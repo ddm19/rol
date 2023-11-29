@@ -1,0 +1,95 @@
+@use '/src/index.scss' as vars;
+
+.navbar
+{
+    max-height: 116px;
+    display: flex;
+    gap: 16px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.logoContainer
+{
+    width: 10%;
+    margin-left: 2em;
+    padding: 0.5em;
+}
+
+.logo
+{
+    height: 100%;
+    width: auto;
+
+}
+
+nav
+{
+    width: 80%;
+}
+
+.navbar .navContainer
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 50%;
+    height: 100%;
+    margin: auto;
+    margin-left: 15%;
+
+    li
+    {
+        color: #5E0202;
+        list-style: none;
+        font-weight: bold;
+        flex: 1;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        height: 40%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1.5rem;
+
+        .navLink
+        {
+            text-decoration: none;
+            color: #5E0202;
+        }
+
+        &:hover
+        {
+            background-color: rgba(94, 2, 2, 0.6);
+            border-radius: 5px;
+
+            a
+            {
+                color: vars.$background-color !important;
+                padding: 2px;
+            }
+        }
+
+
+    }
+
+    .selectedLink
+    {
+        background-color: #7D2709;
+        border-radius: 5px;
+
+        a
+        {
+            color: vars.$background-color !important;
+            padding: 2px;
+        }
+    }
+}
+
+.navSeparator
+{
+    height: 2em;
+    background-color: #F57F17;
+    width: 2px;
+}
