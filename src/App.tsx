@@ -13,6 +13,7 @@ function App()
   return (
     <div className="App">
       <header className="App-header">
+        <script src="https://kit.fontawesome.com/07937a987b.js" crossOrigin="anonymous"></script>
         <NavBar></NavBar>
       </header>
       <body>
