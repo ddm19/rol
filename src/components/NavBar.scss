@@ -1,0 +1,191 @@
+@use '/src/index.scss' as vars;
+
+.navbar
+{
+    max-height: 116px;
+    display: flex;
+    gap: 16px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+}
+
+.logoContainer
+{
+    width: 10%;
+    margin-left: 2em;
+    padding: 0.5em;
+}
+
+.logo
+{
+    height: 100%;
+    width: auto;
+    border-radius: 10%;
+}
+
+.navbar .navContainer,
+.discordButton
+{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 55%;
+    height: 100%;
+    margin: auto;
+    margin-left: 15%;
+
+    .navButton
+    {
+        color: #5E0202;
+        list-style: none;
+        font-weight: bold;
+        flex: 1;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        height: 40%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1.5rem;
+        cursor: pointer;
+
+        .navLink
+        {
+            text-decoration: none;
+            color: #5E0202;
+
+            svg
+            {
+                padding-left: 5px;
+            }
+        }
+
+        &:hover
+        {
+            background-color: rgba(94, 2, 2, 0.6);
+            border-radius: 5px;
+
+            .navLink
+            {
+                color: vars.$background-color;
+                padding: 2px;
+            }
+
+            .dropdown .navLink
+            {
+                color: #5E0202;
+            }
+
+            .dropdown
+            {
+                display: flex;
+                flex-direction: column;
+                min-width: max-content;
+                height: max-content;
+                border-radius: 3%;
+                padding: 0.5rem 1rem 0 1rem;
+            }
+
+            .dropdown-content
+            {
+                width: 100%;
+                height: 100%;
+                //margin: 5%;
+                padding: 5% 0 5% 0;
+                font-weight: 200;
+                border-radius: 3%;
+                padding: 0.5rem 1rem 0.5rem 1rem;
+
+
+                &:hover
+                {
+                    background-color: #5E0202;
+
+                    a
+                    {
+                        color: vars.$background-color;
+
+                    }
+                }
+            }
+
+
+        }
+
+    }
+
+    .dropdown
+    {
+        display: none;
+        z-index: 1;
+        transform: translateX(50%);
+        top: 70%;
+        position: absolute;
+        background-color: vars.$background-color;
+        border: #5E0202;
+        border-radius: 5px;
+        width: max-content;
+        //padding: 5px 5% 5px 5px;
+        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+        list-style: none;
+        text-align: center;
+        flex-direction: column;
+        align-items: center;
+        gap: 1em;
+        padding-inline-start: 0;
+        min-width: max-content;
+    }
+
+
+
+    .activeLink
+    {
+        background-color: #7D2709;
+        border-radius: 5px;
+
+        .navLink
+        {
+            color: vars.$background-color;
+            padding: 2px;
+        }
+    }
+}
+
+.discordButton
+{
+    flex-direction: column;
+    justify-content: center;
+    width: fit-content;
+
+    .discordLink
+    {
+        color: #5E0202;
+        list-style: none;
+        font-weight: bold;
+        flex: 1;
+        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        height: 40%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 1.5rem;
+        cursor: pointer;
+        text-decoration: none;
+        display: flex;
+        flex-direction: column;
+    }
+}
+
+.navSeparator
+{
+    height: 2em;
+    background-color: #F57F17;
+    width: 2px;
+}
+
+.parentNav
+{
+    display: flex;
+    width: 80%;
+}
