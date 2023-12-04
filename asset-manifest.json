@@ -1,13 +1,13 @@
 {
   "files": {
     "main.css": "/rol/static/css/main.066a86db.css",
-    "main.js": "/rol/static/js/main.084ebd81.js",
+    "main.js": "/rol/static/js/main.f68d80b6.js",
     "index.html": "/rol/index.html",
     "main.066a86db.css.map": "/rol/static/css/main.066a86db.css.map",
-    "main.084ebd81.js.map": "/rol/static/js/main.084ebd81.js.map"
+    "main.f68d80b6.js.map": "/rol/static/js/main.f68d80b6.js.map"
   },
   "entrypoints": [
     "static/css/main.066a86db.css",
-    "static/js/main.084ebd81.js"
+    "static/js/main.f68d80b6.js"
   ]
 }
