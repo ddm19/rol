@@ -17,7 +17,7 @@ const NavBar: React.FC = () =>
     const isActive = (path: string) => location.pathname.startsWith(path);
 
     const navigationLinks: Array<NavigationLink> = [
-        { name: "Inicio", url: '/Home' },
+        { name: "Inicio", url: '/' },
         { name: "Campañas", url: '/Campaigns' },
         {
             name: "Conoce Hispania",
