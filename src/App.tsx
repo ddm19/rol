@@ -1,7 +1,8 @@
 import React from 'react';
 import logo from './logo.svg';
 import './App.scss';
-import NavBar from "./components/NavBar";
+import NavBar from "./components/NavBar/NavBar";
+import Footer from "./components/Footer/Footer";
 import Home from "./pages/Home/Home";
 import NoPage from "./pages/NotFound/NotFound";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
@@ -18,6 +19,7 @@ function App()
           <Route path='/' element={<Home />} />
           <Route path="*" element={<NoPage />} />
         </Routes>
+        <Footer></Footer>
       </body>
     </div>
   );
