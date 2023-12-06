@@ -14,7 +14,13 @@ const NavBar: React.FC = () =>
         sublinks?: Array<NavigationLink>
     }
     const location = useLocation();
-    const isActive = (path: string) => location.pathname.startsWith(path);
+    const isActive = (path: string) =>
+    {
+        if (path == '/')
+            return location.pathname == path;
+        return location.pathname.startsWith(path);
+
+    }
 
     const navigationLinks: Array<NavigationLink> = [
         { name: "Inicio", url: '/' },

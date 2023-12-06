@@ -2,10 +2,9 @@
 
 .navbar
 {
-    max-height: 116px;
+    max-height: vars.$header-size;
     display: flex;
     gap: 16px;
-    position: fixed;
     top: 0;
     width: 100%;
 }

@@ -1,20 +1,5 @@
 @use '/src/index.scss' as vars;
 
-.footerbg
-{
-    background-color: #FFE3AE;
-    width: 100%;
-    max-height: 142px;
-    position: fixed;
-    left: 0;
-    bottom: 0;
-    height: 100%;
-    //Center Footer
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
 .footerContainer
 {
     width: 85%;
