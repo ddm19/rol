@@ -1,0 +1,53 @@
+@use '/src/index.scss' as vars;
+
+.footerContainer
+{
+    width: 85%;
+    text-align: left;
+    height: 100%;
+    display: grid;
+    grid-template-rows: 1fr;
+    grid-template-columns: 30% 1fr;
+    gap: 2vw;
+}
+
+.footerText
+{
+    color: #5E0202;
+}
+
+.externalToolsContainer
+{
+    display: flex;
+    flex-direction: column;
+}
+
+.externalTools
+{
+    display: grid;
+    grid-template-rows: repeat(auto-fit, 1fr);
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+
+}
+
+.externalToolsTitle
+{
+    line-height: 1px;
+}
+
+.externalTool
+{
+    width: fit-content;
+    transition: 0.25s;
+
+    &:hover
+    {
+        transform: scale(1.1);
+    }
+}
+
+.alignLeft
+{
+    text-align: left;
+}
