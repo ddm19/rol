@@ -1,26 +1,28 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 $background-color: #FFF1D7;
+$header-size: 116px;
+$footer-size: 116px;
 
-body
-{
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto', sans-serif;
-  background-color: $background-color;
-  margin-top: 116px;
-
-}
 
 html,
 body
 {
   width: 100vw;
-  height: 100vh;
   top: 0;
   left: 0;
-  z-index: 100; // or wherever in the stack you want the layer
+  //z-index: 100; // or wherever in the stack you want the layer
   overflow: hidden;
 }
+
+body
+{
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: #FFF1D7;
+  overflow-y: auto;
+}
+
 
 h1,
 h2,
@@ -36,4 +38,15 @@ h6
 p
 {
   color: adjust-color($background-color, $lightness: 55%);
+}
+
+.link
+{
+  text-decoration: none;
+  color: #5E0202;
+
+  svg
+  {
+    padding: 0 5px 0 5px;
+  }
 }

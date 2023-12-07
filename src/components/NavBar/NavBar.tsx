@@ -14,7 +14,13 @@ const NavBar: React.FC = () =>
         sublinks?: Array<NavigationLink>
     }
     const location = useLocation();
-    const isActive = (path: string) => location.pathname.startsWith(path);
+    const isActive = (path: string) =>
+    {
+        if (path == '/')
+            return location.pathname == path;
+        return location.pathname.startsWith(path);
+
+    }
 
     const navigationLinks: Array<NavigationLink> = [
         { name: "Inicio", url: '/' },
@@ -46,7 +52,7 @@ const NavBar: React.FC = () =>
                 return (
                     <>
                         <li key={index} className={`navButton ${isActive(link.url) ? 'activeLink' : ''}`}>
-                            <Link className='navLink' to={link.url}>
+                            <Link className='navLink link' to={link.url}>
                                 {link.name}
                                 {link.sublinks && link.sublinks.length > 0 ? <FontAwesomeIcon icon={faCaretDown} /> : null}
                             </Link>
@@ -56,7 +62,7 @@ const NavBar: React.FC = () =>
                                     {
                                         return (
                                             <li className='dropdown-content'>
-                                                <Link className='navLink' to={link.url + sublink.url}>{sublink.name}</Link>
+                                                <Link className='navLink link' to={link.url + sublink.url}>{sublink.name}</Link>
 
                                             </li>
                                         )
@@ -78,7 +84,7 @@ const NavBar: React.FC = () =>
         <div className='navbar'>
 
             <div className='logoContainer'>
-                <Link className='navLink' to="/Home"><img className='logo' alt='WebLogo' src={process.env.PUBLIC_URL + '/Logo.png'} /></Link>
+                <Link className='navLink' to="/"><img className='logo' alt='WebLogo' src={process.env.PUBLIC_URL + '/Logo.png'} /></Link>
             </div>
             <nav className='parentNav'>
                 <ul className='navContainer'>
