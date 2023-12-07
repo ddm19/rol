@@ -163,6 +163,13 @@
         display: flex;
         flex-direction: column;
     }
+
+    transition: 0.25s;
+
+    &:hover
+    {
+        transform: scale(1.1);
+    }
 }
 
 .navSeparator
