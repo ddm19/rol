@@ -31,13 +31,12 @@ h4,
 h5,
 h6
 {
-  color: adjust-color($background-color, $lightness: 50%);
-
+  color: #5E0202;
 }
 
 p
 {
-  color: adjust-color($background-color, $lightness: 55%);
+  color: #7D2709;
 }
 
 .link

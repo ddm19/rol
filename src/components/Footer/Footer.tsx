@@ -23,10 +23,10 @@ const Footer: React.FC = () =>
             <div className='externalToolsContainer'>
                 <h4 className='footerText alignLeft externalToolsTitle'>Enlaces Externos</h4>
                 <div className='externalTools footerText'>
-                    {externalTools.map((tool) =>
+                    {externalTools.map((tool, index) =>
                     {
                         return (
-                            <div className='externalTool link'>
+                            <div key={index} className='externalTool link'>
                                 <FontAwesomeIcon icon={tool.icon}></FontAwesomeIcon>
                                 <Link className='footerText link' target='_blank' to={tool.link}>{tool.title}</Link>
                             </div>
