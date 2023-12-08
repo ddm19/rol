@@ -1,5 +1,7 @@
 import { FormEventHandler } from 'react';
 import './Home.scss'
+import './animations.css'
+
 const Home: React.FC = () =>
 {
     const noImage = `${process.env.PUBLIC_URL}/background.png`;
