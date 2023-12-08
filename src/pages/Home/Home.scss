@@ -1,0 +1,179 @@
+@use '/src/index.scss' as vars;
+
+
+.titleBlock
+{
+    background-color: rgba(94, 2, 2, 0.75);
+    width: 100%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.articleBGContainer
+{
+    &::before // Image container
+
+    {
+        content: '';
+        display: block;
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: url('../../../public/background.png');
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        opacity: 0.7;
+    }
+
+    position: relative;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+
+}
+
+.mainArticleContainer
+{
+    width: 40%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 5%;
+
+    p
+    {
+        flex: 1;
+    }
+}
+
+.title
+{
+    font-size: 3rem;
+
+}
+
+.normalText
+{
+    font-size: 1rem;
+}
+
+.whiteText
+{
+    color: vars.$background-color;
+}
+
+.redText
+{
+    color: #5E0202;
+}
+
+.button
+{
+    width: 10rem;
+    height: 3.5rem;
+    background-color: vars.$background-color;
+    box-shadow: 2px 2px 12px 1px #5E0202;
+
+    border-radius: 1.5rem;
+    font-weight: bold;
+    transition: all 0.25s;
+
+    &:hover
+    {
+        cursor: pointer;
+        transform: scale(1.1);
+
+    }
+}
+
+.articlesContainer
+{
+    display: grid;
+    grid-template-rows: repeat(auto-fit, 1fr);
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-flow: row dense;
+
+    gap: 2.5rem;
+    margin: 5%;
+}
+
+.article
+{
+    border-radius: 5%;
+    padding: 1%;
+
+    img
+    {
+        max-width: 90%;
+        border-radius: 8%;
+    }
+
+
+}
+
+.emailContainer
+{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: space-evenly;
+    margin: 5rem;
+    height: 20rem;
+    width: 70%;
+    border-radius: 1rem;
+    background-color: #FFE3AE;
+
+    font-size: 1.2rem;
+}
+
+.emailDescription
+{
+    font-size: 1rem;
+}
+
+.emailForm
+{
+    width: 70%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+    input
+    {
+        width: 40%;
+        height: 40%;
+        padding-left: 2%;
+        margin: 5%;
+        background: #FFF1D7;
+        color: #5B1A04;
+        border-color: #5B1A04;
+        border-width: 1px;
+        border-style: solid;
+        border-radius: 0.5rem;
+        font-size: 1em;
+        text-align: left;
+        border: 2px solid transparent;
+
+    }
+}
+
+.subscribeButton
+{
+    border-radius: 5%;
+    background-color: #5B1A04;
+    font-size: 1em;
+    height: 40%;
+    font-weight: normal;
+}
