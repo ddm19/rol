@@ -1,7 +1,25 @@
+import { FormEventHandler } from 'react';
 import './Home.scss'
 const Home: React.FC = () =>
 {
     const noImage = `${process.env.PUBLIC_URL}/background.png`;
+
+    const articles = [
+        {
+            title: "Título de post1",
+            author: "Daniel Domenech",
+            date: "15 Marzo 2022",
+            timeToRead: "10 min",
+            description: "Lorem ipsum dolor sit amet, consectetur adipiscing"
+        }
+    ]
+
+    const submitEmail = (e: any): FormEventHandler<HTMLButtonElement> | any =>
+    {
+        e.preventDefault()
+        console.log("Método de envío de Emails no implementado!")
+
+    }
 
     return (
         <>
@@ -41,6 +59,25 @@ const Home: React.FC = () =>
                     <p className='articleInfo'>Dani Domenech •  Mar 15, 2022  •  leído en 10 min</p>
                     <p className='articleDescription'>Suspendisse potenti. Sed neque augue, mattis in posuere quis, sagittis...</p>
                 </div>
+            </div>
+            <div className='emailContainer'>
+                <div className='titleContainer'>
+                    <h1 className=' emailTitle'>
+                        Entérate cuando haya algo nuevo
+                    </h1>
+                    <p className='emailDescription'>
+                        Partidas, nuevo lore, personajes interesantes...
+                    </p>
+
+                    <p className='emailDescription'>
+                        Haz que te llegue un mail cuando haya algo nuevo!
+                    </p>
+
+                </div>
+                <form onSubmit={submitEmail} className='emailForm'>
+                    <input className='redText' type="email" name="email" id="email" placeholder="Aquí va tu email"></input>
+                    <button className='button whiteText subscribeButton' type="submit">Enviar</button>
+                </form>
             </div>
         </>
     )

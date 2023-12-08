@@ -58,10 +58,10 @@ const NavBar: React.FC = () =>
                             </Link>
                             {link.sublinks && link.sublinks.length > 0 ?
                                 <ul className='dropdown'>
-                                    {link.sublinks.map((sublink: NavigationLink) =>
+                                    {link.sublinks.map((sublink: NavigationLink, index) =>
                                     {
                                         return (
-                                            <li className='dropdown-content'>
+                                            <li key={index} className='dropdown-content'>
                                                 <Link className='navLink link' to={link.url + sublink.url}>{sublink.name}</Link>
 
                                             </li>
