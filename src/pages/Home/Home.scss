@@ -1,0 +1,97 @@
+@use '/src/index.scss' as vars;
+
+.titleBlock
+{
+    background-color: rgba(94, 2, 2, 0.75);
+    width: 100%;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.articleBGContainer
+{
+    &::before
+    {
+        content: '';
+        display: block;
+        position: absolute;
+        z-index: -1;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        background-image: url('../../../public/background.png');
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: contain;
+        opacity: 0.7;
+
+    }
+
+    position: relative;
+    height: 30em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 80%;
+
+}
+
+.mainArticleContainer
+{
+    width: 40%;
+    height: 80%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 5%;
+
+    p
+    {
+        flex: 1;
+    }
+}
+
+.title
+{
+    font-size: 3rem;
+
+}
+
+.normalText
+{
+    font-size: 1rem;
+}
+
+.whiteText
+{
+    color: vars.$background-color;
+}
+
+.redText
+{
+    color: #5E0202;
+}
+
+.button
+{
+    width: 10rem;
+    height: 3.5rem;
+    background-color: vars.$background-color;
+    box-shadow: 2px 2px 12px 1px #5E0202;
+
+    border-radius: 1.5rem;
+    font-weight: bold;
+    transition: all 0.25s;
+
+    &:hover
+    {
+        cursor: pointer;
+        transform: scale(1.1);
+
+    }
+}
