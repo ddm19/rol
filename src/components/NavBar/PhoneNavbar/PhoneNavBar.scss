@@ -1,0 +1,49 @@
+.buttonMenu
+{
+    appearance: none;
+    background: none;
+    border: none;
+    width: 40%;
+}
+
+.menu
+{
+    position: absolute;
+    left: 0;
+    top: 5vh;
+    background-color: #FFF1D7;
+    justify-content: center;
+    border: solid 1px #5E0202;
+    -webkit-box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
+    -moz-box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
+    box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
+    align-items: center;
+    transform: translateX(-150%);
+    transition: all 0.25s linear;
+
+    .navContainer
+    {
+        flex-direction: column;
+        padding-left: 0;
+    }
+
+    .navButton
+    {
+        border-radius: 5%;
+    }
+
+    .mobileNav
+    {
+        height: 90vh;
+        margin-left: 0;
+        width: 35vw;
+        display: flex;
+        flex-direction: column;
+
+    }
+}
+
+.active-menu
+{
+    transform: translateX(0);
+}
