@@ -14,6 +14,32 @@ body
   overflow: hidden;
 }
 
+// Escritorio
+html
+{
+  font-size: 16px;
+  /* Tamaño de fuente base para escritorio */
+}
+
+// Tablets
+@media (max-width: 768px)
+{
+  html
+  {
+    font-size: 14px;
+
+  }
+}
+
+// Móvil
+@media (max-width: 480px)
+{
+  html
+  {
+    font-size: 12px;
+  }
+}
+
 body
 {
   margin: 0;

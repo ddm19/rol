@@ -184,3 +184,87 @@
     display: flex;
     width: 80%;
 }
+
+.mobileMenu
+{
+    display: none;
+}
+
+.disabled
+{
+    display: none;
+}
+
+@media (max-width: 900px)
+{
+
+    .navbar .navContainer,
+    .discordButton
+    {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+/* DISPOSITIVOS PEQUEÑOS MÓVILES */
+@media (max-width: 700px)
+{
+    .parentNav
+    {
+        display: none;
+    }
+
+    .mobileMenu
+    {
+        justify-content: center;
+        display: flex;
+        width: 60%;
+        align-items: center;
+        margin: auto;
+    }
+
+    .logoContainer
+    {
+        margin-left: 0;
+        flex: 1;
+        padding-left: 5%;
+        height: 90%;
+    }
+
+    .logo
+    {
+        height: 100%;
+        max-height: 30vw;
+        width: auto;
+        max-width: calc(100% + 5vw);
+        border-radius: 10%;
+    }
+
+    .navLink
+    {
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+    }
+
+    .navbar
+    {
+        height: 100%;
+        gap: 5vw;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+    }
+
+    .navItem
+    {
+        width: 50%;
+    }
+
+    .menu-icon
+    {
+        font-size: 1.8rem;
+        color: #5E0202;
+    }
+}
