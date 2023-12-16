@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/rol/static/css/main.310b6b4c.css",
-    "main.js": "/rol/static/js/main.8d41a31f.js",
+    "main.js": "/rol/static/js/main.bf976f1a.js",
     "static/media/background.png": "/rol/static/media/background.8c1a500b1a8e09df7b7b.png",
     "index.html": "/rol/index.html",
     "main.310b6b4c.css.map": "/rol/static/css/main.310b6b4c.css.map",
-    "main.8d41a31f.js.map": "/rol/static/js/main.8d41a31f.js.map"
+    "main.bf976f1a.js.map": "/rol/static/js/main.bf976f1a.js.map"
   },
   "entrypoints": [
     "static/css/main.310b6b4c.css",
-    "static/js/main.8d41a31f.js"
+    "static/js/main.bf976f1a.js"
   ]
 }
