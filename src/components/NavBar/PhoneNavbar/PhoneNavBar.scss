@@ -8,6 +8,8 @@
 
 .menu
 {
+    width: 55%;
+    height: 50vh;
     position: absolute;
     left: 0;
     top: 5vh;
@@ -18,8 +20,8 @@
     -moz-box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
     box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
     align-items: center;
-    transform: translateX(-150%);
-    transition: all 0.25s linear;
+    transform: translateX(-170%);
+    transition: all 0.1s linear;
 
     .navContainer
     {
