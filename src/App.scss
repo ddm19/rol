@@ -65,8 +65,8 @@ main
   margin: 0;
   position: absolute;
   background-color: vars.$background-color;
-  border-top: 5px double #5e0202;
-  border-bottom: 5px double #5e0202;
+  border-top: 5px double vars.$colors-darkRed;
+  border-bottom: 5px double vars.$colors-darkRed;
   border-radius: 2%;
 }
 

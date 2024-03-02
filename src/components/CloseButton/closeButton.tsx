@@ -1,10 +1,17 @@
-interface CloseButtonProps {
-    onCloseEvent : () => void;
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import "./closeButton.scss";
+
+interface CloseButtonProps
+{
+    onCloseEvent: () => void;
 }
 const CloseButton = (props: CloseButtonProps) =>
 {
+    const { onCloseEvent } = props;
+
     return (
-        <p> ajaja</p>
-    )
-}
-export default CloseButton
+        <FontAwesomeIcon className="navPhoneCloseButton" icon={faXmark} onClick={onCloseEvent} />
+    );
+};
+export default CloseButton;

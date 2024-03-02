@@ -37,7 +37,7 @@
 
     .navButton
     {
-        color: #5e0202;
+        color: vars.$colors-darkRed;
         list-style: none;
         font-weight: bold;
         flex: 1;
@@ -62,7 +62,7 @@
 
             .dropdown .navLink
             {
-                color: #5e0202;
+                color: vars.$colors-darkRed
             }
 
             .dropdown
@@ -87,7 +87,7 @@
 
                 &:hover
                 {
-                    background-color: #5e0202;
+                    background-color: vars.$colors-darkRed;
 
                     a
                     {
@@ -106,7 +106,7 @@
         top: 70%;
         position: absolute;
         background-color: vars.$background-color;
-        border: #5e0202;
+        border: vars.$colors-darkRed;
         border-radius: 5px;
         width: max-content;
         //padding: 5px 5% 5px 5px;
@@ -141,7 +141,7 @@
 
     .discordLink
     {
-        color: #5e0202;
+        color: vars.$colors-darkRed;
         list-style: none;
         font-weight: bold;
         flex: 1;
@@ -282,6 +282,6 @@
     .menu-icon
     {
         font-size: 1.8rem;
-        color: #5e0202;
+        color: vars.$colors-darkRed
     }
 }
