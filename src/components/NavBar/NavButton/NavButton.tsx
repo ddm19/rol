@@ -7,7 +7,7 @@ import React from "react";
 interface NavButtonProps 
 {
     link: NavigationLink,
-    toggleMenu?: () => void
+    toggleMenu?: () => void;
 
 }
 
@@ -32,9 +32,8 @@ const NavButton: React.FC<NavButtonProps> = (props: NavButtonProps) =>
     const handleMobileLinkClick = (e: any, link: NavigationLink) =>
     {
         if (!link.sublinks)
-            toggleMenu?.()
-
-    }
+            toggleMenu?.();
+    };
 
     return (
         <li className={`navButton ${isActive(link.url) ? 'activeLink' : ''}`}>
@@ -56,6 +55,6 @@ const NavButton: React.FC<NavButtonProps> = (props: NavButtonProps) =>
                 </ul>
                 : null}
         </li>
-    )
-}
-export default NavButton
+    );
+};
+export default NavButton;
