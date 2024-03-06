@@ -32,7 +32,6 @@
     }
 
     position: relative;
-    height: 30em;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -60,7 +59,7 @@
 .title
 {
     font-size: 3rem;
-
+    color: vars.$colors-darkRed;
 }
 
 .normalText
@@ -75,7 +74,7 @@
 
 .redText
 {
-    color: #5E0202;
+    color: vars.$colors-darkRed
 }
 
 .button
@@ -83,7 +82,7 @@
     width: 10rem;
     height: 3.5rem;
     background-color: vars.$background-color;
-    box-shadow: 2px 2px 12px 1px #5E0202;
+    box-shadow: 2px 2px 12px 1px vars.$colors-darkRed;
 
     border-radius: 1.5rem;
     font-weight: bold;
