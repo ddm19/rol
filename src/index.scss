@@ -2,7 +2,7 @@
 $background-color: #FFF1D7;
 $header-size: 116px;
 $footer-size: 116px;
-
+$colors-darkRed: #5e0202;
 
 html,
 body
@@ -12,6 +12,32 @@ body
   left: 0;
   //z-index: 100; // or wherever in the stack you want the layer
   overflow: hidden;
+}
+
+// Escritorio
+html
+{
+  font-size: 16px;
+  /* Tamaño de fuente base para escritorio */
+}
+
+// Tablets
+@media (max-width: 768px)
+{
+  html
+  {
+    font-size: 14px;
+
+  }
+}
+
+// Móvil
+@media (max-width: 480px)
+{
+  html
+  {
+    font-size: 12px;
+  }
 }
 
 body
@@ -31,7 +57,7 @@ h4,
 h5,
 h6
 {
-  color: #5E0202;
+  color: $colors-darkRed
 }
 
 p
@@ -42,7 +68,8 @@ p
 .link
 {
   text-decoration: none;
-  color: #5E0202;
+
+  color: $colors-darkRed;
 
   svg
   {
