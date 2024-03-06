@@ -1,7 +1,29 @@
+@use '/src/index.scss' as vars;
+
 .App
 {
   text-align: center;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
 }
+
+.App-header
+{
+  height: vars.$header-size;
+  z-index: 1;
+}
+
+main
+{
+  flex: 1;
+  padding-top: 116px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 
 .App-logo
 {
@@ -34,4 +56,27 @@
   {
     transform: rotate(360deg);
   }
+}
+
+.App-header
+{
+  top: 0;
+  width: 100%;
+  margin: 0;
+  position: absolute;
+  background-color: vars.$background-color;
+  border-top: 5px double vars.$colors-darkRed;
+  border-bottom: 5px double vars.$colors-darkRed;
+  border-radius: 2%;
+}
+
+.App-footer
+{
+  background-color: #FFE3AE;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }

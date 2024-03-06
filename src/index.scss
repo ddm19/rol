@@ -1,26 +1,54 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 $background-color: #FFF1D7;
-
-body
-{
-  margin: 0;
-  padding: 0;
-  font-family: 'Roboto', sans-serif;
-  background-color: $background-color;
-  margin-top: 116px;
-
-}
+$header-size: 116px;
+$footer-size: 116px;
+$colors-darkRed: #5e0202;
 
 html,
 body
 {
   width: 100vw;
-  height: 100vh;
   top: 0;
   left: 0;
-  z-index: 100; // or wherever in the stack you want the layer
+  //z-index: 100; // or wherever in the stack you want the layer
   overflow: hidden;
 }
+
+// Escritorio
+html
+{
+  font-size: 16px;
+  /* Tamaño de fuente base para escritorio */
+}
+
+// Tablets
+@media (max-width: 768px)
+{
+  html
+  {
+    font-size: 14px;
+
+  }
+}
+
+// Móvil
+@media (max-width: 480px)
+{
+  html
+  {
+    font-size: 12px;
+  }
+}
+
+body
+{
+  margin: 0;
+  padding: 0;
+  font-family: "Roboto", sans-serif;
+  background-color: #FFF1D7;
+  overflow-y: auto;
+}
+
 
 h1,
 h2,
@@ -29,11 +57,22 @@ h4,
 h5,
 h6
 {
-  color: adjust-color($background-color, $lightness: 50%);
-
+  color: $colors-darkRed
 }
 
 p
 {
-  color: adjust-color($background-color, $lightness: 55%);
+  color: #7D2709;
+}
+
+.link
+{
+  text-decoration: none;
+
+  color: $colors-darkRed;
+
+  svg
+  {
+    padding: 0 5px 0 5px;
+  }
 }
