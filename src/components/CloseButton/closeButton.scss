@@ -1,0 +1,8 @@
+@use '/src/index.scss' as vars;
+
+.navPhoneCloseButton
+{
+    font-size: 2rem;
+    color: vars.$colors-darkRed;
+    margin: 0 0 15% 0;
+}

@@ -1,11 +1,10 @@
-@use '/src/index.scss' as vars;
+@use "/src/index.scss" as vars;
 
 .navbar
 {
-    max-height: 116px;
+    max-height: vars.$header-size;
     display: flex;
     gap: 16px;
-    position: fixed;
     top: 0;
     width: 100%;
 }
@@ -38,28 +37,17 @@
 
     .navButton
     {
-        color: #5E0202;
+        color: vars.$colors-darkRed;
         list-style: none;
         font-weight: bold;
         flex: 1;
-        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
         height: 40%;
         display: flex;
         align-items: center;
         justify-content: center;
         margin: 1.5rem;
         cursor: pointer;
-
-        .navLink
-        {
-            text-decoration: none;
-            color: #5E0202;
-
-            svg
-            {
-                padding-left: 5px;
-            }
-        }
 
         &:hover
         {
@@ -74,7 +62,7 @@
 
             .dropdown .navLink
             {
-                color: #5E0202;
+                color: vars.$colors-darkRed
             }
 
             .dropdown
@@ -97,22 +85,17 @@
                 border-radius: 3%;
                 padding: 0.5rem 1rem 0.5rem 1rem;
 
-
                 &:hover
                 {
-                    background-color: #5E0202;
+                    background-color: vars.$colors-darkRed;
 
                     a
                     {
                         color: vars.$background-color;
-
                     }
                 }
             }
-
-
         }
-
     }
 
     .dropdown
@@ -123,7 +106,7 @@
         top: 70%;
         position: absolute;
         background-color: vars.$background-color;
-        border: #5E0202;
+        border: vars.$colors-darkRed;
         border-radius: 5px;
         width: max-content;
         //padding: 5px 5% 5px 5px;
@@ -137,11 +120,9 @@
         min-width: max-content;
     }
 
-
-
     .activeLink
     {
-        background-color: #7D2709;
+        background-color: #7d2709;
         border-radius: 5px;
 
         .navLink
@@ -160,11 +141,11 @@
 
     .discordLink
     {
-        color: #5E0202;
+        color: vars.$colors-darkRed;
         list-style: none;
         font-weight: bold;
         flex: 1;
-        font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
         height: 40%;
         display: flex;
         align-items: center;
@@ -175,12 +156,19 @@
         display: flex;
         flex-direction: column;
     }
+
+    transition: 0.25s;
+
+    &:hover
+    {
+        transform: scale(1.1);
+    }
 }
 
 .navSeparator
 {
     height: 2em;
-    background-color: #F57F17;
+    background-color: #f57f17;
     width: 2px;
 }
 
@@ -188,4 +176,112 @@
 {
     display: flex;
     width: 80%;
+}
+
+.mobileMenu
+{
+    display: none;
+}
+
+.disabled
+{
+    display: none;
+}
+
+@media (max-width: 900px)
+{
+
+    .navbar .navContainer,
+    .discordButton
+    {
+        width: 100%;
+        margin-left: 0;
+    }
+}
+
+/* DISPOSITIVOS PEQUEÑOS MÓVILES */
+@media (max-width: 700px)
+{
+    .parentNav
+    {
+        display: none;
+    }
+
+    .mobileMenu
+    {
+        justify-content: center;
+        display: flex;
+        width: 60%;
+        align-items: center;
+        margin: auto;
+
+        .menu
+        {
+            width: 65%;
+
+        }
+
+        .mobileNav
+        {
+            width: 30vw;
+
+            .navButton
+            {
+                width: 100%;
+                margin-left: 0;
+                margin-right: 0;
+
+                .dropdown
+                {
+                    top: inherit;
+                    margin-left: 56%;
+                }
+            }
+        }
+    }
+
+    .logoContainer
+    {
+        margin-left: 0;
+        flex: 1;
+        padding-left: 5%;
+        height: 90%;
+    }
+
+    .logo
+    {
+        height: 100%;
+        max-height: 30vw;
+        width: auto;
+        max-width: calc(100% + 5vw);
+        border-radius: 10%;
+    }
+
+    .navLink
+    {
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+    }
+
+    .navbar
+    {
+        height: 100%;
+        gap: 5vw;
+        justify-content: center;
+        align-items: center;
+        display: flex;
+    }
+
+    .navItem
+    {
+        width: 50%;
+    }
+
+    .menu-icon
+    {
+        font-size: 1.8rem;
+        color: vars.$colors-darkRed
+    }
 }
