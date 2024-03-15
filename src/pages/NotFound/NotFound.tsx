@@ -1,16 +1,21 @@
 import React from 'react';
 import './NotFound.scss';
+import { Link } from 'react-router-dom';
 
 const NotFound: React.FC = () =>
 {
-  const dragonImage = "https://cdn3.iconfinder.com/data/icons/cam-the-tigeron/100/038-confused-thinking-uncertain-question-sticker-tigeron-gragon-512.png";
+  const dragonImage = `${process.env.PUBLIC_URL}/NotFound.png`;
   return (
-    <div className="not-found">
-      <img src={dragonImage} alt="404 error page image" />
-      <h1>Error 404</h1>
-      <h2>Un Goblin te ha robado la página</h2>
-      <p>Vuelve al inicio y trata de buscar otra!</p>
-    </div>
+    <>
+      <div className='notFound'>
+        <img draggable={false} className='notFound__mainImage' src={dragonImage} alt="404 error with a little confused dragon" />
+        <div className='notFound__textContainer'>
+          <h1>Ups! No encontramos esa página</h1>
+          <h2>Un goblin te ha robado la página</h2>
+          <p>Vuelve al <Link className='link link--bold link--hoverUnderline' to='/'>Inicio</Link> y trata de buscar otra</p>
+        </div>
+      </div>
+    </>
   );
 };
 
