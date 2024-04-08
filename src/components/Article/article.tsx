@@ -2,8 +2,9 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { ArticleType, RelatedArticle } from "./types";
 import { error } from "console";
-
-
+import Error from "components/Error/error";
+import Sections from "./components/sections";
+import { contentParser } from "./utilFunctions";
 const Article = () =>
 {
     const articleId = useParams().articleId;
@@ -25,16 +26,20 @@ const Article = () =>
 
 
     }, []);
-
     return (
         <>
-            {error ? error :
+            {error ? <Error
+                title={error}
+                subtitle="Puedes crearlo tú mismo 😉"
+            /> :
                 <div className="articleContainer">
                     {article ?
                         <div className="articleContainer__sectionsContainer">
                             <h1>{article.title}</h1>
                             <h3>{article.date}</h3>
-                            <p>{article.content}</p>
+                            {contentParser(article.content, article)}
+                            <Sections sections={article.sections} article={article} />
+
                         </div>
                         :
                         <h1>Loading...</h1>
@@ -46,4 +51,5 @@ const Article = () =>
 
     );
 };
+
 export default Article;
