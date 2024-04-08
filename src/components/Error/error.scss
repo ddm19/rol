@@ -1,4 +1,4 @@
-.notFound
+.error
 {
     margin-top: 0.8rem;
     height: 100%;
@@ -8,7 +8,7 @@
     flex-direction: column;
     gap: 0.5rem;
 
-    .notFound__mainImage
+    &__mainImage
     {
         width: 65%;
         user-select: none;
