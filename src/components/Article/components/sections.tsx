@@ -22,11 +22,11 @@ const Sections = (props: SectionProps) =>
                     if (sectionObject.isNumbered)
                     {
                         articlesQuantity += 1;
-                        finalSection.push(<h2>{parentTitle}{articlesQuantity} {sectionObject.title}</h2>);
+                        finalSection.push(<h2 id={sectionObject.title}>{parentTitle}{articlesQuantity} {sectionObject.title}</h2>);
                     }
                     else
                     {
-                        finalSection.push(<h2>{sectionObject.title}</h2>);
+                        finalSection.push(<h2 id={sectionObject.title}>{sectionObject.title}</h2>);
 
                     }
                     if (sectionObject.subtitle != null)

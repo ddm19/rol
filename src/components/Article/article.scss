@@ -1,0 +1,21 @@
+.articleContainer
+{
+    display: flex;
+    gap: 2%;
+    justify-content: center;
+
+    &__indexContainer
+    {
+        width: 15%;
+    }
+
+    &__mainContainer
+    {
+        width: 60%;
+    }
+
+    &__relatedContentContainer
+    {
+        width: 25%;
+    }
+}

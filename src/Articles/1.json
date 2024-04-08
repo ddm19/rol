@@ -5,7 +5,13 @@
     "related":
     [
         {
+            "image": "https://play-lh.googleusercontent.com/CWnUKImqAolAYXmKDix36PmRvFvS1ztKV10qW1x2NVOrChlhm8NYEkjnrbRQvalUXLXB",
             "title": "Valar D. Heimdall",
+            "subtitle": "Personaje",
+            "link": "https://hispania.vercel.app"
+        },
+        {
+            "title": "Quelsor Binfel",
             "subtitle": "Personaje",
             "link": "https://hispania.vercel.app"
         }
