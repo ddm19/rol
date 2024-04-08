@@ -1,6 +1,7 @@
 import { FormEventHandler } from 'react';
-import './Home.scss'
-import './animations.css'
+import './Home.scss';
+import './animations.css';
+import { Link } from 'react-router-dom';
 
 const Home: React.FC = () =>
 {
@@ -14,14 +15,14 @@ const Home: React.FC = () =>
             timeToRead: "10 min",
             description: "Lorem ipsum dolor sit amet, consectetur adipiscing"
         }
-    ]
+    ];
 
     const submitEmail = (e: any): FormEventHandler<HTMLButtonElement> | any =>
     {
-        e.preventDefault()
-        console.log("Método de envío de Emails no implementado!")
+        e.preventDefault();
+        console.log("Método de envío de Emails no implementado!");
 
-    }
+    };
 
     return (
         <>
@@ -35,8 +36,10 @@ const Home: React.FC = () =>
                     </div>
 
                 </div>
+
             </div>
             <div className='articlesContainer'>
+                <Link to='/article/1'>ARTICLE1</Link>
                 <div className='article'>
                     <img src={noImage} alt="article1" />
                     <h3 className='articleTitle'>Este es un post</h3>
@@ -82,7 +85,7 @@ const Home: React.FC = () =>
                 </form>
             </div>
         </>
-    )
+    );
 
-}
+};
 export default Home;

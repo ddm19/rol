@@ -1,3 +1,86 @@
 {
-    "title": "hola"
+    "title": "Investigación Kóbold",
+    "date": "15 abril de 2015",
+    "content": "Descripción lalalalalla",
+    "related":
+    [
+        {
+            "title": "Valar D. Heimdall",
+            "subtitle": "Personaje",
+            "link": "https://hispania.vercel.app"
+        }
+    ],
+    "sections":
+    [
+        {
+            "id": "1",
+            "title": "Personajes",
+            "content": "{ValarD} {Jhonny}",
+            "isNumbered": true
+        },
+        {
+            "id": "2",
+            "title": "Historia",
+            "subtitle": "Actualizado el 12/11/2023",
+            "content": "",
+            "isNumbered": true,
+            "subSections":
+            [
+                {
+                    "id": "2.1",
+                    "title": "Lorem",
+                    "content": "Lorem Lorem",
+                    "isNumbered": true
+                },
+                {
+                    "id": "2.2",
+                    "title": "Ipsum",
+                    "content": "Macum Macum",
+                    "isNumbered": true
+                }
+            ]
+        },
+        {
+            "id": "3",
+            "title": "Momentos Destacables",
+            "content": "",
+            "isNumbered": true,
+            "subSections":
+            [
+                {
+                    "id": "3.1",
+                    "title": "Lorem",
+                    "content": "Lorem Lorem",
+                    "isNumbered": true
+                }
+            ]
+        },
+        {
+            "id": "NotasDelDM",
+            "title": "Notas del DM",
+            "content": "In occlusión mental",
+            "isNumbered": false
+        }
+    ],
+    "imports":
+    [
+        {
+            "id": "ValarD",
+            "link": "https://hispania.vercel.app",
+            "title": "Valard D. Heimdall",
+            "subtitle": "Marc",
+            "shortDesc": "Lorem ipsum dolor sit amet"
+        },
+        {
+            "id": "Jhonny",
+            "link": "https://hispania.vercel.app",
+            "title": "Jhonny Piesligeros",
+            "subtitle": "NPC",
+            "shortDesc": "Lorem ipsum dolor sit amet"
+        },
+        {
+            "id": "image1",
+            "image": "https://hafnia.es/wp-content/uploads/E2410.jpg"
+        }
+    ]
 }
