@@ -1,6 +1,6 @@
 export interface ImportedItem 
 {
-    id: number;
+    id: string;
     link?: string;
     title?: string;
     subtitle?: string;

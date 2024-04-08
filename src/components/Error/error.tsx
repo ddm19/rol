@@ -22,7 +22,7 @@ const Error: React.FC<ErrorProps> = (props: ErrorProps) =>
                 <div className='error__textContainer'>
                     <h1>{title}</h1>
                     <h2>{subtitle}</h2>
-                    {homeLink || <p>Vuelve al <Link className='link link--bold link--hoverUnderline' to='/'>Inicio</Link> y busca otra movida</p>}
+                    {homeLink || <p>Vuelve al <Link className='link link--bold link--hoverUnderline' to='/'>Inicio</Link></p>}
                 </div>
             </div>
         </>

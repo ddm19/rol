@@ -1,7 +1,7 @@
 {
     "title": "Investigación Kóbold",
     "date": "15 abril de 2015",
-    "content": "Descripción lalalalalla",
+    "content": "{image1} Descripción corta de la campaña +  Objetivo \n Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis imperdiet sed arcu in auctor. Morbi rhoncus sapien ut scelerisque molestie. Nullam erat orci, cursus ut fermentum in, mattis sit amet sem. Vivamus ac lectus semper orci tempor tincidunt. Sed non neque felis. Pellentesque et venenatis purus. Fusce blandit ac purus vehicula tempus. ",
     "related":
     [
         {
@@ -69,18 +69,20 @@
             "link": "https://hispania.vercel.app",
             "title": "Valard D. Heimdall",
             "subtitle": "Marc",
-            "shortDesc": "Lorem ipsum dolor sit amet"
+            "shortDesc": "Lorem ipsum dolor sit amet",
+            "image": "https://play-lh.googleusercontent.com/CWnUKImqAolAYXmKDix36PmRvFvS1ztKV10qW1x2NVOrChlhm8NYEkjnrbRQvalUXLXB"
         },
         {
             "id": "Jhonny",
             "link": "https://hispania.vercel.app",
             "title": "Jhonny Piesligeros",
             "subtitle": "NPC",
-            "shortDesc": "Lorem ipsum dolor sit amet"
+            "shortDesc": "Lorem ipsum dolor sit amet",
+            "image": "https://play-lh.googleusercontent.com/CWnUKImqAolAYXmKDix36PmRvFvS1ztKV10qW1x2NVOrChlhm8NYEkjnrbRQvalUXLXB"
         },
         {
             "id": "image1",
-            "image": "https://hafnia.es/wp-content/uploads/E2410.jpg"
+            "image": "https://media.istockphoto.com/id/1409329028/es/vector/no-hay-imagen-disponible-marcador-de-posici%C3%B3n-miniatura-icono-dise%C3%B1o-de-ilustraci%C3%B3n.jpg?s=612x612&w=0&k=20&c=Bd89b8CBr-IXx9mBbTidc-wu_gtIj8Py_EMr3hGGaPw="
         }
     ]
 }
