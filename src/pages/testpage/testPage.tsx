@@ -119,7 +119,9 @@ const DiceRoller: React.FC = () =>
             <div className="roll-container">
                 {rolls.map((roll, index) => (
                     <div key={index} className="roll-display">
-                        <span>{roll}</span>
+
+                        <span className="roll">{roll}</span>
+
                         <span className="bonus">Bonus: {calculateBonus(roll)}</span>
                         <div className="action-buttons">
                             <button
