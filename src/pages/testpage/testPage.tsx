@@ -1,69 +1,153 @@
-const testPage: React.FC = () =>
+import React, { useState } from 'react';
+import './styles.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUndo } from '@fortawesome/free-solid-svg-icons';
+
+const calculateBonus = (roll: number): string =>
 {
+    if (roll >= 20) return '+5';
+    if (roll >= 18) return '+4';
+    if (roll >= 16) return '+3';
+    if (roll >= 14) return '+2';
+    if (roll >= 12) return '+1';
+    if (roll >= 10) return '0';
+    if (roll >= 8) return '-1';
+    if (roll >= 6) return '-2';
+    if (roll >= 4) return '-3';
+    if (roll >= 2) return '-4';
+    return '-5';
+};
+
+const DiceRoller: React.FC = () =>
+{
+    const [rolls, setRolls] = useState<number[]>([]);
+    const [addCounts, setAddCounts] = useState<number[]>([]);
+    const [subtractCounts, setSubtractCounts] = useState<number[]>([]);
+    const [actionsDone, setActionsDone] = useState<string[]>([]);
+
+    const rollDice = () =>
+    {
+        const newRolls = Array.from({ length: 6 }, () => Math.floor(Math.random() * 20) + 1);
+        setRolls(newRolls);
+        setAddCounts(new Array(6).fill(0));
+        setSubtractCounts(new Array(6).fill(0));
+        setActionsDone(new Array(6).fill(''));
+    };
+
+    const clearRolls = () =>
+    {
+        setRolls([]);
+        setAddCounts([]);
+        setSubtractCounts([]);
+        setActionsDone([]);
+    };
+
+    const resetAction = (index: number) =>
+    {
+        const newRolls = [...rolls];
+        const newAddCounts = [...addCounts];
+        const newSubtractCounts = [...subtractCounts];
+        const newActionsDone = [...actionsDone];
+
+        if (newActionsDone[index] === 'add')
+        {
+            newRolls[index] -= 2;
+            newAddCounts[index] -= 1;
+        } else if (newActionsDone[index] === 'subtract')
+        {
+            newRolls[index] += 2;
+            newSubtractCounts[index] -= 1;
+        }
+
+        newActionsDone[index] = '';
+        setRolls(newRolls);
+        setAddCounts(newAddCounts);
+        setSubtractCounts(newSubtractCounts);
+        setActionsDone(newActionsDone);
+    };
+
+    const handleAdd = (index: number) =>
+    {
+        const remainingAdds = 3 - addCounts.reduce((acc, count) => acc + count, 0);
+        if (actionsDone[index] === 'subtract') resetAction(index);
+        if (!actionsDone[index] && rolls[index] < 21 && addCounts[index] < 3 && remainingAdds > 0)
+        {
+            const newRolls = [...rolls];
+            newRolls[index] += 2;
+            const newAddCounts = [...addCounts];
+            newAddCounts[index] += 1;
+            const newActionsDone = [...actionsDone];
+            newActionsDone[index] = 'add';
+            setRolls(newRolls);
+            setAddCounts(newAddCounts);
+            setActionsDone(newActionsDone);
+        }
+    };
+
+    const handleSubtract = (index: number) =>
+    {
+        const remainingSubtracts = 3 - subtractCounts.reduce((acc, count) => acc + count, 0);
+        if (actionsDone[index] === 'add') resetAction(index);
+        if (!actionsDone[index] && rolls[index] > 2 && subtractCounts[index] < 3 && remainingSubtracts > 0)
+        {
+            const newRolls = [...rolls];
+            newRolls[index] -= 2;
+            const newSubtractCounts = [...subtractCounts];
+            newSubtractCounts[index] += 1;
+            const newActionsDone = [...actionsDone];
+            newActionsDone[index] = 'subtract';
+            setRolls(newRolls);
+            setSubtractCounts(newSubtractCounts);
+            setActionsDone(newActionsDone);
+        }
+    };
+
+    const totalSum = rolls.reduce((acc, roll) => acc + roll, 0);
+    const average = rolls.length > 0 ? (totalSum / rolls.length).toFixed(2) : '0.00';
+
+    const remainingAdds = 3 - addCounts.reduce((acc, count) => acc + count, 0);
+    const remainingSubtracts = 3 - subtractCounts.reduce((acc, count) => acc + count, 0);
+
     return (
-        <div>
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante diam, accumsan eget lectus nec, accumsan sodales nunc. Sed orci ligula, consequat ac dignissim at, rutrum sit amet turpis. Ut a sagittis lectus. Suspendisse vel vestibulum erat, et hendrerit tortor. Integer dignissim scelerisque aliquet. Etiam risus mauris, feugiat ac sem vitae, pulvinar elementum dolor. Suspendisse potenti. Interdum et malesuada fames ac ante ipsum primis in faucibus. In sapien ex, feugiat ornare turpis et, faucibus tempus lectus. Suspendisse congue, purus ac dictum sollicitudin, sapien sapien faucibus turpis, tempus iaculis lectus dolor quis enim. Curabitur quis vulputate sapien. Fusce non accumsan urna. Quisque pulvinar velit id lorem euismod, a euismod magna dictum. Pellentesque sapien nunc, viverra id libero nec, accumsan accumsan enim.
-
-                Vivamus commodo velit ut tincidunt dapibus. Morbi viverra lectus et risus porta dictum ut ac eros. Nunc eu dui et neque ultricies consectetur in in mi. In in nisl metus. Curabitur at felis sit amet turpis aliquam aliquam. Duis commodo massa at nibh semper pellentesque. Vivamus ut nibh purus. Fusce sit amet gravida tortor, eget ullamcorper nunc. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi tincidunt augue quam, maximus consectetur mauris ultrices eget.
-
-                Aenean non elementum massa. Maecenas urna massa, vulputate eu pellentesque ac, semper a leo. Nam eu sem justo. Vestibulum sit amet nibh odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aliquam dolor nunc, bibendum vitae augue semper, auctor tincidunt ipsum.
-
-                Donec blandit velit sit amet purus rutrum, at convallis purus vestibulum. Sed tristique massa tortor, sit amet consequat augue finibus quis. Nullam ultrices lorem non erat auctor vulputate. Quisque quis odio nec enim tincidunt convallis eget a nisi. Nullam facilisis, enim ut malesuada luctus, felis lectus posuere lectus, quis scelerisque orci lacus vitae ante. Quisque a molestie leo, vestibulum scelerisque nibh. Aenean congue, arcu porttitor dictum dictum, turpis leo commodo dui, ut semper odio magna tincidunt nisl. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In condimentum urna vitae tempor pellentesque. Mauris hendrerit tortor eu quam dictum tristique. Aenean molestie enim at nisi laoreet faucibus. Praesent ipsum justo, sodales eget sem ac, eleifend malesuada ligula.
-
-                Etiam sollicitudin, ex eget blandit ultricies, tortor quam bibendum elit, at aliquam dolor nunc eu sapien. Donec faucibus urna in lorem placerat viverra. Praesent vestibulum convallis lectus, condimentum accumsan justo imperdiet sit amet. Nam vel bibendum lorem, at congue ex. Etiam posuere, erat vitae sollicitudin vulputate, lorem elit lobortis elit, at tincidunt justo quam quis ex. Phasellus iaculis, nisl ut facilisis tincidunt, nulla diam malesuada odio, in tincidunt nulla lacus vel felis. Duis eu lacus non erat tempor efficitur nec non mauris. Nulla id egestas arcu. Nullam id consectetur nibh. Nullam sed augue tempus, pretium dolor eu, fermentum lorem.
-
-                Aenean a rutrum mi, eu blandit turpis. Phasellus in dolor ut lorem eleifend facilisis. Nulla sodales lobortis cursus. Aliquam erat volutpat. Nulla maximus vulputate ultricies. Praesent quis purus efficitur, sodales purus facilisis, condimentum lacus. Fusce eu facilisis ligula. Ut maximus magna id purus condimentum accumsan.
-
-                Sed dictum id erat id sollicitudin. Nulla fringilla mauris ex. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aliquam hendrerit sem sodales, consequat dolor a, consequat nibh. Aenean vitae mi in libero placerat elementum. Nam enim quam, convallis a justo vestibulum, venenatis feugiat augue. Nulla non sem porta, rutrum magna in, lobortis ante. Ut ac neque at lectus laoreet lobortis. Duis efficitur sem id arcu varius ultrices. Donec blandit, metus ullamcorper consectetur elementum, orci odio venenatis quam, finibus pharetra sapien lectus eu tellus. Nunc placerat sem sit amet arcu interdum ultrices.
-
-                Morbi ornare semper dapibus. Vivamus metus neque, consectetur ac luctus quis, bibendum vel risus. Praesent in risus id dui lobortis vulputate. Nullam bibendum fringilla maximus. Duis fermentum felis quis libero auctor, id tempus tortor efficitur. Sed libero mi, vestibulum nec sodales ac, tristique et urna. Praesent nec eros nulla. Pellentesque quis mauris et diam lacinia tristique suscipit a est.
-
-                Nulla consequat metus diam, non porttitor nisi vehicula nec. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur blandit libero mauris, a tristique quam rhoncus consectetur. Suspendisse at vehicula orci, vitae blandit sem. Proin at efficitur quam, ut congue lectus. Vestibulum sit amet massa ultrices neque sollicitudin consectetur eget vitae risus. Donec consequat tellus in justo gravida posuere. Nam laoreet lectus eget lorem lobortis, vitae finibus leo tristique. Nunc ut lacinia nisl, ac commodo ipsum. Phasellus pharetra orci ac nibh placerat, non ornare tellus tempor. Integer dolor ligula, tempus eu lacus quis, viverra feugiat nulla. Pellentesque enim dolor, dictum ac varius nec, sollicitudin fringilla augue. In hac habitasse platea dictumst. Nunc euismod nisi dolor, ac varius libero eleifend sit amet. Nullam rutrum nisi sed vestibulum facilisis.
-
-                In rutrum feugiat tortor quis ullamcorper. Vestibulum quis feugiat nisi, nec dignissim felis. Morbi enim tortor, posuere eu purus nec, rhoncus posuere dui. Duis diam ex, finibus eu odio ut, imperdiet tempus lorem. Integer elit arcu, tempus nec dictum et, mattis molestie urna. Pellentesque sagittis leo id commodo ultrices. Duis fermentum, quam ut tempor aliquet, dui dolor tristique lorem, vitae ultrices dui lectus id nisi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris et maximus leo. Nunc tempor pulvinar eros, vitae suscipit odio eleifend non. Curabitur vel ante nisl. Sed vel nisi fermentum, iaculis mauris id, rhoncus est.
-
-                Morbi ac pharetra lectus. Nunc dapibus et sem quis fermentum. Nulla eleifend maximus magna non commodo. Integer et enim efficitur, condimentum risus a, tincidunt velit. Fusce felis est, tincidunt quis gravida vitae, suscipit sit amet metus. Vivamus nec dui orci. Morbi hendrerit eleifend enim varius ultrices. Praesent eu interdum diam. Praesent vitae tortor vel lectus dapibus pulvinar. Pellentesque in viverra orci. Nulla dignissim risus eu felis facilisis efficitur. Mauris eu felis diam. Nunc id malesuada odio. Duis non eleifend tortor, ut interdum est. Cras vel nisi eget felis luctus aliquet.
-
-                Aliquam erat volutpat. Morbi nisl sapien, maximus quis fringilla non, vehicula sit amet felis. Aenean et vehicula ante. Aenean pulvinar, justo eget fringilla imperdiet, nunc mi finibus velit, sollicitudin rhoncus tortor erat at lorem. In vulputate enim vel tincidunt tristique. Nulla sagittis purus metus, id congue quam pellentesque vel. Morbi dictum sapien lobortis tempus tincidunt. Mauris et velit luctus nibh volutpat volutpat vitae ut arcu. Curabitur dui dolor, sagittis non sapien in, porta interdum nisi. Donec non ex feugiat lacus finibus porta vitae vel arcu. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Phasellus consectetur pulvinar facilisis.
-
-                Nullam bibendum massa nisl, rutrum volutpat metus blandit nec. Proin id eros et felis elementum placerat in id libero. Vestibulum eu tincidunt lorem, id sagittis sem. Proin pharetra dui in justo posuere ornare. Etiam viverra, urna sed tincidunt rutrum, risus nunc volutpat arcu, at ultrices arcu diam ac purus. Proin a libero ligula. Integer imperdiet urna id turpis gravida varius. Ut blandit iaculis augue et luctus. Donec non congue erat, in luctus augue.
-
-                Nam ac nisi nec velit blandit ultricies ac id justo. Proin et mattis nisi. Fusce luctus nunc accumsan, varius justo in, viverra tortor. Vivamus vel orci eget arcu sodales mattis et id elit. Pellentesque tincidunt mi in nibh gravida, id semper augue viverra. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas ac aliquet leo. Donec ante ipsum, fringilla quis massa maximus, viverra vulputate elit.
-
-                Morbi vel magna ultricies, ultricies tellus quis, euismod dui. Suspendisse in vehicula tortor. Vestibulum tempus justo vitae faucibus commodo. Duis nec purus egestas, tincidunt ligula porttitor, molestie purus. Phasellus iaculis blandit orci in tempor. Duis sed metus sit amet enim feugiat faucibus. Maecenas at enim posuere ligula laoreet malesuada at non elit. In dignissim at nibh eget bibendum.</p>
-
-            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vestibulum ante diam, accumsan eget lectus nec, accumsan sodales nunc. Sed orci ligula, consequat ac dignissim at, rutrum sit amet turpis. Ut a sagittis lectus. Suspendisse vel vestibulum erat, et hendrerit tortor. Integer dignissim scelerisque aliquet. Etiam risus mauris, feugiat ac sem vitae, pulvinar elementum dolor. Suspendisse potenti. Interdum et malesuada fames ac ante ipsum primis in faucibus. In sapien ex, feugiat ornare turpis et, faucibus tempus lectus. Suspendisse congue, purus ac dictum sollicitudin, sapien sapien faucibus turpis, tempus iaculis lectus dolor quis enim. Curabitur quis vulputate sapien. Fusce non accumsan urna. Quisque pulvinar velit id lorem euismod, a euismod magna dictum. Pellentesque sapien nunc, viverra id libero nec, accumsan accumsan enim.
-
-                Vivamus commodo velit ut tincidunt dapibus. Morbi viverra lectus et risus porta dictum ut ac eros. Nunc eu dui et neque ultricies consectetur in in mi. In in nisl metus. Curabitur at felis sit amet turpis aliquam aliquam. Duis commodo massa at nibh semper pellentesque. Vivamus ut nibh purus. Fusce sit amet gravida tortor, eget ullamcorper nunc. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Morbi tincidunt augue quam, maximus consectetur mauris ultrices eget.
-
-                Aenean non elementum massa. Maecenas urna massa, vulputate eu pellentesque ac, semper a leo. Nam eu sem justo. Vestibulum sit amet nibh odio. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Aliquam dolor nunc, bibendum vitae augue semper, auctor tincidunt ipsum.
-
-                Donec blandit velit sit amet purus rutrum, at convallis purus vestibulum. Sed tristique massa tortor, sit amet consequat augue finibus quis. Nullam ultrices lorem non erat auctor vulputate. Quisque quis odio nec enim tincidunt convallis eget a nisi. Nullam facilisis, enim ut malesuada luctus, felis lectus posuere lectus, quis scelerisque orci lacus vitae ante. Quisque a molestie leo, vestibulum scelerisque nibh. Aenean congue, arcu porttitor dictum dictum, turpis leo commodo dui, ut semper odio magna tincidunt nisl. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. In condimentum urna vitae tempor pellentesque. Mauris hendrerit tortor eu quam dictum tristique. Aenean molestie enim at nisi laoreet faucibus. Praesent ipsum justo, sodales eget sem ac, eleifend malesuada ligula.
-
-                Etiam sollicitudin, ex eget blandit ultricies, tortor quam bibendum elit, at aliquam dolor nunc eu sapien. Donec faucibus urna in lorem placerat viverra. Praesent vestibulum convallis lectus, condimentum accumsan justo imperdiet sit amet. Nam vel bibendum lorem, at congue ex. Etiam posuere, erat vitae sollicitudin vulputate, lorem elit lobortis elit, at tincidunt justo quam quis ex. Phasellus iaculis, nisl ut facilisis tincidunt, nulla diam malesuada odio, in tincidunt nulla lacus vel felis. Duis eu lacus non erat tempor efficitur nec non mauris. Nulla id egestas arcu. Nullam id consectetur nibh. Nullam sed augue tempus, pretium dolor eu, fermentum lorem.
-
-                Aenean a rutrum mi, eu blandit turpis. Phasellus in dolor ut lorem eleifend facilisis. Nulla sodales lobortis cursus. Aliquam erat volutpat. Nulla maximus vulputate ultricies. Praesent quis purus efficitur, sodales purus facilisis, condimentum lacus. Fusce eu facilisis ligula. Ut maximus magna id purus condimentum accumsan.
-
-                Sed dictum id erat id sollicitudin. Nulla fringilla mauris ex. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Aliquam hendrerit sem sodales, consequat dolor a, consequat nibh. Aenean vitae mi in libero placerat elementum. Nam enim quam, convallis a justo vestibulum, venenatis feugiat augue. Nulla non sem porta, rutrum magna in, lobortis ante. Ut ac neque at lectus laoreet lobortis. Duis efficitur sem id arcu varius ultrices. Donec blandit, metus ullamcorper consectetur elementum, orci odio venenatis quam, finibus pharetra sapien lectus eu tellus. Nunc placerat sem sit amet arcu interdum ultrices.
-
-                Morbi ornare semper dapibus. Vivamus metus neque, consectetur ac luctus quis, bibendum vel risus. Praesent in risus id dui lobortis vulputate. Nullam bibendum fringilla maximus. Duis fermentum felis quis libero auctor, id tempus tortor efficitur. Sed libero mi, vestibulum nec sodales ac, tristique et urna. Praesent nec eros nulla. Pellentesque quis mauris et diam lacinia tristique suscipit a est.
-
-                Nulla consequat metus diam, non porttitor nisi vehicula nec. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Curabitur blandit libero mauris, a tristique quam rhoncus consectetur. Suspendisse at vehicula orci, vitae blandit sem. Proin at efficitur quam, ut congue lectus. Vestibulum sit amet massa ultrices neque sollicitudin consectetur eget vitae risus. Donec consequat tellus in justo gravida posuere. Nam laoreet lectus eget lorem lobortis, vitae finibus leo tristique. Nunc ut lacinia nisl, ac commodo ipsum. Phasellus pharetra orci ac nibh placerat, non ornare tellus tempor. Integer dolor ligula, tempus eu lacus quis, viverra feugiat nulla. Pellentesque enim dolor, dictum ac varius nec, sollicitudin fringilla augue. In hac habitasse platea dictumst. Nunc euismod nisi dolor, ac varius libero eleifend sit amet. Nullam rutrum nisi sed vestibulum facilisis.
-
-                In rutrum feugiat tortor quis ullamcorper. Vestibulum quis feugiat nisi, nec dignissim felis. Morbi enim tortor, posuere eu purus nec, rhoncus posuere dui. Duis diam ex, finibus eu odio ut, imperdiet tempus lorem. Integer elit arcu, tempus nec dictum et, mattis molestie urna. Pellentesque sagittis leo id commodo ultrices. Duis fermentum, quam ut tempor aliquet, dui dolor tristique lorem, vitae ultrices dui lectus id nisi. Interdum et malesuada fames ac ante ipsum primis in faucibus. Mauris et maximus leo. Nunc tempor pulvinar eros, vitae suscipit odio eleifend non. Curabitur vel ante nisl. Sed vel nisi fermentum, iaculis mauris id, rhoncus est.
-
-                Morbi ac pharetra lectus. Nunc dapibus et sem quis fermentum. Nulla eleifend maximus magna non commodo. Integer et enim efficitur, condimentum risus a, tincidunt velit. Fusce felis est, tincidunt quis gravida vitae, suscipit sit amet metus. Vivamus nec dui orci. Morbi hendrerit eleifend enim varius ultrices. Praesent eu interdum diam. Praesent vitae tortor vel lectus dapibus pulvinar. Pellentesque in viverra orci. Nulla dignissim risus eu felis facilisis efficitur. Mauris eu felis diam. Nunc id malesuada odio. Duis non eleifend tortor, ut interdum est. Cras vel nisi eget felis luctus aliquet.
-
-                Aliquam erat volutpat. Morbi nisl sapien, maximus quis fringilla non, vehicula sit amet felis. Aenean et vehicula ante. Aenean pulvinar, justo eget fringilla imperdiet, nunc mi finibus velit, sollicitudin rhoncus tortor erat at lorem. In vulputate enim vel tincidunt tristique. Nulla sagittis purus metus, id congue quam pellentesque vel. Morbi dictum sapien lobortis tempus tincidunt. Mauris et velit luctus nibh volutpat volutpat vitae ut arcu. Curabitur dui dolor, sagittis non sapien in, porta interdum nisi. Donec non ex feugiat lacus finibus porta vitae vel arcu. Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Phasellus consectetur pulvinar facilisis.
-
-                Nullam bibendum massa nisl, rutrum volutpat metus blandit nec. Proin id eros et felis elementum placerat in id libero. Vestibulum eu tincidunt lorem, id sagittis sem. Proin pharetra dui in justo posuere ornare. Etiam viverra, urna sed tincidunt rutrum, risus nunc volutpat arcu, at ultrices arcu diam ac purus. Proin a libero ligula. Integer imperdiet urna id turpis gravida varius. Ut blandit iaculis augue et luctus. Donec non congue erat, in luctus augue.
-
-                Nam ac nisi nec velit blandit ultricies ac id justo. Proin et mattis nisi. Fusce luctus nunc accumsan, varius justo in, viverra tortor. Vivamus vel orci eget arcu sodales mattis et id elit. Pellentesque tincidunt mi in nibh gravida, id semper augue viverra. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Maecenas ac aliquet leo. Donec ante ipsum, fringilla quis massa maximus, viverra vulputate elit.
-
-                Morbi vel magna ultricies, ultricies tellus quis, euismod dui. Suspendisse in vehicula tortor. Vestibulum tempus justo vitae faucibus commodo. Duis nec purus egestas, tincidunt ligula porttitor, molestie purus. Phasellus iaculis blandit orci in tempor. Duis sed metus sit amet enim feugiat faucibus. Maecenas at enim posuere ligula laoreet malesuada at non elit. In dignissim at nibh eget bibendum.</p>
-
+        <div className="container">
+            <button onClick={rollDice}>Tirar 6d20</button>
+            <button onClick={clearRolls}>Borrar tiradas</button>
+            <div className="stats">Total: {totalSum}</div>
+            <div className="stats">Media: {average}</div>
+            <div className="stats">Sumas restantes: {remainingAdds}</div>
+            <div className="stats">Restas restantes: {remainingSubtracts}</div>
+            <div className="roll-container">
+                {rolls.map((roll, index) => (
+                    <div key={index} className="roll-display">
+                        <span>{roll}</span>
+                        <span className="bonus">Bonus: {calculateBonus(roll)}</span>
+                        <div className="action-buttons">
+                            <button
+                                onClick={() => handleAdd(index)}
+                                disabled={roll >= 21 || addCounts[index] >= 3 || remainingAdds <= 0 || actionsDone[index] !== ''}
+                                className={`action-button ${actionsDone[index] === 'add' ? 'green' : ''}`}
+                            >
+                                +2
+                            </button>
+                            <button
+                                onClick={() => handleSubtract(index)}
+                                disabled={roll <= 2 || subtractCounts[index] >= 3 || remainingSubtracts <= 0 || actionsDone[index] !== ''}
+                                className={`action-button ${actionsDone[index] === 'subtract' ? 'red' : ''}`}
+                            >
+                                -2
+                            </button>
+                            <button
+                                onClick={() => resetAction(index)}
+                                className="reset-button"
+                            >
+                                <FontAwesomeIcon icon={faUndo} />
+                            </button>
+                        </div>
+                    </div>
+                ))}
+            </div>
         </div>
-    )
+    );
+};
 
-}
-export default testPage;
+export default DiceRoller;

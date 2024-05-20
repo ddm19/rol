@@ -1,0 +1,94 @@
+/* DiceRoller.css */
+.container
+{
+    background-color: #FFF1D7;
+    padding: 20px;
+    border-radius: 10px;
+    max-width: 400px;
+    margin: auto;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    font-family: 'Georgia', serif;
+}
+
+button
+{
+    background-color: #F57F17;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    margin: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:disabled
+{
+    background-color: #9D6157;
+    cursor: not-allowed;
+}
+
+button:hover:not(:disabled)
+{
+    background-color: #9D6157;
+}
+
+.roll-container
+{
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.roll-display
+{
+    background-color: #FFF1D7;
+    border: 2px solid #9D6157;
+    border-radius: 5px;
+    padding: 10px;
+    text-align: center;
+}
+
+.roll-display span
+{
+    display: block;
+    font-size: 18px;
+    margin-bottom: 5px;
+}
+
+.action-buttons
+{
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+}
+
+.action-button
+{
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.action-button.green
+{
+    background-color: green;
+}
+
+.action-button.red
+{
+    background-color: red;
+}
+
+.stats
+{
+    margin: 15px 0;
+    font-size: 16px;
+}
+
+.bonus
+{
+    font-size: 14px;
+    color: #F57F17;
+}
