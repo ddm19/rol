@@ -6,7 +6,8 @@ import Footer from "./components/Footer/Footer";
 import Home from "./pages/Home/Home";
 import TestPage from "./pages/testpage/testPage";
 import NoPage from "./pages/NotFound/NotFound";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+import Article from 'components/Article/article';
 
 function App()
 {
@@ -19,6 +20,7 @@ function App()
         <Routes>
           <Route path='/' element={<Home />} />
           <Route path='/Hispania' element={<TestPage />}></Route>
+          <Route path='/Article/:articleId' element={<Article />} />
           <Route path="*" element={<NoPage />} />
         </Routes>
       </main>

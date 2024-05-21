@@ -3,6 +3,12 @@ $background-color: #FFF1D7;
 $header-size: 116px;
 $footer-size: 116px;
 $colors-darkRed: #5e0202;
+$colors-lightYellow: #FEE09C;
+$colors-darkYellow: #FBC02D;
+$colors-border: rgba(0, 0, 0, 0.75);
+$colors-font: #444444;
+$colors-subtitle: #7A7A7A;
+
 
 html,
 body
@@ -10,15 +16,13 @@ body
   width: 100vw;
   top: 0;
   left: 0;
-  //z-index: 100; // or wherever in the stack you want the layer
   overflow: hidden;
+  scroll-behavior: smooth;
 }
 
-// Escritorio
 html
 {
   font-size: 16px;
-  /* Tamaño de fuente base para escritorio */
 }
 
 // Tablets
@@ -38,6 +42,7 @@ html
   {
     font-size: 12px;
   }
+
 }
 
 body
@@ -62,7 +67,7 @@ h6
 
 p
 {
-  color: #7D2709;
+  color: $colors-font;
 }
 
 .link
@@ -74,5 +79,10 @@ p
   svg
   {
     padding: 0 5px 0 5px;
+  }
+
+  &--bold
+  {
+    font-weight: bold;
   }
 }
