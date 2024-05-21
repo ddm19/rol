@@ -1,28 +1,21 @@
-import { FormEventHandler } from 'react';
+import { FormEventHandler, useEffect } from 'react';
 import './Home.scss';
 import './animations.css';
 import { Link } from 'react-router-dom';
+import ArticleDisplay from 'components/ArticleDisplay/articleDisplay';
 
 const Home: React.FC = () =>
 {
     const noImage = `${process.env.PUBLIC_URL}/background.png`;
 
-    const articles = [
-        {
-            title: "Título de post1",
-            author: "Daniel Domenech",
-            date: "15 Marzo 2022",
-            timeToRead: "10 min",
-            description: "Lorem ipsum dolor sit amet, consectetur adipiscing"
-        }
-    ];
 
     const submitEmail = (e: any): FormEventHandler<HTMLButtonElement> | any =>
     {
         e.preventDefault();
-        console.log("Método de envío de Emails no implementado!");
+        alert("Método de envío de Emails no implementado!");
 
     };
+
 
     return (
         <>
@@ -39,31 +32,7 @@ const Home: React.FC = () =>
 
             </div>
             <div className='articlesContainer'>
-                <Link to='/article/1'>ARTICLE1</Link>
-                <div className='article'>
-                    <img src={noImage} alt="article1" />
-                    <h3 className='articleTitle'>Este es un post</h3>
-                    <p className='articleInfo'>Dani Domenech •  Mar 15, 2022  •  leído en 10 min</p>
-                    <p className='articleDescription'>Suspendisse potenti. Sed neque augue, mattis in posuere quis, sagittis...</p>
-                </div>
-                <div className='article'>
-                    <img src={noImage} alt="article1" />
-                    <h3 className='articleTitle'>Este es un post</h3>
-                    <p className='articleInfo'>Dani Domenech •  Mar 15, 2022  •  leído en 10 min</p>
-                    <p className='articleDescription'>Suspendisse potenti. Sed neque augue, mattis in posuere quis, sagittis...</p>
-                </div>
-                <div className='article'>
-                    <img src={noImage} alt="article1" />
-                    <h3 className='articleTitle'>Este es un post</h3>
-                    <p className='articleInfo'>Dani Domenech •  Mar 15, 2022  •  leído en 10 min</p>
-                    <p className='articleDescription'>Suspendisse potenti. Sed neque augue, mattis in posuere quis, sagittis...</p>
-                </div>
-                <div className='article'>
-                    <img src={noImage} alt="article1" />
-                    <h3 className='articleTitle'>Este es un post</h3>
-                    <p className='articleInfo'>Dani Domenech •  Mar 15, 2022  •  leído en 10 min</p>
-                    <p className='articleDescription'>Suspendisse potenti. Sed neque augue, mattis in posuere quis, sagittis...</p>
-                </div>
+                <ArticleDisplay image={noImage} title={'Este es un post'} articleInfo={'Dani Domenech •  Mar 15, 2022  •  leído en 10 min'} description={'Suspendisse potenti. Sed neque augue, mattis in posuere quis, sagittis...'} articleId={1} />
             </div>
             <div className='emailContainer'>
                 <div className='titleContainer'>

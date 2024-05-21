@@ -18,7 +18,7 @@ const RelatedContent = (props: RelatedContentProps) =>
             {relatedArray.map((related) =>
             {
                 return (
-                    <Link to={related.link} className="relatedContentContainer__link">
+                    <Link to={related.link} className="relatedContentContainer__link" target="blank">
                         <img src={related.image != null ? related.image : defaultImage} />
                         <div className="relatedContentContainer__content">
                             <h3 className="relatedContentContainer__title">{related.title}</h3>
