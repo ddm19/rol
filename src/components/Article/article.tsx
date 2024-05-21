@@ -38,15 +38,16 @@ const Article = () =>
                     {article ?
                         <div className="articleContainer">
                             <div className="articleContainer__indexContainer">
+                                <span className="articleContainer--bold">CONTENIDO</span>
                                 <Index sections={article.sections} />
                             </div>
                             <div className="articleContainer__mainContainer">
-                                <h1>{article.title}</h1>
-                                <h3>{article.date}</h3>
+                                <h1 className="articleContainer__title">{article.title}</h1>
+                                <span className="articleContainer__subtitle">{article.date}</span>
                                 {contentParser(article.content, article)}
                                 <Sections sections={article.sections} article={article} />
                             </div>
-                            <div className="articleContainer__relatedContentContainer">
+                            <div className="relatedContentContainer">
                                 <RelatedContent relatedArray={article.related} />
                             </div>
 

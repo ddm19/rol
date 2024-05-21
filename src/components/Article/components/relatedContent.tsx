@@ -14,15 +14,17 @@ const RelatedContent = (props: RelatedContentProps) =>
 
     return (
         <React.Fragment>
-            <h2>CONTENIDO RELACIONADO</h2>
+            <h2 className="relatedContentContainer__mainTitle">ENLACES RELACIONADOS</h2>
             {relatedArray.map((related) =>
             {
                 return (
-                    <Link to={related.link}>
-
+                    <Link to={related.link} className="relatedContentContainer__link">
                         <img src={related.image != null ? related.image : defaultImage} />
-                        <h3>{related.title}</h3>
-                        <h4>{related.subtitle}</h4>
+                        <div className="relatedContentContainer__content">
+                            <h3 className="relatedContentContainer__title">{related.title}</h3>
+                            <p className="relatedContentContainer__subtitle">{related.subtitle}</p>
+                        </div>
+
                     </Link>
 
                 );

@@ -9,17 +9,16 @@ const EmbedArticle = (props: RelatedProps) =>
 {
     const { related } = props;
     const defaultImage = `${process.env.PUBLIC_URL}/NotFound.png`;
-    useEffect(() =>
-    {
-        console.log(related);
-    }, []);
+
     return (
-        <>
+        <div className="embedContentContainer">
             <img src={related.image ? related.image : defaultImage} />
-            <h3>{related.title}</h3>
-            <h4>{related.subtitle}</h4>
-            <p>{related.shortDesc}</p>
-        </>
+            <div className="embedContentContainer__content">
+                <h3 className="embedContentContainer__title">{related.title}</h3>
+                <span className="embedContentContainer__subtitle">{related.subtitle}</span>
+                <p >{related.shortDesc}</p>
+            </div>
+        </div>
 
     );
 };
