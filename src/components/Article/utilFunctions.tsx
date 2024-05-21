@@ -16,7 +16,8 @@ export const contentParser = (content: string, article: ArticleType, isNumbered 
             element = "";
             const imageId = word.substring(1, word.length - 1);
             const src = article.imports.filter((importedThing) => importedThing.id === imageId)[0];
-            parsedContainer.push(<EmbedArticle related={src} />);
+            if (src != null)
+                parsedContainer.push(<EmbedArticle related={src} />);
 
         }
         else if (word.includes('\n'))

@@ -33,4 +33,8 @@ export interface ArticleType
     related: RelatedArticle[];
     sections: Section[];
     imports: ImportedItem[];
+    image?: string;
+    author?: string;
+    timeToRead?: string;
+    shortDescription?: string;
 }
