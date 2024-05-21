@@ -66,14 +66,14 @@ const DiceRoller: React.FC = () =>
         setActionsDone(newActionsDone);
     };
 
-    const handleAdd = (index: number) =>
+    const handleAdd = (index: number, e: any) =>
     {
         const remainingAdds = 3 - addCounts.reduce((acc, count) => acc + count, 0);
         if (actionsDone[index] === 'subtract') resetAction(index);
-        if (!actionsDone[index] && rolls[index] < 21 && addCounts[index] < 3 && remainingAdds > 0)
+        if (!actionsDone[index] && rolls[index] < 20 && addCounts[index] < 3 && remainingAdds > 0)
         {
             const newRolls = [...rolls];
-            newRolls[index] += 2;
+            newRolls[index] = Math.min(newRolls[index] + 2, 20);
             const newAddCounts = [...addCounts];
             newAddCounts[index] += 1;
             const newActionsDone = [...actionsDone];
@@ -81,6 +81,11 @@ const DiceRoller: React.FC = () =>
             setRolls(newRolls);
             setAddCounts(newAddCounts);
             setActionsDone(newActionsDone);
+        }
+        else
+        {
+            e.target.parentElement.parentElement.classList.add('shake');
+            setTimeout(() => e.target.parentElement.parentElement.classList.remove('shake'), 300);
         }
     };
 
@@ -125,7 +130,7 @@ const DiceRoller: React.FC = () =>
                         <span className="bonus">Bonus: {calculateBonus(roll)}</span>
                         <div className="action-buttons">
                             <button
-                                onClick={() => handleAdd(index)}
+                                onClick={(e) => handleAdd(index, e)}
                                 disabled={roll >= 21 || addCounts[index] >= 3 || remainingAdds <= 0 || actionsDone[index] !== ''}
                                 className={`action-button ${actionsDone[index] === 'add' ? 'green' : ''}`}
                             >
