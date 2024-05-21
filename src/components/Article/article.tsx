@@ -7,27 +7,33 @@ import Sections from "./components/sections";
 import { contentParser } from "./utilFunctions";
 import RelatedContent from "./components/relatedContent";
 import Index from "./components/index";
+import { fetchArticleById } from "./actions";
 const Article = () =>
 {
     const articleId = useParams().articleId;
     const [article, setArticle] = useState<ArticleType | null>(null);
-    const [related, setRelated] = useState<RelatedArticle | null>(null);
     const [error, setError] = useState<String | null>(null);
 
     useEffect(() =>
     {
+        if (articleId)
+            fetchArticleById(articleId).then((res: any) =>
+            {
+                console.log(res);
+                setArticle(res);
+            }).catch((err: any) =>
+            {
+                setError(err);
+            });
 
-        import(`Articles/${articleId}.json`).then((res) =>
-        {
-            setArticle(res);
-        }).catch((err) =>
-        {
-            if (err.code == "MODULE_NOT_FOUND")
-                setError("No hemos encontrado ese Artículo");
-        });
 
 
     }, []);
+    useEffect(() =>
+    {
+        console.log(article);
+    }, [article]);
+
     return (
         <>
             {error ? <Error

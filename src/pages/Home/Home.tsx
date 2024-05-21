@@ -1,13 +1,16 @@
-import { FormEventHandler, useEffect } from 'react';
+import { FormEventHandler, useEffect, useState } from 'react';
 import './Home.scss';
 import './animations.css';
 import { Link } from 'react-router-dom';
 import ArticleDisplay from 'components/ArticleDisplay/articleDisplay';
+import { fetchArticles } from './actions';
+import { ArticleDisplayType } from './types/types';
+import { ArticleType } from 'components/Article/types';
 
 const Home: React.FC = () =>
 {
     const noImage = `${process.env.PUBLIC_URL}/background.png`;
-
+    const [articles, setArticles] = useState<ArticleDisplayType[]>([]);
 
     const submitEmail = (e: any): FormEventHandler<HTMLButtonElement> | any =>
     {
@@ -15,6 +18,16 @@ const Home: React.FC = () =>
         alert("Método de envío de Emails no implementado!");
 
     };
+    useEffect(() =>
+    {
+        fetchArticles().then((res) =>
+        {
+            setArticles(res);
+        }).catch((err) =>
+        {
+            console.log(err);
+        });
+    }, []);
 
 
     return (
@@ -32,7 +45,21 @@ const Home: React.FC = () =>
 
             </div>
             <div className='articlesContainer'>
-                <ArticleDisplay image={noImage} title={'Este es un post'} articleInfo={'Dani Domenech •  Mar 15, 2022  •  leído en 10 min'} description={'Suspendisse potenti. Sed neque augue, mattis in posuere quis, sagittis...'} articleId={1} />
+                {articles.length > 0 &&
+                    articles.map((articleItem: ArticleDisplayType, index: number) =>
+                    {
+
+
+                        return <ArticleDisplay key={index}
+                            image={articleItem.content.image ? articleItem.content.image : noImage}
+                            title={articleItem.content.title} articleInfo={getArticleInfo(articleItem.content)}
+                            description={articleItem.content.shortDescription ? articleItem.content.shortDescription : ""}
+                            articleId={articleItem.name} />;
+
+
+
+                    })
+                }
             </div>
             <div className='emailContainer'>
                 <div className='titleContainer'>
@@ -58,3 +85,11 @@ const Home: React.FC = () =>
 
 };
 export default Home;
+function getArticleInfo(content: ArticleType): string
+{
+
+    const timeToRead = content.timeToRead ? `Leído en ${content.timeToRead}` : "";
+    const author = content.author ? content.author : "";
+
+    return `${author} • ${content.date} • ${timeToRead} `;
+}
