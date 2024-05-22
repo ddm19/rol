@@ -45,7 +45,7 @@ const Home: React.FC = () =>
 
             </div>
             <div className='articlesContainer'>
-                {articles.length > 0 &&
+                {articles != null ? articles.length > 0 &&
                     articles.map((articleItem: ArticleDisplayType, index: number) =>
                     {
 
@@ -58,7 +58,7 @@ const Home: React.FC = () =>
 
 
 
-                    })
+                    }) : <h1 className='noArticles'>No hay artículos</h1>
                 }
             </div>
             <div className='emailContainer'>
