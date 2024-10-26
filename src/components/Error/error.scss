@@ -10,8 +10,17 @@
 
     &__mainImage
     {
-        width: 65%;
+        width: 35%;
         user-select: none;
+
+    }
+
+    @media only screen and (max-width: 600px)
+    {
+        &__mainImage
+        {
+            width: 50%;
+        }
     }
 }
 

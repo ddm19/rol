@@ -19,7 +19,6 @@ const Article = () =>
         if (articleId)
             fetchArticleById(articleId).then((res: any) =>
             {
-                console.log(res);
                 setArticle(res);
             }).catch((err: any) =>
             {
@@ -41,7 +40,7 @@ const Article = () =>
                 subtitle="Puedes crearlo tú mismo 😉"
             /> :
                 <>
-                    {article ?
+                    {article != null ?
                         <div className="articleContainer">
                             <div className="articleContainer__indexContainer">
                                 <span className="articleContainer--bold">CONTENIDO</span>
