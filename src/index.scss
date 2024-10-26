@@ -2,7 +2,7 @@
 $background-color: #FFF1D7;
 $header-size: 116px;
 $footer-size: 116px;
-
+$colors-darkRed: #5e0202;
 
 html,
 body
@@ -57,7 +57,7 @@ h4,
 h5,
 h6
 {
-  color: #5E0202;
+  color: $colors-darkRed
 }
 
 p
@@ -68,10 +68,16 @@ p
 .link
 {
   text-decoration: none;
-  color: #5E0202;
+
+  color: $colors-darkRed;
 
   svg
   {
     padding: 0 5px 0 5px;
+  }
+
+  &--bold
+  {
+    font-weight: bold;
   }
 }
