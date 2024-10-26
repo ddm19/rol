@@ -1,4 +1,4 @@
-import { FormEventHandler, useEffect, useState } from 'react';
+import { FormEventHandler, SetStateAction, useEffect, useState } from 'react';
 import './Home.scss';
 import './animations.css';
 import { Link } from 'react-router-dom';
@@ -20,12 +20,12 @@ const Home: React.FC = () =>
     };
     useEffect(() =>
     {
-        fetchArticles().then((res) =>
+        fetchArticles().then((res: SetStateAction<ArticleDisplayType[]>) =>
         {
             setArticles(res);
-        }).catch((err) =>
+        }).catch((err: any) =>
         {
-            console.log(err);
+            console.error(err);
         });
     }, []);
 
@@ -45,7 +45,7 @@ const Home: React.FC = () =>
 
             </div>
             <div className='articlesContainer'>
-                {articles.length > 0 &&
+                {articles != null ? articles.length > 0 &&
                     articles.map((articleItem: ArticleDisplayType, index: number) =>
                     {
 
@@ -58,7 +58,7 @@ const Home: React.FC = () =>
 
 
 
-                    })
+                    }) : <h1 className='noArticles'>No hay artículos</h1>
                 }
             </div>
             <div className='emailContainer'>
