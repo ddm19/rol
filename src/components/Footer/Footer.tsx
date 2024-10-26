@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileAudio, faUsers, faPuzzlePiece, faUserCog, faBook, faDiceD20 } from '@fortawesome/free-solid-svg-icons'
+import { faFileAudio, faPuzzlePiece, faUserCog, faBook, faDiceD20 } from '@fortawesome/free-solid-svg-icons'
 import './Footer.scss'
 import { Link } from 'react-router-dom';
 

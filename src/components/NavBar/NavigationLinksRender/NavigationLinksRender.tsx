@@ -1,7 +1,5 @@
 import React from 'react';
-import { useLocation, Link } from 'react-router-dom';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCaretDown } from '@fortawesome/free-solid-svg-icons';
+
 import { NavigationLink } from '../NavBar';
 import NavButton from '../NavButton/NavButton';
 

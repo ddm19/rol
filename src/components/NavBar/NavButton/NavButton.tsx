@@ -21,8 +21,8 @@ const NavButton: React.FC<NavButtonProps> = (props: NavButtonProps) =>
     const location = useLocation();
     const isActive = (path: string) =>
     {
-        if (path == '/')
-            return location.pathname == path;
+        if (path === '/')
+            return location.pathname === path;
         return location.pathname.startsWith(path);
 
     };
