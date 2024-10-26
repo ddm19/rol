@@ -1,8 +1,6 @@
-@use "/src/index.scss" as vars;
-
 .navbar
 {
-    max-height: vars.$header-size;
+    max-height: var(--header-size);
     display: flex;
     gap: 16px;
     top: 0;
@@ -37,7 +35,7 @@
 
     .navButton
     {
-        color: vars.$colors-darkRed;
+        color: var(--colors-darkRed);
         list-style: none;
         font-weight: bold;
         flex: 1;
@@ -56,13 +54,13 @@
 
             .navLink
             {
-                color: vars.$background-color;
+                color: var(--background-color);
                 padding: 2px;
             }
 
             .dropdown .navLink
             {
-                color: vars.$colors-darkRed
+                color: var(--colors-darkRed);
             }
 
             .dropdown
@@ -87,11 +85,11 @@
 
                 &:hover
                 {
-                    background-color: vars.$colors-darkRed;
+                    background-color: var(colors-darkRed);
 
                     a
                     {
-                        color: vars.$background-color;
+                        color: var(--background-color);
                     }
                 }
             }
@@ -105,11 +103,10 @@
         transform: translateX(50%);
         top: 70%;
         position: absolute;
-        background-color: vars.$background-color;
-        border: vars.$colors-darkRed;
+        background-color: var(--background-color);
+        border: var(--colors-darkRed);
         border-radius: 5px;
         width: max-content;
-        //padding: 5px 5% 5px 5px;
         box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
         list-style: none;
         text-align: center;
@@ -127,7 +124,7 @@
 
         .navLink
         {
-            color: vars.$background-color;
+            color: var(--background-color);
             padding: 2px;
         }
     }
@@ -141,7 +138,7 @@
 
     .discordLink
     {
-        color: vars.$colors-darkRed;
+        color: var(--colors-darkRed);
         list-style: none;
         font-weight: bold;
         flex: 1;
@@ -282,6 +279,6 @@
     .menu-icon
     {
         font-size: 1.8rem;
-        color: vars.$colors-darkRed
+        color: var(--colors-darkRed)
     }
 }

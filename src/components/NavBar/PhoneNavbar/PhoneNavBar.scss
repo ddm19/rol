@@ -17,7 +17,7 @@
     top: 5vh;
     background-color: #FFF1D7;
     justify-content: center;
-    border: solid 1px vars.$colors-darkRed;
+    border: solid 1px var(--colors-darkRed);
     -webkit-box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
     -moz-box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
     box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
