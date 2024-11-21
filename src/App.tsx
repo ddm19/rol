@@ -1,13 +1,11 @@
-import React from 'react';
-import logo from './logo.svg';
 import './App.scss';
 import NavBar from "./components/NavBar/NavBar";
 import Footer from "./components/Footer/Footer";
 import Home from "./pages/Home/Home";
-import TestPage from "./pages/testpage/testPage";
 import NoPage from "./pages/NotFound/NotFound";
 import { Routes, Route } from "react-router-dom";
 import Article from 'components/Article/article';
+import TestPage from 'pages/testpage/testPage';
 
 function App()
 {

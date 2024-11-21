@@ -1,4 +1,13 @@
 /* DiceRoller.css */
+.diceRollerContainer
+{
+    display: flex;
+    flex-direction: row;
+    gap: 5%;
+    justify-content: center;
+    align-items: center;
+}
+
 .container
 {
     background-color: #FFF1D7;
@@ -53,7 +62,7 @@ button:hover:not(:disabled)
 
 .roll-display span
 {
-    font-size: 18px;
+    font-size: 14px;
     margin-bottom: 5px;
 }
 
