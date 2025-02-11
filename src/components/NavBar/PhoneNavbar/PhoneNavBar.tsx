@@ -4,7 +4,7 @@ import { NavigationLink } from "../NavBar";
 import NavButton from "../NavButton/NavButton";
 import CloseButton from "components/CloseButton/closeButton";
 import PhoneMenuButton from "./components/PhoneMenuButton/PhoneMenuButton";
-import { DiscordButton } from "components/NavBar/DiscordButton/discordButton";
+import { DiscordButton } from "components/NavBar/DiscordButton/DiscordButton";
 
 interface Props {
   navigationLinks: NavigationLink[];

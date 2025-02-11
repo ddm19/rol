@@ -3,7 +3,7 @@ import "./NavBar.scss";
 import { Link } from "react-router-dom";
 import PhoneNavBar from "components/NavBar/PhoneNavbar/PhoneNavBar";
 import NavigationLinksRender from "./NavigationLinksRender/NavigationLinksRender";
-import { DiscordButton } from "components/NavBar/DiscordButton/discordButton";
+import { DiscordButton } from "components/NavBar/DiscordButton/DiscordButton";
 
 export interface NavigationLink {
   name: string;
