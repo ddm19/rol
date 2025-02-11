@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ArticleType, Section } from "../types";
 import { contentParser } from "../utilFunctions";
 

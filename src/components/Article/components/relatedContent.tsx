@@ -19,7 +19,7 @@ const RelatedContent = (props: RelatedContentProps) =>
             {
                 return (
                     <Link to={related.link} className="relatedContentContainer__link" target="blank">
-                        <img src={related.image != null ? related.image : defaultImage} />
+                        <img src={related.image != null ? related.image : defaultImage} alt={related.title} />
                         <div className="relatedContentContainer__content">
                             <h3 className="relatedContentContainer__title">{related.title}</h3>
                             <p className="relatedContentContainer__subtitle">{related.subtitle}</p>

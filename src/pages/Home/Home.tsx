@@ -1,7 +1,6 @@
 import { FormEventHandler, SetStateAction, useEffect, useState } from 'react';
 import './Home.scss';
 import './animations.css';
-import { Link } from 'react-router-dom';
 import ArticleDisplay from 'components/ArticleDisplay/articleDisplay';
 import { fetchArticles } from './actions';
 import { ArticleDisplayType } from './types/types';
