@@ -1,0 +1,344 @@
+.discordButton {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 60px;
+  overflow: visible;
+  transition: transform 0.25s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    .portalEffect {
+      opacity: 90%;
+      transform: translate(-50%, -50%) scale(1);
+    }
+    .discordLink__text,
+    svg {
+      color: var(--colors-white);
+      text-shadow: 4px 4px 15px var(--colors-black);
+    }
+  }
+
+  .discordLink {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--colors-darkRed);
+    font-size: 0.75rem;
+    text-decoration: none;
+    width: 100%;
+    height: 100%;
+  }
+
+  .portalEffect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 120%;
+    height: 120%;
+    transform: translate(-50%, -50%) scale(0.1);
+    opacity: 0;
+    transition: transform 0.5s ease, opacity 0.5s ease;
+    pointer-events: none;
+    z-index: 5;
+
+    .rings {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+
+      .ring {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background: conic-gradient(
+          from 0deg,
+          var(--portal-color-1),
+          var(--portal-color-2),
+          var(--portal-color-3),
+          var(--portal-color-2),
+          var(--portal-color-1)
+        );
+        transform: translate(-50%, -50%);
+        filter: blur(2px);
+      }
+
+      .ring:nth-child(1) {
+        animation: spinSlow 6s linear infinite;
+      }
+      .ring:nth-child(2) {
+        transform: translate(-50%, -50%) scale(0.85);
+        animation: spinMedium 4s linear reverse infinite;
+      }
+      .ring:nth-child(3) {
+        transform: translate(-50%, -50%) scale(0.7);
+        animation: spinFast 2s linear infinite;
+      }
+    }
+
+    .core {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 40%;
+      height: 40%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: radial-gradient(
+        circle,
+        var(--portal-color-3),
+        var(--portal-color-1)
+      );
+      box-shadow: 0 0 10px var(--portal-color-1);
+      animation: corePulse 2s ease-in-out infinite;
+      z-index: 1;
+    }
+
+    .sparkles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+
+      .sparkle {
+        position: absolute;
+        width: 4px;
+        height: 4px;
+        background: #ffffff;
+        border-radius: 50%;
+      }
+
+      // Cada destello usa una animación distinta para moverlo a posiciones diferentes
+      .sparkle:nth-child(1) {
+        animation: sparkleMove1 4s ease-in-out infinite;
+      }
+      .sparkle:nth-child(2) {
+        animation: sparkleMove2 4s ease-in-out infinite;
+      }
+      .sparkle:nth-child(3) {
+        animation: sparkleMove3 4s ease-in-out infinite;
+      }
+      .sparkle:nth-child(4) {
+        animation: sparkleMove4 4s ease-in-out infinite;
+      }
+      .sparkle:nth-child(5) {
+        animation: sparkleMove5 4s ease-in-out infinite;
+      }
+    }
+  }
+}
+
+// Animaciones para los anillos y el núcleo
+
+@keyframes spinSlow {
+  from {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+}
+
+@keyframes spinMedium {
+  from {
+    transform: translate(-50%, -50%) scale(0.85) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(0.85) rotate(-360deg);
+  }
+}
+
+@keyframes spinFast {
+  from {
+    transform: translate(-50%, -50%) scale(0.7) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -50%) scale(0.7) rotate(360deg);
+  }
+}
+
+@keyframes corePulse {
+  0%,
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(0.9);
+    opacity: 0.7;
+  }
+}
+
+// Keyframes para mover los destellos a posiciones diferentes
+@keyframes sparkleMove1 {
+  0% {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+  20% {
+    top: 10%;
+    left: 80%;
+    opacity: 1;
+  }
+  40% {
+    top: 80%;
+    left: 20%;
+    opacity: 1;
+  }
+  60% {
+    top: 30%;
+    left: 50%;
+    opacity: 1;
+  }
+  80% {
+    top: 90%;
+    left: 70%;
+    opacity: 0;
+  }
+  100% {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+}
+@keyframes sparkleMove2 {
+  0% {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+  20% {
+    top: 20%;
+    left: 10%;
+    opacity: 1;
+  }
+  40% {
+    top: 70%;
+    left: 90%;
+    opacity: 1;
+  }
+  60% {
+    top: 60%;
+    left: 40%;
+    opacity: 1;
+  }
+  80% {
+    top: 10%;
+    left: 30%;
+    opacity: 0;
+  }
+  100% {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+}
+
+@keyframes sparkleMove3 {
+  0% {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+  20% {
+    top: 90%;
+    left: 10%;
+    opacity: 1;
+  }
+  40% {
+    top: 10%;
+    left: 30%;
+    opacity: 1;
+  }
+  60% {
+    top: 40%;
+    left: 60%;
+    opacity: 1;
+  }
+  80% {
+    top: 80%;
+    left: 20%;
+    opacity: 0;
+  }
+  100% {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+}
+
+@keyframes sparkleMove4 {
+  0% {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+  20% {
+    top: 30%;
+    left: 70%;
+    opacity: 1;
+  }
+  40% {
+    top: 60%;
+    left: 20%;
+    opacity: 1;
+  }
+  60% {
+    top: 10%;
+    left: 90%;
+    opacity: 1;
+  }
+
+  80% {
+    top: 50%;
+    left: 40%;
+    opacity: 0;
+  }
+  100% {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+}
+@keyframes sparkleMove5 {
+  0% {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+  20% {
+    top: 70%;
+    left: 30%;
+    opacity: 1;
+  }
+  40% {
+    top: 40%;
+    left: 80%;
+    opacity: 1;
+  }
+  60% {
+    top: 20%;
+    left: 50%;
+    opacity: 1;
+  }
+  80% {
+    top: 90%;
+    left: 60%;
+    opacity: 0;
+  }
+  100% {
+    top: 50%;
+    left: 50%;
+    opacity: 0;
+  }
+}

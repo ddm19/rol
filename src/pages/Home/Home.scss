@@ -92,6 +92,11 @@
     border-radius: 1.5rem;
     font-weight: bold;
     transition: all 0.25s;
+    text-decoration: none;
+    color: var(--colors-black);
+    justify-content: center;
+    align-items: center;
+    display: flex;
 
     &:hover {
       cursor: pointer;

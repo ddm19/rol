@@ -6,6 +6,7 @@ import { fetchArticles } from "./actions";
 import { ArticleDisplayType } from "./types/types";
 import { ArticleType } from "components/Article/types";
 import Loading from "components/Loading/Loading";
+import { Link } from "react-router-dom";
 
 const Home: React.FC = () => {
   const noImage = `${process.env.PUBLIC_URL}/background.png`;
@@ -21,6 +22,7 @@ const Home: React.FC = () => {
         setArticles(res);
         const randomIndex = Math.floor(Math.random() * res.length);
         setMainArticle(res[randomIndex]);
+        console.log(res);
       })
       .catch((err: any) => {
         console.error(err);
@@ -40,16 +42,20 @@ const Home: React.FC = () => {
                 <p className="mainArticleContainer--normalText mainArticleContainer--whiteText ">
                   {mainArticle?.content.shortDescription}
                 </p>
-                <button className="mainArticleContainer__button mainArticleContainer--redText mainArticleContainer--normalText">
+
+                <Link
+                  to={`/article/${mainArticle?.id}`}
+                  className="mainArticleContainer__button mainArticleContainer--redText mainArticleContainer--normalText"
+                >
                   Leer Más
-                </button>
+                </Link>
                 <img
                   src={
                     mainArticle?.content.image
                       ? mainArticle?.content.image
                       : noImage
                   }
-                  alt={mainArticle?.content.title}
+                  alt={mainArticle?.id}
                   className="mainArticleContainer__image"
                 />
               </>
@@ -78,7 +84,7 @@ const Home: React.FC = () => {
                       ? articleItem.content.shortDescription
                       : ""
                   }
-                  articleId={articleItem.name}
+                  articleId={articleItem.id}
                 />
               );
             })
