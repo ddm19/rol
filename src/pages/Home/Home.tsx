@@ -6,12 +6,14 @@ import { fetchArticles } from "./actions";
 import { ArticleDisplayType } from "./types/types";
 import { ArticleType } from "components/Article/types";
 import Loading from "components/Loading/Loading";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const Home: React.FC = () => {
   const noImage = `${process.env.PUBLIC_URL}/background.png`;
   const [articles, setArticles] = useState<ArticleDisplayType[]>([]);
   const [mainArticle, setMainArticle] = useState<ArticleDisplayType>();
+
+  const navigate = useNavigate();
   const submitEmail = (e: any): FormEventHandler<HTMLButtonElement> | any => {
     e.preventDefault();
     alert("Método de envío de Emails no implementado!");
@@ -35,10 +37,16 @@ const Home: React.FC = () => {
           <div className="mainArticleContainer">
             {mainArticle != null ? (
               <>
-                <h1 className="mainArticleContainer__title mainArticleContainer--whiteText">
+                <h1
+                  className="mainArticleContainer__title mainArticleContainer--whiteText"
+                  onClick={() => navigate(`article/${mainArticle?.id}`)}
+                >
                   {mainArticle?.content.title}
                 </h1>
-                <p className="mainArticleContainer--normalText mainArticleContainer--whiteText ">
+                <p
+                  className="mainArticleContainer--normalText mainArticleContainer--whiteText"
+                  onClick={() => navigate(`article/${mainArticle?.id}`)}
+                >
                   {mainArticle?.content.shortDescription}
                 </p>
 
@@ -56,6 +64,7 @@ const Home: React.FC = () => {
                   }
                   alt={mainArticle?.id}
                   className="mainArticleContainer__image"
+                  onClick={() => navigate(`article/${mainArticle?.id}`)}
                 />
               </>
             ) : (

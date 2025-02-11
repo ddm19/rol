@@ -10,11 +10,12 @@ import Index from "./components/index";
 import { fetchArticleById } from "./actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import Loading from "components/Loading/Loading";
 const Article = () => {
   const articleId = useParams().articleId;
   const [article, setArticle] = useState<ArticleType | null>(null);
   const [error, setError] = useState<String | null>(null);
-  const [isIndexVisible, setIsIndexVisible] = useState<boolean>(true);
+  const [isIndexVisible, setIsIndexVisible] = useState<boolean>(false);
 
   useEffect(() => {
     if (articleId)
@@ -79,7 +80,7 @@ const Article = () => {
               </div>
             </div>
           ) : (
-            <h1>Loading...</h1>
+            <Loading />
           )}
         </>
       )}
