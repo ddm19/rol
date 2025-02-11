@@ -17,10 +17,10 @@ const Home: React.FC = () => {
   };
   useEffect(() => {
     fetchArticles()
-      .then((res: SetStateAction<ArticleDisplayType[]>) => {
+      .then((res: ArticleDisplayType[]) => {
         setArticles(res);
         const randomIndex = Math.floor(Math.random() * res.length);
-        setMainArticle(articles[randomIndex]);
+        setMainArticle(res[randomIndex]);
       })
       .catch((err: any) => {
         console.error(err);
@@ -61,29 +61,32 @@ const Home: React.FC = () => {
       </div>
       <div className="articlesContainer">
         {articles != null ? (
-          articles.length > 0 &&
-          articles.map((articleItem: ArticleDisplayType, index: number) => {
-            return (
-              <ArticleDisplay
-                key={index}
-                image={
-                  articleItem.content.image
-                    ? articleItem.content.image
-                    : noImage
-                }
-                title={articleItem.content.title}
-                articleInfo={getArticleInfo(articleItem.content)}
-                description={
-                  articleItem.content.shortDescription
-                    ? articleItem.content.shortDescription
-                    : ""
-                }
-                articleId={articleItem.name}
-              />
-            );
-          })
+          articles.length > 0 ? (
+            articles.map((articleItem: ArticleDisplayType, index: number) => {
+              return (
+                <ArticleDisplay
+                  key={index}
+                  image={
+                    articleItem.content.image
+                      ? articleItem.content.image
+                      : noImage
+                  }
+                  title={articleItem.content.title}
+                  articleInfo={getArticleInfo(articleItem.content)}
+                  description={
+                    articleItem.content.shortDescription
+                      ? articleItem.content.shortDescription
+                      : ""
+                  }
+                  articleId={articleItem.name}
+                />
+              );
+            })
+          ) : (
+            <Loading />
+          )
         ) : (
-          <h1 className="noArticles">No hay artículos</h1>
+          <Loading />
         )}
       </div>
       <div className="emailContainer">

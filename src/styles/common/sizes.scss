@@ -3,6 +3,19 @@
   --footer-size: 116px;
   --loading-size: 100px;
 
+  --image-size-1: 100px;
+  --image-size-2: 200px;
+  --image-size-3: 300px;
+  --image-size-4: 400px;
+  --image-size-5: 500px;
+
+  @media (max-width: 700px) {
+    --image-size-1: 75px;
+    --image-size-2: 150px;
+    --image-size-3: 225px;
+    --image-size-4: 325px;
+    --image-size-5: 375px;
+  }
   --mobileMaxWidth: 700px;
   --tabletMaxWidth: 900px;
 }
