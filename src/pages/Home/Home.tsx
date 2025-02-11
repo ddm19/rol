@@ -22,7 +22,6 @@ const Home: React.FC = () => {
         setArticles(res);
         const randomIndex = Math.floor(Math.random() * res.length);
         setMainArticle(res[randomIndex]);
-        console.log(res);
       })
       .catch((err: any) => {
         console.error(err);

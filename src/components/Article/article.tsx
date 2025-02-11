@@ -8,64 +8,83 @@ import { contentParser } from "./utilFunctions";
 import RelatedContent from "./components/relatedContent";
 import Index from "./components/index";
 import { fetchArticleById } from "./actions";
-const Article = () =>
-{
-    const articleId = useParams().articleId;
-    const [article, setArticle] = useState<ArticleType | null>(null);
-    const [error, setError] = useState<String | null>(null);
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+const Article = () => {
+  const articleId = useParams().articleId;
+  const [article, setArticle] = useState<ArticleType | null>(null);
+  const [error, setError] = useState<String | null>(null);
+  const [isIndexVisible, setIsIndexVisible] = useState<boolean>(true);
 
-    useEffect(() =>
-    {
-        if (articleId)
-            fetchArticleById(articleId).then((res: any) =>
-            {
-                setArticle(res);
-            }).catch((err: any) =>
-            {
-                setError(err);
-            });
+  useEffect(() => {
+    if (articleId)
+      fetchArticleById(articleId)
+        .then((res: any) => {
+          setArticle(res);
+        })
+        .catch((err: any) => {
+          setError(err);
+        });
+  }, [articleId]);
+  useEffect(() => {
+    console.log(isIndexVisible);
+  }, [isIndexVisible]);
 
-
-
-    }, [articleId]);
-    useEffect(() =>
-    {
-        console.log(article);
-    }, [article]);
-
-    return (
+  return (
+    <>
+      {error ? (
+        <Error title={error} subtitle="Puedes crearlo tú mismo 😉" />
+      ) : (
         <>
-            {error ? <Error
-                title={error}
-                subtitle="Puedes crearlo tú mismo 😉"
-            /> :
-                <>
-                    {article != null ?
-                        <div className="articleContainer">
-                            <div className="articleContainer__indexContainer">
-                                <span className="articleContainer--bold">CONTENIDO</span>
-                                <Index sections={article.sections} />
-                            </div>
-                            <div className="articleContainer__mainContainer">
-                                <h1 className="articleContainer__title">{article.title}</h1>
-                                <span className="articleContainer__subtitle">{article.date}</span>
-                                {contentParser(article.content, article)}
-                                <Sections sections={article.sections} article={article} />
-                            </div>
-                            <div className="relatedContentContainer">
-                                <RelatedContent relatedArray={article.related} />
-                            </div>
+          {article != null ? (
+            <div className="articleContainer">
+              <button
+                className={`${
+                  isIndexVisible
+                    ? "articleContainer__indexButton--hidden"
+                    : "articleContainer__indexButton articleContainer__indexButton--float"
+                }`}
+                onClick={() => setIsIndexVisible(!isIndexVisible)}
+              >
+                <FontAwesomeIcon icon={faArrowRight} />
+              </button>
 
-                        </div >
-                        :
-                        <h1>Loading...</h1>
-                    }
-                </>
-            }
+              <div
+                className={`articleContainer__indexContainer${
+                  !isIndexVisible
+                    ? " articleContainer__indexContainer--hidden"
+                    : ""
+                }`}
+              >
+                <span className="articleContainer--bold">CONTENIDO</span>
+                <button
+                  onClick={() => setIsIndexVisible(!isIndexVisible)}
+                  className="articleContainer__indexButton "
+                >
+                  <FontAwesomeIcon icon={faArrowLeft} />
+                </button>
+
+                <Index sections={article.sections} />
+              </div>
+              <div className="articleContainer__mainContainer">
+                <h1 className="articleContainer__title">{article.title}</h1>
+                <span className="articleContainer__subtitle">
+                  {article.date}
+                </span>
+                {contentParser(article.content, article)}
+                <Sections sections={article.sections} article={article} />
+              </div>
+              <div className="relatedContentContainer">
+                <RelatedContent relatedArray={article.related} />
+              </div>
+            </div>
+          ) : (
+            <h1>Loading...</h1>
+          )}
         </>
-
-
-    );
+      )}
+    </>
+  );
 };
 
 export default Article;
