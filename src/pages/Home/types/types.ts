@@ -1,7 +1,6 @@
 import { ArticleType } from "components/Article/types";
 
-export interface ArticleDisplayType
-{
-    name: string,
-    content: ArticleType;
+export interface ArticleDisplayType {
+  id: string;
+  content: ArticleType;
 }
