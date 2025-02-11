@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ArticleType, RelatedArticle } from "./types";
+import { ArticleType } from "./types";
 import "./article.scss";
 import Error from "components/Error/error";
 import Sections from "./components/sections";
@@ -27,7 +27,7 @@ const Article = () =>
 
 
 
-    }, []);
+    }, [articleId]);
     useEffect(() =>
     {
         console.log(article);
