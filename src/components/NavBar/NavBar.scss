@@ -1,283 +1,244 @@
-.navbar
-{
-    max-height: var(--header-size);
-    display: flex;
-    gap: 16px;
-    top: 0;
-    width: 100%;
+.navbar {
+  max-height: var(--header-size);
+  display: flex;
+  gap: 16px;
+  top: 0;
+  width: 100%;
 }
 
-.logoContainer
-{
-    width: 10%;
-    margin-left: 2em;
-    padding: 0.5em;
+.logoContainer {
+  width: 10%;
+  margin-left: 2em;
+  padding: 0.5em;
 }
 
-.logo
-{
-    height: 100%;
-    width: auto;
-    border-radius: 10%;
+.logo {
+  height: 100%;
+  width: auto;
+  border-radius: 10%;
 }
 
 .navbar .navContainer,
-.discordButton
-{
+.discordButton {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  width: 55%;
+  height: 100%;
+  margin: auto;
+  margin-left: 15%;
+
+  .navButton {
+    color: var(--colors-darkRed);
+    list-style: none;
+    font-weight: bold;
+    flex: 1;
+    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+      "Lucida Sans", Arial, sans-serif;
+    height: 40%;
     display: flex;
-    flex-direction: row;
-    justify-content: space-between;
     align-items: center;
-    width: 55%;
-    height: 100%;
-    margin: auto;
-    margin-left: 15%;
-
-    .navButton
-    {
-        color: var(--colors-darkRed);
-        list-style: none;
-        font-weight: bold;
-        flex: 1;
-        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-        height: 40%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 1.5rem;
-        cursor: pointer;
-
-        &:hover
-        {
-            background-color: rgba(94, 2, 2, 0.6);
-            border-radius: 5px;
-
-            .navLink
-            {
-                color: var(--background-color);
-                padding: 2px;
-            }
-
-            .dropdown .navLink
-            {
-                color: var(--colors-darkRed);
-            }
-
-            .dropdown
-            {
-                display: flex;
-                flex-direction: column;
-                min-width: max-content;
-                height: max-content;
-                border-radius: 3%;
-                padding: 0.5rem 1rem 0 1rem;
-
-            }
-
-            .dropdown-content
-            {
-                width: 100%;
-                height: 100%;
-                padding: 5% 0 5% 0;
-                font-weight: 200;
-                border-radius: 3%;
-                padding: 0.5rem 1rem 0.5rem 1rem;
-
-                &:hover
-                {
-                    a
-                    {
-                        color: var(--colors-mediumRed);
-
-                    }
-                }
-            }
-        }
-    }
-
-    .dropdown
-    {
-        display: none;
-        z-index: 1;
-        transform: translateX(50%);
-        top: 70%;
-        position: absolute;
-        background-color: var(--background-color);
-        border: var(--colors-darkRed);
-        border-radius: 5px;
-        width: max-content;
-        box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
-        list-style: none;
-        text-align: center;
-        flex-direction: column;
-        align-items: center;
-        gap: 1em;
-        padding-inline-start: 0;
-        min-width: max-content;
-    }
-
-    .activeLink
-    {
-        background-color: #7d2709;
-        border-radius: 5px;
-
-        .navLink
-        {
-            color: var(--background-color);
-            padding: 2px;
-        }
-    }
-}
-
-.discordButton
-{
-    flex-direction: column;
     justify-content: center;
-    width: fit-content;
+    margin: 1.5rem;
+    cursor: pointer;
 
-    .discordLink
-    {
+    &:hover {
+      background-color: rgba(94, 2, 2, 0.6);
+      border-radius: 5px;
+
+      .navLink {
+        color: var(--background-color);
+        padding: 2px;
+      }
+
+      .dropdown .navLink {
         color: var(--colors-darkRed);
-        list-style: none;
-        font-weight: bold;
-        flex: 1;
-        font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande", "Lucida Sans", Arial, sans-serif;
-        height: 40%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 1.5rem;
-        cursor: pointer;
-        text-decoration: none;
+      }
+
+      .dropdown {
         display: flex;
         flex-direction: column;
-    }
+        min-width: max-content;
+        height: max-content;
+        border-radius: 3%;
+        padding: 0.5rem 1rem 0 1rem;
+      }
 
-    transition: 0.25s;
-
-    &:hover
-    {
-        transform: scale(1.1);
-    }
-}
-
-.navSeparator
-{
-    height: 2em;
-    background-color: #f57f17;
-    width: 2px;
-}
-
-.parentNav
-{
-    display: flex;
-    width: 80%;
-}
-
-.mobileMenu
-{
-    display: none;
-}
-
-.disabled
-{
-    display: none;
-}
-
-@media (max-width: 900px)
-{
-
-    .navbar .navContainer,
-    .discordButton
-    {
+      .dropdown-content {
         width: 100%;
-        margin-left: 0;
+        height: 100%;
+        padding: 5% 0 5% 0;
+        font-weight: 200;
+        border-radius: 3%;
+        padding: 0.5rem 1rem 0.5rem 1rem;
+
+        &:hover {
+          a {
+            color: var(--colors-mediumRed);
+          }
+        }
+      }
     }
+  }
+
+  .dropdown {
+    display: none;
+    z-index: 1;
+    transform: translateX(50%);
+    top: 70%;
+    position: absolute;
+    background-color: var(--background-color);
+    border: var(--colors-darkRed);
+    border-radius: 5px;
+    width: max-content;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    list-style: none;
+    text-align: center;
+    flex-direction: column;
+    align-items: center;
+    gap: 1em;
+    padding-inline-start: 0;
+    min-width: max-content;
+  }
+
+  .activeLink {
+    background-color: #7d2709;
+    border-radius: 5px;
+
+    .navLink {
+      color: var(--background-color);
+      padding: 2px;
+    }
+  }
+}
+
+.discordButton {
+  flex-direction: column;
+  justify-content: center;
+  width: fit-content;
+
+  .discordLink {
+    color: var(--colors-darkRed);
+    list-style: none;
+    font-weight: bold;
+    flex: 1;
+    font-family: "Trebuchet MS", "Lucida Sans Unicode", "Lucida Grande",
+      "Lucida Sans", Arial, sans-serif;
+    height: 40%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 1.5rem;
+    cursor: pointer;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  transition: 0.25s;
+
+  &:hover {
+    transform: scale(1.1);
+  }
+}
+
+.navSeparator {
+  height: 2em;
+  background-color: #f57f17;
+  width: 2px;
+}
+
+.parentNav {
+  display: flex;
+  width: 80%;
+}
+
+.mobileMenu {
+  display: none;
+}
+
+.disabled {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .navbar .navContainer,
+  .discordButton {
+    width: 100%;
+    margin-left: 0;
+  }
 }
 
 /* DISPOSITIVOS PEQUEÑOS MÓVILES */
-@media (max-width: 700px)
-{
-    .parentNav
-    {
-        display: none;
+@media (max-width: 700px) {
+  .parentNav {
+    display: none;
+  }
+
+  .mobileMenu {
+    justify-content: center;
+    display: flex;
+    width: 60%;
+    align-items: center;
+    margin: auto;
+
+    .menu {
+      width: 65%;
     }
 
-    .mobileMenu
-    {
-        justify-content: center;
-        display: flex;
-        width: 60%;
-        align-items: center;
-        margin: auto;
+    .mobileNav {
+      width: 30vw;
 
-        .menu
-        {
-            width: 65%;
-
-        }
-
-        .mobileNav
-        {
-            width: 30vw;
-
-            .navButton
-            {
-                width: 100%;
-                margin-left: 0;
-                margin-right: 0;
-
-                .dropdown
-                {
-                    top: inherit;
-                    margin-left: 56%;
-                }
-            }
-        }
-    }
-
-    .logoContainer
-    {
+      .navButton {
+        width: 100%;
         margin-left: 0;
-        flex: 1;
-        padding-left: 5%;
-        height: 90%;
-    }
+        margin-right: 0;
 
-    .logo
-    {
-        height: 100%;
-        max-height: 30vw;
-        width: auto;
-        max-width: calc(100% + 5vw);
-        border-radius: 10%;
+        .dropdown {
+          top: inherit;
+          margin-left: 56%;
+        }
+      }
     }
+  }
 
-    .navLink
-    {
-        height: 100%;
-        justify-content: center;
-        align-items: center;
-        display: flex;
-    }
+  .logoContainer {
+    margin-left: 0;
+    flex: 1;
+    padding-left: 5%;
+    height: 90%;
+  }
 
-    .navbar
-    {
-        height: 100%;
-        gap: 5vw;
-        justify-content: center;
-        align-items: center;
-        display: flex;
-    }
+  .logo {
+    height: 100%;
+    max-height: 30vw;
+    width: auto;
+    max-width: calc(100% + 5vw);
+    border-radius: 10%;
+  }
 
-    .navItem
-    {
-        width: 50%;
-    }
+  .navLink {
+    height: 100%;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  }
 
-    .menu-icon
-    {
-        font-size: 1.8rem;
-        color: var(--colors-darkRed)
-    }
+  .navbar {
+    height: 100%;
+    gap: 5vw;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+  }
+
+  .navItem {
+    width: 50%;
+  }
+
+  .menu-icon {
+    font-size: 1.8rem;
+    color: var(--colors-darkRed);
+  }
 }
