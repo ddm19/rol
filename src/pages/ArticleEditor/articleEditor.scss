@@ -1,0 +1,56 @@
+.formTab {
+  width: 70%;
+  height: 70%;
+  border: 2px solid var(--colors-border);
+  input,
+  textarea {
+    width: 90%;
+    height: var(--input-size-1);
+    padding: var(--spacing-1) var(--spacing-2);
+    background: var(--colors-white);
+    color: var(--colors-black);
+    border: 1px solid var(--colors-border);
+    border-radius: 3px;
+    font-size: var(--font-size-2);
+    text-align: left;
+  }
+  textarea {
+    resize: none;
+    height: 100%;
+  }
+  label {
+    display: flex;
+    font-size: var(--font-size-3);
+    padding: var(--spacing-1);
+    color: var(--colors-subtitle);
+
+    font-weight: var(--font-weight-4);
+    .formTab__tooltip {
+      margin: 0 var(--spacing-1);
+      color: var(--colors-darkRedLowOpacy);
+      border: 1px solid var(--colors-darkRedLowOpacy);
+      border-radius: 70%;
+      padding: 1%;
+      font-size: var(--font-size-1);
+    }
+  }
+  @media (max-width: 700px) {
+    width: 95%;
+    height: 95%;
+  }
+}
+.customTabsPanel {
+  width: 70%;
+  &_customTab {
+    transition: all 0.25s ease-in-out;
+  }
+  &__customTab:hover {
+    transform: translateY(4px);
+  }
+  &__customTab[aria-selected="true"] {
+    transform: translateY(5px);
+  }
+  .MuiTabs-indicator {
+    background-color: var(--colors-darkRed);
+  }
+}

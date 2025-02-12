@@ -27,12 +27,7 @@ const CustomTabs = (props: TabsProps) => {
 
   return (
     <>
-      <Tabs
-        value={value}
-        onChange={handleChange}
-        indicatorColor="secondary"
-        className="customTabsPanel"
-      >
+      <Tabs value={value} onChange={handleChange} className="customTabsPanel">
         {tabs.map((tab, index) => (
           <Tab
             key={index}
