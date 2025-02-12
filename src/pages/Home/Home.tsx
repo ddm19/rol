@@ -122,7 +122,7 @@ const Home: React.FC = () => {
             id="email"
             placeholder="Aquí va tu email"
           ></input>
-          <button className="button whiteText subscribeButton" type="submit">
+          <button className="subscribeButton" type="submit">
             Enviar
           </button>
         </form>
