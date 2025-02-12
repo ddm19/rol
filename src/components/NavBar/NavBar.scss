@@ -46,6 +46,7 @@
     &:hover {
       background-color: rgba(94, 2, 2, 0.6);
       border-radius: 5px;
+      transition: all 0.25s ease-in-out;
 
       .navLink {
         color: var(--background-color);

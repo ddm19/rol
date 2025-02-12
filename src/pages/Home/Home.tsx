@@ -6,12 +6,16 @@ import { fetchArticles } from "./actions";
 import { ArticleDisplayType } from "./types/types";
 import { ArticleType } from "components/Article/types";
 import Loading from "components/Loading/Loading";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const Home: React.FC = () => {
   const noImage = `${process.env.PUBLIC_URL}/background.png`;
   const [articles, setArticles] = useState<ArticleDisplayType[]>([]);
   const [mainArticle, setMainArticle] = useState<ArticleDisplayType>();
+
+  const navigate = useNavigate();
   const submitEmail = (e: any): FormEventHandler<HTMLButtonElement> | any => {
     e.preventDefault();
     alert("Método de envío de Emails no implementado!");
@@ -22,7 +26,6 @@ const Home: React.FC = () => {
         setArticles(res);
         const randomIndex = Math.floor(Math.random() * res.length);
         setMainArticle(res[randomIndex]);
-        console.log(res);
       })
       .catch((err: any) => {
         console.error(err);
@@ -36,10 +39,16 @@ const Home: React.FC = () => {
           <div className="mainArticleContainer">
             {mainArticle != null ? (
               <>
-                <h1 className="mainArticleContainer__title mainArticleContainer--whiteText">
+                <h1
+                  className="mainArticleContainer__title mainArticleContainer--whiteText"
+                  onClick={() => navigate(`article/${mainArticle?.id}`)}
+                >
                   {mainArticle?.content.title}
                 </h1>
-                <p className="mainArticleContainer--normalText mainArticleContainer--whiteText ">
+                <p
+                  className="mainArticleContainer--normalText mainArticleContainer--whiteText"
+                  onClick={() => navigate(`article/${mainArticle?.id}`)}
+                >
                   {mainArticle?.content.shortDescription}
                 </p>
 
@@ -57,6 +66,7 @@ const Home: React.FC = () => {
                   }
                   alt={mainArticle?.id}
                   className="mainArticleContainer__image"
+                  onClick={() => navigate(`article/${mainArticle?.id}`)}
                 />
               </>
             ) : (
@@ -65,6 +75,9 @@ const Home: React.FC = () => {
           </div>
         </div>
       </div>
+      <button className="newArticleButton" onClick={() => navigate("article")}>
+        Crear artículo <FontAwesomeIcon icon={faPlus} />
+      </button>
       <div className="articlesContainer">
         {articles != null ? (
           articles.length > 0 ? (
@@ -94,7 +107,12 @@ const Home: React.FC = () => {
         ) : (
           <Loading />
         )}
+        <ArticleDisplay
+          image="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Plus_symbol.svg/1200px-Plus_symbol.svg.png"
+          title="Crear Articulo"
+        />
       </div>
+
       <div className="emailContainer">
         <div className="titleContainer">
           <h1 className=" emailTitle">Entérate cuando haya algo nuevo</h1>
@@ -114,7 +132,7 @@ const Home: React.FC = () => {
             id="email"
             placeholder="Aquí va tu email"
           ></input>
-          <button className="button whiteText subscribeButton" type="submit">
+          <button className="subscribeButton" type="submit">
             Enviar
           </button>
         </form>
