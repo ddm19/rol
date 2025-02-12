@@ -6,3 +6,5 @@ const ArticleEditor = () => {
     </>
   );
 };
+
+export default ArticleEditor;

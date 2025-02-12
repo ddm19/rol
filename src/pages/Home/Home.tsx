@@ -7,6 +7,8 @@ import { ArticleDisplayType } from "./types/types";
 import { ArticleType } from "components/Article/types";
 import Loading from "components/Loading/Loading";
 import { Link, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const Home: React.FC = () => {
   const noImage = `${process.env.PUBLIC_URL}/background.png`;
@@ -73,6 +75,9 @@ const Home: React.FC = () => {
           </div>
         </div>
       </div>
+      <button className="newArticleButton" onClick={() => navigate("article")}>
+        Crear artículo <FontAwesomeIcon icon={faPlus} />
+      </button>
       <div className="articlesContainer">
         {articles != null ? (
           articles.length > 0 ? (
@@ -102,7 +107,12 @@ const Home: React.FC = () => {
         ) : (
           <Loading />
         )}
+        <ArticleDisplay
+          image="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Plus_symbol.svg/1200px-Plus_symbol.svg.png"
+          title="Crear Articulo"
+        />
       </div>
+
       <div className="emailContainer">
         <div className="titleContainer">
           <h1 className=" emailTitle">Entérate cuando haya algo nuevo</h1>
