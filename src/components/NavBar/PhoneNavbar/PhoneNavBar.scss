@@ -1,53 +1,46 @@
-@use '/src/index.scss' as vars;
+@use "/src/index.scss" as vars;
 
-.buttonMenu
-{
-    appearance: none;
-    background: none;
-    border: none;
-    width: 40%;
+.buttonMenu {
+  appearance: none;
+  background: none;
+  border: none;
+  width: 40%;
 }
 
-.menu
-{
-    width: 55%;
-    height: 50vh;
-    position: absolute;
-    left: 0;
-    top: 5vh;
-    background-color: #FFF1D7;
-    justify-content: center;
-    border: solid 1px var(--colors-darkRed);
-    -webkit-box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
-    -moz-box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
-    box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
-    align-items: center;
-    transform: translateX(-170%);
-    transition: all 0.1s linear;
+.menu {
+  width: 55%;
+  height: 50vh;
+  position: absolute;
+  left: 0;
+  top: 5vh;
+  background-color: var(--background-color);
+  justify-content: center;
+  border: solid 1px var(--colors-darkRed);
+  -webkit-box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
+  -moz-box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
+  box-shadow: 4px 4px 2px 0px rgba(94, 2, 2, 0.5);
+  align-items: center;
+  transform: translateX(-170%);
+  transition: all 0.1s linear;
 
-    .navContainer
-    {
-        flex-direction: column;
-        padding-left: 0;
-    }
+  .navContainer {
+    flex-direction: column;
+    padding-left: 0;
+  }
 
-    .navButton
-    {
-        border-radius: 5%;
-    }
+  .navButton {
+    border-radius: 5%;
+  }
 
-    .mobileNav
-    {
-        height: 90vh;
-        margin-left: 0;
-        width: 35vw;
-        display: flex;
-        flex-direction: column;
-
-    }
+  .mobileNav {
+    height: 90vh;
+    margin-left: 0;
+    width: 35vw;
+    display: flex;
+    flex-direction: column;
+  }
 }
 
-.active-menu
-{
-    transform: translateX(0);
+.active-menu {
+  transform: translateX(0);
 }
