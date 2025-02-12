@@ -1,0 +1,12 @@
+.customTabsPanel {
+  &__customTab[role="tab"] {
+    background-color: var(--colors-darkYellow);
+    border-radius: 12% 12% 0 0;
+    border: 1px solid var(--colors-border);
+    transition: all 0.25s ease-in-out;
+  }
+  &__customTab[role="tab"][aria-selected="true"] {
+    background-color: var(--colors-darkRed);
+    color: var(--colors-white);
+  }
+}
