@@ -59,7 +59,7 @@ const DiceRoller3d6: React.FC = () => {
         <div className="stats">Media: {average}</div>
         <button
           className="diceRollerContainer__downloadButton"
-          onClick={() => saveScreenshot(".d20")}
+          onClick={() => saveScreenshot(".d36")}
         >
           Descargar
         </button>
