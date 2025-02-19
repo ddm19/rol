@@ -26,8 +26,8 @@ export const DiscordButton: React.FC = () => {
         className="discordLink navItem"
         target="_blank"
         to={
-          process.env.REACT_APP_DISCORD_LINK
-            ? process.env.REACT_APP_DISCORD_LINK
+          import.meta.env.VITE_DISCORD_LINK
+            ? import.meta.env.VITE_DISCORD_LINK
             : "/Error"
         }
       >

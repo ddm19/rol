@@ -1,5 +1,5 @@
 export const axiosConfig = {
     headers: {
-        "Authorization": `Bearer ${process.env.REACT_APP_BEARER_TOKEN}`
+        "Authorization": `Bearer ${import.meta.env.VITE_BEARER_TOKEN}`
     },
 };

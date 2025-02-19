@@ -14,7 +14,7 @@ const Error: React.FC<ErrorProps> = (props: ErrorProps) =>
 {
     const { title, image, subtitle, homeLink } = props;
 
-    const defaultImage = `${process.env.PUBLIC_URL}/NotFound.png`;
+    const defaultImage = `/NotFound.png`;
     return (
         <>
             <div className='error'>

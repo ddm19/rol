@@ -48,7 +48,7 @@ const DiceRoller3d6: React.FC = () => {
     rolls2.length > 0 ? (totalSum2 / rolls2.length).toFixed(2) : "0.00";
 
   return (
-    <>
+    <> 
       <div className="diceContainer d36">
         <button onClick={rollDice1}>Tirar 3d6 (1ª Tirada)</button>
         {rolls && rolls.length > 0 && (

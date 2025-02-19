@@ -10,7 +10,7 @@ interface RelatedContentProps
 const RelatedContent = (props: RelatedContentProps) =>
 {
     const { relatedArray } = props;
-    const defaultImage = `${process.env.PUBLIC_URL}/NotFound.png`;
+    const defaultImage = `/NotFound.png`;
 
     return (
         <React.Fragment>
