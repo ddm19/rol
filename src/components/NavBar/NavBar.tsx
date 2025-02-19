@@ -42,7 +42,7 @@ const NavBar: React.FC = () => {
           <img
             className="logo"
             alt="WebLogo"
-            src={process.env.PUBLIC_URL + "/Logo.png"}
+            src={"/Logo.png"}
           />
         </Link>
       </div>

@@ -7,7 +7,7 @@ interface RelatedProps
 const EmbedArticle = (props: RelatedProps) =>
 {
     const { related } = props;
-    const defaultImage = `${process.env.PUBLIC_URL}/NotFound.png`;
+    const defaultImage = `/NotFound.png`;
     return (
         <div className="embedContentContainer">
             <img src={related.image ? related.image : defaultImage} alt={related.title} />

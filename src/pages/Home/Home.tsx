@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
 
 const Home: React.FC = () => {
-  const noImage = `${process.env.PUBLIC_URL}/background.png`;
+  const noImage = `${import.meta.env.VITE_PUBLIC_URL}/background.png`;
   const [articles, setArticles] = useState<ArticleDisplayType[]>([]);
   const [mainArticle, setMainArticle] = useState<ArticleDisplayType>();
 
