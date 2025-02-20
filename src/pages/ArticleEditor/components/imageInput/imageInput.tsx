@@ -14,7 +14,7 @@ interface ImageInputProps {
 const ImageInput = (props: ImageInputProps) => {
   const {
     label = "Imagen*",
-    placeholder = "URL de la imagen (https://cdn.shopify.com/s/files/1/0040/8997/0777/files/Cute_Bunny_7d_1024x1024.jpg)",
+    placeholder = "URL de la imagen (https://i.imgur.com/IWg8EK5.gif)",
     value,
     onChange,
   } = props;

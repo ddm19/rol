@@ -193,10 +193,10 @@
   color: var(--colors-white);
   padding: var(--spacing-4) var(--spacing-8);
   cursor: pointer;
-  transition: transform 0.4s cubic-bezier(0.47, 1.64, 0.18, -0.35);
+  transition: transform 0.6s cubic-bezier(0.47, 1.64, 0.18, -0.35);
 
   &:hover {
-    transform: translateY(-1rem);
+    transform: translateY(-1.2rem);
   }
   @media (max-width: 700px) {
     height: var(--input-size-1);

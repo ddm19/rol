@@ -14,9 +14,11 @@
     font-size: var(--font-size-2);
     text-align: left;
   }
-  textarea:not(#image) {
+  textarea {
     resize: none;
-    height: 100%;
+    &:not(#image) {
+      height: 100%;
+    }
   }
   label {
     display: flex;

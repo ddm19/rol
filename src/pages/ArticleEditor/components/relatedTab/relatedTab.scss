@@ -12,4 +12,11 @@
       grid-template-columns: 1fr;
     }
   }
+  &__removeButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    gap: var(--spacing-1);
+  }
 }
