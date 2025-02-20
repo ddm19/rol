@@ -1,7 +1,8 @@
 import CustomTabs, { TabItem } from "components/customTabs/customTabs";
 import { useEffect, useState } from "react";
-import GeneralTab from "./components/generalTab";
+import GeneralTab from "./components/generalTab/generalTab";
 import "./articleEditor.scss";
+import RelatedTab from "./components/relatedTab/relatedTab";
 
 const ArticleEditor = () => {
   const [formData, setFormData] = useState({});
@@ -16,11 +17,11 @@ const ArticleEditor = () => {
       content: <GeneralTab formData={formData} setFormData={setFormData} />,
     },
     {
-      title: "Contenido",
-      content: <p>This is a placeholder for the content tab content.</p>,
+      title: "Relacionados",
+      content: <RelatedTab formData={formData} setFormData={setFormData} />,
     },
     {
-      title: "Imagen",
+      title: "Importados",
       content: <p>This is a placeholder for the image tab content.</p>,
     },
   ];

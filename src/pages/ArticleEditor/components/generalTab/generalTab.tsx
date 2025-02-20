@@ -4,6 +4,7 @@ import { Tooltip } from "@mui/material";
 import "./generalTab.scss";
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import ImageInput from "../imageInput/imageInput";
 
 interface GeneralTabProps {
   formData: any;
@@ -11,21 +12,11 @@ interface GeneralTabProps {
 }
 const GeneralTab = (props: GeneralTabProps) => {
   const { formData, setFormData } = props;
-  const [isValidImage, setIsValidImage] = useState(false);
 
-  function isImageUrlUsingImage(url: string): Promise<boolean> {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = () => resolve(true);
-      img.onerror = () => resolve(false);
-      img.src = url;
-      debugger;
-    });
-  }
   return (
     <div className="formTab generalTab">
       <div className="generalTab__formDivider">
-        <div className="generalTab__formElement">
+        <div className="formTab__formElement">
           <label htmlFor="title">Título*</label>
           <input
             type="text"
@@ -38,51 +29,13 @@ const GeneralTab = (props: GeneralTabProps) => {
             }
           />
         </div>
-        <div className="generalTab__formElement">
-          <label htmlFor="image">
-            Imagen*
-            <Tooltip
-              title="Asegúrate que se muestra correctamente la imagen"
-              className="formTab__tooltip"
-            >
-              <FontAwesomeIcon icon={faQuestion} />
-            </Tooltip>
-            {formData.image && (
-              <Link to={formData.image} reloadDocument target="_blank">
-                <Tooltip title={<img src={formData.image} />}>
-                  <FontAwesomeIcon
-                    icon={faImage}
-                    className={
-                      isValidImage
-                        ? "generalTab__image--valid"
-                        : "generalTab__image--invalid"
-                    }
-                  />
-                </Tooltip>
-              </Link>
-            )}
-          </label>
-
-          <textarea
-            id="image"
-            required
-            name="image"
-            placeholder="URL de la imagen"
-            onChange={(e) => {
-              const newValue = e.target.value;
-              try {
-                new URL(newValue);
-                setFormData({ ...formData, image: newValue });
-                isImageUrlUsingImage(newValue).then((isValid) =>
-                  setIsValidImage(isValid)
-                );
-              } catch (error) {
-                setFormData({ ...formData, image: "" });
-              }
-            }}
+        <div className="formTab__formElement">
+          <ImageInput
+            value={formData.image}
+            onChange={(e) => setFormData({ ...formData, image: e })}
           />
         </div>
-        <div className="generalTab__formElement">
+        <div className="formTab__formElement">
           <label htmlFor="timeToRead">Tiempo de lectura*</label>
           <input
             required
@@ -94,7 +47,7 @@ const GeneralTab = (props: GeneralTabProps) => {
             }
           />
         </div>
-        <div className="generalTab__formElement">
+        <div className="formTab__formElement">
           <label htmlFor="author">Autor*</label>
           <input
             type="text"
@@ -107,7 +60,7 @@ const GeneralTab = (props: GeneralTabProps) => {
             }
           />
         </div>
-        <div className="generalTab__formElement">
+        <div className="formTab__formElement">
           <label htmlFor="date">Fecha*</label>
           <input
             type="date"
@@ -119,7 +72,7 @@ const GeneralTab = (props: GeneralTabProps) => {
         </div>
       </div>
       <div className="generalTab__formDivider">
-        <div className="generalTab__formElement">
+        <div className="formTab__formElement">
           <label htmlFor="shortDescription">Descripción Corta*</label>
           <input
             id="shortDescription"
@@ -132,7 +85,7 @@ const GeneralTab = (props: GeneralTabProps) => {
             }
           />
         </div>
-        <div className="generalTab__formElement generalTab__formElement--long">
+        <div className="formTab__formElement formTab__formElement--long">
           <label htmlFor="description">Descripción Completa</label>
           <textarea
             id="description"
