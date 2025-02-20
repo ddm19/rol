@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import GeneralTab from "./components/generalTab/generalTab";
 import "./articleEditor.scss";
 import RelatedTab from "./components/relatedTab/relatedTab";
+import ImportsTab from "./components/importsTab/importsTab";
 
 const ArticleEditor = () => {
   const [formData, setFormData] = useState({});
@@ -22,7 +23,7 @@ const ArticleEditor = () => {
     },
     {
       title: "Importados",
-      content: <p>This is a placeholder for the image tab content.</p>,
+      content: <ImportsTab formData={formData} setFormData={setFormData} />,
     },
   ];
 

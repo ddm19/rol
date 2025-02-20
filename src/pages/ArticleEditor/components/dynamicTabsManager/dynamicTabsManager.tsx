@@ -108,11 +108,7 @@ const DynamicTabsManager = (props: DynamicTabsManagerProps) => {
     icon: faPlus,
     classname: initialTabMetadata.classname,
   };
-  return (
-    <div>
-      <CustomTabs tabs={[...computedTabs, addTabButton]} />
-    </div>
-  );
+  return <CustomTabs tabs={[...computedTabs, addTabButton]} />;
 };
 
 export default DynamicTabsManager;

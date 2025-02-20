@@ -8,15 +8,17 @@ interface ImageInputProps {
   label?: string;
   placeholder?: string;
   value: string;
+  required?: boolean;
   onChange: (value: string) => void;
 }
 
 const ImageInput = (props: ImageInputProps) => {
   const {
-    label = "Imagen*",
+    label = "Imagen",
     placeholder = "URL de la imagen (https://i.imgur.com/IWg8EK5.gif)",
     value,
     onChange,
+    required = true,
   } = props;
 
   const [isValidImage, setIsValidImage] = useState<boolean>(true);
@@ -48,7 +50,7 @@ const ImageInput = (props: ImageInputProps) => {
   return (
     <>
       <label htmlFor="image">
-        {label}
+        {`${label} ${required ? "*" : ""}`}
         <Tooltip
           title="Asegúrate que se muestra correctamente la imagen"
           className="formTab__tooltip"
@@ -74,7 +76,7 @@ const ImageInput = (props: ImageInputProps) => {
       </label>
       <textarea
         id="image"
-        required
+        required={required}
         name="image"
         placeholder={placeholder}
         value={localValue}

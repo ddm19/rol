@@ -1,32 +1,30 @@
-import tabForm from "./components/tabForm";
 import DynamicTabsManager from "../dynamicTabsManager/dynamicTabsManager";
-import "./relatedTab.scss";
+import tabForm from "./components/tabForm";
 
-interface RelatedTabProps {
+interface ImportsTabProps {
   formData: any;
   setFormData: (formData: any) => void;
 }
 
-const RelatedTab = (props: RelatedTabProps) => {
+const ImportsTab = (props: ImportsTabProps) => {
   const { formData, setFormData } = props;
   return (
-    <div className="formTab relatedTab">
+    <div className="formTab importsTab">
       <DynamicTabsManager
-        key="related"
+        key="imports"
         formData={formData}
         setFormData={setFormData}
-        formKey="related"
+        formKey="imports"
         initialTabMetadata={{
-          title: "Relacionado",
-          classname: "relatedItems__customTab",
+          title: "Importado",
+          classname: "importsItems__customTab",
         }}
         renderTabForm={(index, onFieldChange, values, removeTab) =>
           tabForm(index, onFieldChange, values, index, removeTab)
         }
-        addButtonLabel="Agregar Relacionado"
+        addButtonLabel="Agregar Importado"
       />
     </div>
   );
 };
-
-export default RelatedTab;
+export default ImportsTab;
