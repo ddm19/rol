@@ -27,10 +27,13 @@
     "vite": "^6.1.1",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4",
+    "sharp": "^0.33.3",
+    "fast-glob": "^3.3.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "vite",
+    "prebuild": "node scripts/svg2png.mjs",
     "build": "tsc && vite build",
     "serve": "vite preview"
   },

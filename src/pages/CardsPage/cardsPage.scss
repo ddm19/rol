@@ -1,0 +1,63 @@
+.cardsPage {
+  display: grid;
+  grid-template-rows: repeat(auto-fit, 1fr);
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1rem;
+  padding: 1rem;
+}
+
+.card {
+  flex: 1 0;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+
+  &:hover {
+    transform: scale(1.04);
+  }
+
+  img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+}
+
+.modalBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0 0 0 / 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+
+  &.is-open {
+    display: flex;
+  }
+}
+
+.modalContent {
+  position: relative;
+  max-width: 35vw;
+  margin-top: 5%;
+  img {
+    width: 100%;
+    height: auto;
+    border-radius: 0.25rem;
+  }
+}
+
+.closeBtn {
+  position: absolute;
+  top: -0.75rem;
+  right: -0.75rem;
+  background: var(--background-color);
+  color: var(--colors-darkRed);
+  border: none;
+  border-radius: 50%;
+  font-size: 1.25rem;
+  cursor: pointer;
+  line-height: 2rem;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0 0 0 / 0.3);
+}
