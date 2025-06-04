@@ -20,6 +20,12 @@
       height: 100%;
     }
   }
+  &__tooltip {
+    margin: 0 var(--spacing-1);
+    color: var(--colors-darkRedLowOpacy);
+    border-radius: 70%;
+    font-size: var(--font-size-2);
+  }
   label {
     display: flex;
     font-size: var(--font-size-3);
@@ -27,12 +33,6 @@
     color: var(--colors-subtitle);
 
     font-weight: var(--font-weight-4);
-    .formTab__tooltip {
-      margin: 0 var(--spacing-1);
-      color: var(--colors-darkRedLowOpacy);
-      border-radius: 70%;
-      font-size: var(--font-size-2);
-    }
   }
   @media (max-width: 700px) {
     width: 95%;
@@ -60,19 +60,34 @@
   &__formElement--long {
     height: -webkit-fill-available;
   }
+  &__addRelated {
+    position: sticky;
+    width: var(--input-size-8);
+    gap: var(--spacing-1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 45%;
+    @media (max-width: 700px) {
+      width: var(--input-size-7);
+      margin-left: 0;
+    }
+    &__error {
+      position: absolute;
+      bottom: 26%;
+      right: 35%;
+      color: var(--colors-mediumRed);
+      font-size: var(--font-size-2);
+      @media (max-width: 700px) {
+        bottom: 38%;
+        right: 20%;
+      }
+    }
+  }
 }
-.customTabsPanel {
+.articleEditorContainer {
   width: 70%;
-  &_customTab {
-    transition: all 0.25s ease-in-out;
-  }
-  &__customTab:hover {
-    transform: translateY(4px);
-  }
-  &__customTab[aria-selected="true"] {
-    transform: translateY(5px);
-  }
-  .MuiTabs-indicator {
-    background-color: var(--colors-darkRed);
-  }
+  border: 1px solid var(--colors-border);
+  border-radius: 10px;
+  margin-top: var(--spacing-5);
 }

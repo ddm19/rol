@@ -1,17 +1,43 @@
-import { faImage, faQuestion } from "@fortawesome/free-solid-svg-icons";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Tooltip } from "@mui/material";
 import "./generalTab.scss";
-import { Link } from "react-router-dom";
-import { useState } from "react";
 import ImageInput from "../imageInput/imageInput";
+import { FormDataArticle } from "pages/ArticleEditor/articleEditorFunctions";
+import { useState } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faPlus, faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { Tooltip } from "@mui/material";
 
 interface GeneralTabProps {
-  formData: any;
+  formData: FormDataArticle;
   setFormData: (formData: any) => void;
 }
 const GeneralTab = (props: GeneralTabProps) => {
   const { formData, setFormData } = props;
+  const [importedInput, setImportedInput] = useState("");
+
+  const addRelated = (relatedText: string) => {
+    if (relatedText != null && relatedText != "")
+      setFormData({
+        ...formData,
+        content: `${formData.content || ""}{${relatedText}}`,
+      });
+    else {
+      //TODO: Alert - Toast
+      document.getElementById("addRelated")?.classList.add("shake");
+      const errorSpan = document.createElement("span");
+      errorSpan.className = "formTab__addRelated__error";
+      errorSpan.textContent = "Se requiere un ID";
+      document
+        .getElementById("addRelated")
+        ?.parentElement?.appendChild(errorSpan);
+
+      setTimeout(() => {
+        document.getElementById("addRelated")?.classList.remove("shake");
+      }, 350);
+      setTimeout(() => {
+        errorSpan.remove();
+      }, 1000);
+    }
+  };
 
   return (
     <div className="formTab generalTab">
@@ -20,6 +46,7 @@ const GeneralTab = (props: GeneralTabProps) => {
           <label htmlFor="title">Título*</label>
           <input
             type="text"
+            value={formData.title || ""}
             id="title"
             name="title"
             required
@@ -31,7 +58,7 @@ const GeneralTab = (props: GeneralTabProps) => {
         </div>
         <div className="formTab__formElement">
           <ImageInput
-            value={formData.image}
+            value={formData.image || ""}
             onChange={(e) => setFormData({ ...formData, image: e })}
           />
         </div>
@@ -39,6 +66,8 @@ const GeneralTab = (props: GeneralTabProps) => {
           <label htmlFor="timeToRead">Tiempo de lectura*</label>
           <input
             required
+            type="text"
+            value={formData.timeToRead || ""}
             id="timeToRead"
             name="timeToRead"
             placeholder="12 Minutos"
@@ -51,6 +80,7 @@ const GeneralTab = (props: GeneralTabProps) => {
           <label htmlFor="author">Autor*</label>
           <input
             type="text"
+            value={formData.author || ""}
             required
             placeholder="Nombre del autor"
             id="author"
@@ -64,6 +94,7 @@ const GeneralTab = (props: GeneralTabProps) => {
           <label htmlFor="date">Fecha*</label>
           <input
             type="date"
+            value={formData.date || ""}
             id="date"
             required
             name="date"
@@ -75,6 +106,7 @@ const GeneralTab = (props: GeneralTabProps) => {
         <div className="formTab__formElement">
           <label htmlFor="shortDescription">Descripción Corta*</label>
           <input
+            value={formData.shortDescription || ""}
             id="shortDescription"
             name="shortDescription"
             placeholder="Descripción corta, se mostrará en la Página Principal"
@@ -89,12 +121,32 @@ const GeneralTab = (props: GeneralTabProps) => {
           <label htmlFor="description">Descripción Completa</label>
           <textarea
             id="description"
+            value={formData.content || ""}
             placeholder="Descripción completa, mostrada dentro del Artículo"
             name="description"
             onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
+              setFormData({ ...formData, content: e.target.value })
             }
           />
+        </div>
+        <div className="formTab__addRelated" id="addRelated">
+          <label htmlFor="description">Añadir Importado</label>
+          <Tooltip
+            title="Si el import no se muestra puede que sea porque el ID no coincide, o porque no lo has añadido todavía"
+            className="formTab__tooltip"
+          >
+            <FontAwesomeIcon icon={faQuestion} />
+          </Tooltip>
+          <input
+            type="text"
+            value={importedInput}
+            placeholder="ID"
+            onChange={(e) => setImportedInput(e.target.value)}
+          />
+
+          <button onClick={() => addRelated(importedInput)}>
+            <FontAwesomeIcon icon={faPlus} />
+          </button>
         </div>
       </div>
     </div>

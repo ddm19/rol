@@ -22,6 +22,8 @@ const CustomTabs = (props: TabsProps) => {
   const { tabs, classname } = props;
   const [value, setValue] = useState(0);
 
+  const isPhone = window.innerWidth < 700;
+
   const handleChange = (
     _event: React.SyntheticEvent<Element, Event>,
     newValue: number,
@@ -35,6 +37,9 @@ const CustomTabs = (props: TabsProps) => {
         value={value}
         onChange={handleChange}
         className={`${classname ? classname : "customTabsPanel"}`}
+        variant={isPhone ? "scrollable" : "standard"}
+        scrollButtons={isPhone ? "auto" : false}
+        allowScrollButtonsMobile
       >
         {tabs.map((tab, index) => (
           <Tab

@@ -9,4 +9,24 @@
     background-color: var(--colors-darkRed);
     color: var(--colors-white);
   }
+  width: 70%;
+
+  &_customTab {
+    transition: all 0.25s ease-in-out;
+  }
+  &__customTab:hover {
+    transform: translateY(4px);
+  }
+  &__customTab[aria-selected="true"] {
+    transform: translateY(5px);
+  }
+  .MuiTabs-indicator {
+    background-color: var(--colors-darkRed);
+  }
+  @media (max-width: 700px) {
+    width: 85%;
+  }
+  .MuiTabs-scroller {
+    overflow-y: hidden;
+  }
 }

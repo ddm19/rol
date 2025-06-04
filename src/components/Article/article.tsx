@@ -11,14 +11,24 @@ import { fetchArticleById } from "./actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import Loading from "components/Loading/Loading";
-const Article = () => {
+interface ArticleProps {
+  articleContent: ArticleType | null;
+}
+
+const Article = (props: ArticleProps) => {
   const articleId = useParams().articleId;
+  const { articleContent } = props;
   const [article, setArticle] = useState<ArticleType | null>(null);
   const [error, setError] = useState<String | null>(null);
   const [isIndexVisible, setIsIndexVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    if (articleId)
+    if (articleContent) setArticle(articleContent);
+    console.log(articleContent);
+  }, [articleContent]);
+
+  useEffect(() => {
+    if (articleId && articleContent == null)
       fetchArticleById(articleId)
         .then((res: any) => {
           setArticle(res);
@@ -27,9 +37,6 @@ const Article = () => {
           setError(err);
         });
   }, [articleId]);
-  useEffect(() => {
-    console.log(isIndexVisible);
-  }, [isIndexVisible]);
 
   return (
     <>

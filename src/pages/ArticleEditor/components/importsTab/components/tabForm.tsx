@@ -36,7 +36,12 @@ const tabForm = (
             placeholder="ImagenQuelsor1 (Debe ser único!)"
             value={values.id || ""}
             onChange={(e) => {
-              onFieldChange("id", e.target.value.replace(/ /g, "_"));
+              //replace spaces and '{' '}'
+              const newValue = e.target.value
+                .replace(/ /g, "_")
+                .replace(/{/g, "")
+                .replace(/}/g, "");
+              onFieldChange("id", newValue);
             }}
           />
         </div>
