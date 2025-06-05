@@ -1,28 +1,39 @@
-.cardsPage {
+.cardsPage
+{
   display: grid;
   grid-template-rows: repeat(auto-fit, 1fr);
   grid-template-columns: repeat(5, 1fr);
   gap: 1rem;
   padding: 1rem;
+
+  @media(max-width: 700px)
+  {
+    grid-template-columns: repeat(1, 1fr);
+
+  }
 }
 
-.card {
+.card
+{
   flex: 1 0;
   cursor: pointer;
   transition: transform 0.15s ease;
 
-  &:hover {
+  &:hover
+  {
     transform: scale(1.04);
   }
 
-  img {
+  img
+  {
     width: 100%;
     height: auto;
     display: block;
   }
 }
 
-.modalBackdrop {
+.modalBackdrop
+{
   position: fixed;
   inset: 0;
   background: rgba(0 0 0 / 0.8);
@@ -31,23 +42,36 @@
   justify-content: center;
   z-index: 1000;
 
-  &.is-open {
+  &.is-open
+  {
     display: flex;
   }
 }
 
-.modalContent {
+.modalContent
+{
   position: relative;
   max-width: 35vw;
   margin-top: 5%;
-  img {
+
+  @media (max-width: 700px)
+  {
+    pointer-events: none;
+    max-width: 95vw;
+
+  }
+
+
+  img
+  {
     width: 100%;
     height: auto;
     border-radius: 0.25rem;
   }
 }
 
-.closeBtn {
+.closeBtn
+{
   position: absolute;
   top: -0.75rem;
   right: -0.75rem;
