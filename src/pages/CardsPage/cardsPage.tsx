@@ -46,7 +46,6 @@ const CardsPage: React.FC = () => {
         </section>
       ))}
 
-      {/* Modal */}
       {active && (
         <div
           className="modalBackdrop is-open"

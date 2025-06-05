@@ -75,10 +75,6 @@ const AdvantagesPage: React.FC = () => {
 
   const total = sumTotal();
 
-  useEffect(() => {
-    console.log("advantagesSelectedIds:", advantagesSelectedIds);
-    console.log("disadvantagesSelectedIds:", disadvantagesSelectedIds);
-  }, [advantagesSelectedIds, disadvantagesSelectedIds]);
 
   return (
     <div className="advantagesPage">
@@ -86,20 +82,30 @@ const AdvantagesPage: React.FC = () => {
         className="advantagesPage__openModalButton"
         onClick={toggleContainer}
       >
-        Abrir Ventajas/Desventajas
+        Abrir Ventajas/Desventajas (+ {advantagesSelectedIds.length}  / - {disadvantagesSelectedIds.length} )
       </button>
-      {isOpen && (
+
+
+      <div
+        className={`advantagesPage__modalBackdrop ${isOpen ? "advantagesPage__modalBackdrop--open" : "advantagesPage__modalBackdrop--close"}`}
+        onClick={toggleContainer}
+      >
+
         <div
-          className="advantagesPage__modalBackdrop"
-          onClick={toggleContainer}
+          className="advantagesPage__modalContent"
+          onClick={(e) => e.stopPropagation()}
         >
-          <div
-            className="advantagesPage__modalContent"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="advantagesPage__selectedHeader">
+
+          <div className="advantagesPage__selectedHeader">
+            <button
+              className="advantagesPage__closeButton"
+              onClick={toggleContainer}
+            >
+              Cerrar
+            </button>
+            <div className="advantagesPage__selectedContainer">
               <div className="advantagesPage__ventajas">
-                <h2>Ventajas:</h2>
+                <h2 className="lilaFont">Ventajas:</h2>
                 {advantagesSelectedIds.map((id) => {
                   const item = advantages.find((v) => v.id === id);
                   if (!item) return null;
@@ -120,7 +126,7 @@ const AdvantagesPage: React.FC = () => {
               </div>
               <div className="advantagesPage__separator" />
               <div className="advantagesPage__desventajas">
-                <h2>Desventajas:</h2>
+                <h2 className="naranjaFont">Desventajas:</h2>
                 {disadvantagesSelectedIds.map((id) => {
                   const item = disadvantages.find((d) => d.id === id);
                   if (!item) return null;
@@ -139,6 +145,8 @@ const AdvantagesPage: React.FC = () => {
                   );
                 })}
               </div>
+            </div>
+            <div className="advantagesPage__totalContainer">
               <button
                 className="advantagesPage__deleteButton"
                 onClick={clearSelection}
@@ -154,24 +162,21 @@ const AdvantagesPage: React.FC = () => {
                 Recuerda: Nunca puedes escoger una ventaja que anule una
                 desventaja.
               </p>
-              <button
-                className="advantagesPage__closeButton"
-                onClick={toggleContainer}
-              >
-                Cerrar
-              </button>
+
             </div>
           </div>
         </div>
-      )}
-      <div className="advantagesPage__modalBackdrop">
-        <div className="advantagesPage__modalContent">
+      </div>
+
+
+      <div>
+        <div>
           <div className="advantagesPage__section">
             <h2>Desventajas</h2>
             <div className="advantagesPage__row">
               {tiers.map((tier, i) => (
-                <div key={`d-tier-${tier}`} className="advantagesPage__column">
-                  <h3 className="lila">Tier {tier}</h3>
+                <div key={`d-tier-${tier}`} className="advantagesPage__list">
+                  <h3>Tier {tier}</h3>
                   <ul className="advantagesPage__list">
                     {grouped.disadvantages[i].map((item: ChoiceItem) => {
                       const isSelected = disadvantagesSelectedIds.includes(
@@ -180,16 +185,15 @@ const AdvantagesPage: React.FC = () => {
                       return (
                         <li key={item.id}>
                           <button
-                            className={`advantagesPage__itemButton ${
-                              item.disabled
-                                ? "advantagesPage__itemButton--disabled"
-                                : ""
-                            } ${isSelected ? "advantagesPage__itemButton--selected" : ""}`}
+                            className={`advantagesPage__itemButton lila${item.disabled
+                              ? "advantagesPage__itemButton--disabled"
+                              : ""
+                              } ${isSelected ? "advantagesPage__itemButton--selected" : ""}`}
                             onClick={() => handleSelect(item)}
                             disabled={item.disabled}
                           >
                             <div
-                              className={`advantagesPage__itemTitle advantagesPage__itemTitle--disadvantage`}
+                              className={`advantagesPage__itemTitle`}
                             >
                               {item.title}
                             </div>
@@ -203,8 +207,8 @@ const AdvantagesPage: React.FC = () => {
                   </ul>
                 </div>
               ))}
-              <div className="advantagesPage__column">
-                <h3 className="lila">Especiales</h3>
+              <div className="advantagesPage__list">
+                <h3>Especiales</h3>
                 <ul className="advantagesPage__list">
                   {grouped.specialDis.map((item: ChoiceItem) => {
                     const isSelected = disadvantagesSelectedIds.includes(
@@ -213,15 +217,14 @@ const AdvantagesPage: React.FC = () => {
                     return (
                       <li key={item.id}>
                         <button
-                          className={`advantagesPage__itemButton advantagesPage__itemButton--disabled ${
-                            isSelected
-                              ? "advantagesPage__itemButton--selected"
-                              : ""
-                          }`}
+                          className={`advantagesPage__itemButton advantagesPage__itemButton--disabled ${isSelected
+                            ? "advantagesPage__itemButton--selected"
+                            : ""
+                            }`}
                           disabled
                         >
                           <div
-                            className={`advantagesPage__itemTitle advantagesPage__itemTitle--disadvantage`}
+                            className={`advantagesPage__itemTitle`}
                           >
                             {item.title}
                           </div>
@@ -241,8 +244,8 @@ const AdvantagesPage: React.FC = () => {
             <h2>Ventajas</h2>
             <div className="advantagesPage__row">
               {tiers.map((tier, i) => (
-                <div key={`v-tier-${tier}`} className="advantagesPage__column">
-                  <h3 className="naranja">Tier {tier}</h3>
+                <div key={`v-tier-${tier}`} className="advantagesPage__list">
+                  <h3>Tier {tier}</h3>
                   <ul className="advantagesPage__list">
                     {grouped.advantages[i].map((item: ChoiceItem) => {
                       const isSelected = advantagesSelectedIds.includes(
@@ -251,16 +254,15 @@ const AdvantagesPage: React.FC = () => {
                       return (
                         <li key={item.id}>
                           <button
-                            className={`advantagesPage__itemButton ${
-                              item.disabled
-                                ? "advantagesPage__itemButton--disabled"
-                                : ""
-                            } ${isSelected ? "advantagesPage__itemButton--selected" : ""}`}
+                            className={`advantagesPage__itemButton naranja ${item.disabled
+                              ? "advantagesPage__itemButton--disabled"
+                              : ""
+                              } ${isSelected ? "advantagesPage__itemButton--selected" : ""}`}
                             onClick={() => handleSelect(item)}
                             disabled={item.disabled}
                           >
                             <div
-                              className={`advantagesPage__itemTitle advantagesPage__itemTitle--advantage`}
+                              className={`advantagesPage__itemTitle `}
                             >
                               {item.title}
                             </div>
@@ -274,23 +276,22 @@ const AdvantagesPage: React.FC = () => {
                   </ul>
                 </div>
               ))}
-              <div className="advantagesPage__column">
-                <h3 className="naranja">Especiales</h3>
+              <div className="advantagesPage__list">
+                <h3>Especiales</h3>
                 <ul className="advantagesPage__list">
                   {grouped.specialAdv.map((item: ChoiceItem) => {
                     const isSelected = advantagesSelectedIds.includes(item.id);
                     return (
                       <li key={item.id}>
                         <button
-                          className={`advantagesPage__itemButton advantagesPage__itemButton--disabled ${
-                            isSelected
-                              ? "advantagesPage__itemButton--selected"
-                              : ""
-                          }`}
+                          className={`advantagesPage__itemButton advantagesPage__itemButton--disabled ${isSelected
+                            ? "advantagesPage__itemButton--selected"
+                            : ""
+                            }`}
                           disabled
                         >
                           <div
-                            className={`advantagesPage__itemTitle advantagesPage__itemTitle--advantage`}
+                            className={`advantagesPage__itemTitle `}
                           >
                             {item.title}
                           </div>
