@@ -1,49 +1,56 @@
-// CardsPage.tsx
-import React, { useState } from 'react'
-import './cardsPage.scss'
-
-// ahora apuntamos a la carpeta PNG clonada
-const pngMods = import.meta.glob('../../cards-png/**/*.png', {
-  eager: true,
-  import: 'default', 
-})
+import React, { useEffect, useState } from "react";
+import "./cardsPage.scss";
+import DeckPanel from "./components/deckPanel";
+import { DeckDTO, fetchDecks, CardDTO } from "./actions";
+import Loading from "components/Loading/Loading";
 
 interface ImgItem {
-  key: string
-  url: string
-  alt: string
-  group: string
+  key: string;
+  url: string;
+  alt: string;
+  group: string;
 }
 
-const imgItems: ImgItem[] = Object.entries(pngMods).map(([path, url]) => {
-  const parts = path.split('/')
-  const file = parts.pop()!
-  const group = parts[3] ?? 'root'
-  return { key: path, url: url as string, alt: file.replace('.png', ''), group }
-})
-
-const groups = imgItems.reduce<Record<string, ImgItem[]>>((acc, item) => {
-  ;(acc[item.group] ||= []).push(item)
-  return acc
-}, {})
-
 const CardsPage: React.FC = () => {
-  const [active, setActive] = useState<string | null>(null)
+  const [groups, setGroups] = useState<Record<string, ImgItem[]>>({});
+  const [active, setActive] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const decks: DeckDTO[] = await fetchDecks();
+
+        const collected: Record<string, ImgItem[]> = {};
+        decks.forEach((deck) => {
+          collected[deck.title] = deck.cards.map((card: CardDTO) => ({
+            key: `${deck.title}/${card.name}`,
+            url: card.url,
+            alt: card.name,
+            group: deck.title,
+          }));
+        });
+
+        setGroups(collected);
+      } catch (err) {
+        console.error("Error fetching decks:", err);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  if (loading) return <Loading />;
 
   return (
     <>
       {Object.entries(groups).map(([groupName, items]) => (
-        <section key={groupName} className="cardsGroup">
-          <h2 className="cardsTitle">{groupName}</h2>
-
-          <div className="cardsPage">
-            {items.map(({ key, url, alt }) => (
-              <article key={key} className="card" onClick={() => setActive(url)}>
-                <img src={url} alt={alt} loading="lazy" />
-              </article>
-            ))}
-          </div>
-        </section>
+        <DeckPanel
+          key={groupName}
+          groupName={groupName}
+          items={items}
+          onSelect={setActive}
+        />
       ))}
 
       {active && (
@@ -54,7 +61,11 @@ const CardsPage: React.FC = () => {
           aria-modal="true"
         >
           <div className="modalContent" onClick={(e) => e.stopPropagation()}>
-            <button className="closeBtn" aria-label="Cerrar" onClick={() => setActive(null)}>
+            <button
+              className="closeBtn"
+              aria-label="Cerrar"
+              onClick={() => setActive(null)}
+            >
               ✖
             </button>
             <img src={active} alt="" />
@@ -62,7 +73,7 @@ const CardsPage: React.FC = () => {
         </div>
       )}
     </>
-  )
-}
+  );
+};
 
-export default React.memo(CardsPage)
+export default React.memo(CardsPage);
