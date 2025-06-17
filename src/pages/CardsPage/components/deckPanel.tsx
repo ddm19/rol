@@ -16,7 +16,7 @@ interface DeckPanelProps {
 }
 
 const DeckPanel: React.FC<DeckPanelProps> = ({ groupName, items, onSelect }) => {
-    const [collapsed, setCollapsed] = useState(false)
+    const [collapsed, setCollapsed] = useState(true)
 
     return (
         <section className="cardsGroup">
