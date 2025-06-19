@@ -22,7 +22,7 @@ function App() {
             element={<DiceRollerPage />}
           ></Route>
           <Route path="/Article/:articleId" element={<Article />} />
-          <Route path="/Article" element={<ArticleEditor />} />'
+          <Route path="/Article" element={<ArticleEditor />} />
           <Route path="*" element={<NoPage />} />
         </Routes>
       </main>

@@ -1,4 +1,4 @@
-import { ArticleType } from "components/Article/types";
+import { ArticleType, Section } from "components/Article/types";
 
 export interface FormDataArticle {
   title?: string;
@@ -10,6 +10,7 @@ export interface FormDataArticle {
   shortDescription?: string;
   related?: Array<{ values?: RelatedFormValues }>;
   imports?: Array<{ values?: ImportFormValues }>;
+  sections?: Section[]
 }
 
 interface RelatedFormValues {
@@ -126,6 +127,6 @@ export function generateArticleJSON(formData: FormDataArticle): ArticleType {
           image: item.values?.image || "",
         }))
       : [],
-    sections: [],
+    sections: formData.sections || [],
   };
 }

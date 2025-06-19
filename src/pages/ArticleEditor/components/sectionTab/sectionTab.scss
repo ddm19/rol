@@ -1,0 +1,43 @@
+.sectionsTab
+{
+    &__removeButton
+    {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: var(--spacing-2) auto;
+        gap: var(--spacing-1);
+    }
+
+    &__addButton
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        margin: var(--spacing-2) 0;
+    }
+
+    &__editable
+    {
+        width: 90%;
+        min-height: var(--input-size-2);
+        padding: var(--spacing-1) var(--spacing-2);
+        border: 1px solid var(--colors-border);
+        border-radius: 3px;
+        font-size: var(--font-size-2);
+        background: var(--colors-white);
+        color: var(--colors-black);
+
+        &--long
+        {
+            min-height: var(--input-size-4);
+        }
+    }
+
+    &__subSection
+    {
+        margin-left: var(--spacing-4);
+        border-left: 2px dashed var(--colors-border);
+        padding-left: var(--spacing-2);
+    }
+}

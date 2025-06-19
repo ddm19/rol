@@ -5,15 +5,16 @@ import "./articleEditor.scss";
 import RelatedTab from "./components/relatedTab/relatedTab";
 import ImportsTab from "./components/importsTab/importsTab";
 import {
+  FormDataArticle,
   generateArticleJSON,
   validateFormData,
 } from "./articleEditorFunctions";
-import SectionEditor from "./components/sectionEditor/sectionEditor";
+import SectionEditor from "./components/sectionTab/sectionTab";
 import Article from "components/Article/article";
 import test from "./1.json";
 
 const ArticleEditor = () => {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState<FormDataArticle>({ sections: [] });
 
   const tabs: TabItem[] = [
     {
@@ -28,6 +29,15 @@ const ArticleEditor = () => {
       title: "Importados",
       content: <ImportsTab formData={formData} setFormData={setFormData} />,
     },
+    {
+      title: "Secciones",
+      content: (
+        <SectionEditor
+          formData={formData}
+          setFormData={setFormData}
+        />
+      ),
+    },
   ];
 
   return (
@@ -37,7 +47,6 @@ const ArticleEditor = () => {
       <div className="articleEditorContainer">
         <h3>Vista Previa del Artículo</h3>
         <Article articleContent={generateArticleJSON(formData)} />
-        <SectionEditor formData={formData} setFormData={setFormData} />
         <button onClick={() => validateFormData(formData)}>Guardar</button>
       </div>
     </>
