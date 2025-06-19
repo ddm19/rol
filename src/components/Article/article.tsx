@@ -12,7 +12,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
 import Loading from "components/Loading/Loading";
 interface ArticleProps {
-  articleContent: ArticleType | null;
+  articleContent?: ArticleType | null;
 }
 
 const Article = (props: ArticleProps) => {
@@ -47,22 +47,20 @@ const Article = (props: ArticleProps) => {
           {article != null ? (
             <div className="articleContainer">
               <button
-                className={`${
-                  isIndexVisible
+                className={`${isIndexVisible
                     ? "articleContainer__indexButton--hidden"
                     : "articleContainer__indexButton articleContainer__indexButton--float"
-                }`}
+                  }`}
                 onClick={() => setIsIndexVisible(!isIndexVisible)}
               >
                 <FontAwesomeIcon icon={faArrowRight} />
               </button>
 
               <div
-                className={`articleContainer__indexContainer${
-                  !isIndexVisible
+                className={`articleContainer__indexContainer${!isIndexVisible
                     ? " articleContainer__indexContainer--hidden"
                     : ""
-                }`}
+                  }`}
               >
                 <span className="articleContainer--bold">CONTENIDO</span>
                 <button
