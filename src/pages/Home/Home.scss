@@ -1,6 +1,7 @@
 @use "/src/index.scss" as vars;
 
-.titleBlock {
+.titleBlock
+{
   background-color: rgba(94, 2, 2, 0.75);
   width: 100%;
   height: 30em;
@@ -9,8 +10,10 @@
   align-items: center;
 }
 
-.articleBGContainer {
+.articleBGContainer
+{
   &::before // Image container
+
   {
     content: "";
     display: block;
@@ -32,7 +35,8 @@
   align-items: center;
 }
 
-.mainArticleContainer {
+.mainArticleContainer
+{
   max-width: var(--image-size-3);
   display: flex;
   flex-direction: column;
@@ -42,7 +46,8 @@
   padding-bottom: 5%;
   margin-top: 5%;
 
-  p {
+  p
+  {
     flex: 1;
     z-index: 1;
     color: var(--background-color);
@@ -56,7 +61,8 @@
     text-align: center;
   }
 
-  &__image {
+  &__image
+  {
     position: absolute;
     opacity: 70%;
     width: var(--image-size-4);
@@ -64,28 +70,34 @@
     margin-top: var(--spacing-2);
     transition: all 0.25s ease-in-out;
   }
-  &__title {
+
+  &__title
+  {
     font-size: var(--font-size-10);
     color: var(--colors-darkRed);
     z-index: 1;
     text-shadow: 0px 0px 10px var(--background-color);
   }
 
-  &__normalText {
+  &__normalText
+  {
     font-size: 1rem;
     z-index: 1;
     text-shadow: 0px 0px 10px var(--background-color);
   }
 
-  &__whiteText {
+  &__whiteText
+  {
     color: var(--background-color);
   }
 
-  &__redText {
+  &__redText
+  {
     color: var(--colors-darkRed);
   }
 
-  &__button {
+  &__button
+  {
     width: 10rem;
     height: 3.5rem;
     background-color: var(--background-color);
@@ -100,21 +112,25 @@
     align-items: center;
     display: flex;
 
-    &:hover {
+    &:hover
+    {
       cursor: pointer;
       transform: scale(1.1);
     }
   }
+
   &:hover .mainArticleContainer__image,
   p,
-  &__title {
+  &__title
+  {
     transform: scale(1.1);
     cursor: pointer;
     opacity: 100%;
   }
 }
 
-.articlesContainer {
+.articlesContainer
+{
   display: grid;
   grid-template-rows: repeat(auto-fit, 1fr);
   grid-template-columns: repeat(3, 1fr);
@@ -124,18 +140,21 @@
   margin: 5%;
 }
 
-.article {
+.article
+{
   border-radius: 5%;
   padding: 1%;
   text-decoration: none;
 
-  img {
+  img
+  {
     max-width: 90%;
     border-radius: 8%;
   }
 }
 
-.emailContainer {
+.emailContainer
+{
   display: flex;
   align-items: center;
   flex-direction: column;
@@ -149,20 +168,24 @@
   font-size: 1.2rem;
 }
 
-.emailDescription {
-  font-size: 1rem;
+.emailDescription
+{
+  font-size: var(--font-size-2);
 }
 
-.emailForm {
-  width: 70%;
+.emailForm
+{
+  width: 80%;
   display: flex;
   flex-direction: row;
   justify-content: center;
   align-items: center;
+  height: 20%;
 
-  input {
+  input
+  {
     width: 40%;
-    height: 40%;
+    height: 100%;
     padding-left: 2%;
     margin: 5%;
     background: var(--background-color);
@@ -171,29 +194,49 @@
     border-width: 1px;
     border-style: solid;
     border-radius: 0.5rem;
-    font-size: 1em;
+    font-size: var(--font-size-2);
     text-align: left;
     border: 2px solid transparent;
   }
+
+  @media (max-width: 700px)
+  {
+    flex-direction: column;
+
+    input
+    {
+      width: 95%;
+    }
+  }
 }
 
-.subscribeButton {
+.subscribeButton
+{
+  height: 100%;
   border-radius: 5%;
   background-color: #5b1a04;
   font-size: 1em;
-  height: 40%;
   font-weight: normal;
   color: var(--colors-white);
   padding: var(--spacing-4) var(--spacing-8);
   cursor: pointer;
-  transition: all 0.4s cubic-bezier(0.47, 1.64, 0.18, -0.35);
+  transition: transform 0.6s cubic-bezier(0.47, 1.64, 0.18, -0.35);
 
-  &:hover {
-    transform: translateY(-1rem);
+  &:hover
+  {
+    transform: translateY(-1.2rem);
+  }
+
+  @media (max-width: 700px)
+  {
+    height: var(--input-size-1);
+    padding: var(--spacing-2) var(--spacing-4);
+    font-size: var(--font-size-3);
   }
 }
 
-.newArticleButton {
+.newArticleButton
+{
   border-radius: 5%;
   background-color: #5b1a04;
   font-size: 1em;
@@ -205,7 +248,8 @@
   transition: all 0.4s cubic-bezier(0.47, 1.64, 0.18, -0.35);
   margin-top: 2rem;
 
-  &:hover {
+  &:hover
+  {
     transform: translateY(-1rem);
   }
 }

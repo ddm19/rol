@@ -1,11 +1,13 @@
 @use "/src/index.scss" as vars;
 
-.articleContainer {
+.articleContainer
+{
   display: flex;
   gap: 5%;
   justify-content: center;
 
-  img {
+  img
+  {
     max-height: 20rem;
     object-fit: cover;
     border-radius: 10px;
@@ -15,10 +17,13 @@
     -o-user-drag: none;
   }
 
-  &--bold {
+  &--bold
+  {
     font-weight: 600;
   }
-  &__indexButton {
+
+  &__indexButton
+  {
     left: var(--spacing-4);
     top: 28%;
     transform: translateY(-50%);
@@ -28,18 +33,24 @@
     cursor: pointer;
     margin-top: var(--spacing-4);
 
-    &:hover {
+    &:hover
+    {
       background-color: rgba(251, 192, 45, 0.8);
     }
 
-    &--hidden {
+    &--hidden
+    {
       display: none;
     }
-    &--float {
+
+    &--float
+    {
       position: absolute;
     }
   }
-  &__indexContainer {
+
+  &__indexContainer
+  {
     width: 15%;
     height: min-content;
     position: sticky;
@@ -57,89 +68,110 @@
     opacity: 0.8;
     transition: all 0.5s ease-in-out;
 
-    p {
+    p
+    {
       padding-left: 1rem;
       font-size: 14px;
     }
 
-    a {
+    a
+    {
       text-decoration: none;
       transition: all 0.1s ease-in-out;
     }
 
-    a:hover {
+    a:hover
+    {
       transform: translateY(-3px);
       cursor: pointer;
     }
 
-    &--hidden {
+    &--hidden
+    {
       visibility: hidden;
       opacity: 0;
     }
   }
 
-  .index {
-    &--subSection {
+  .index
+  {
+    &--subSection
+    {
       margin-left: 1rem;
       font-size: 13px;
     }
   }
 
-  &__mainContainer {
+  &__mainContainer
+  {
     width: 55%;
     margin-top: 2rem;
     text-align: left;
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-2);
 
-    img {
+    img
+    {
       max-height: 20rem;
       object-fit: cover;
       border-radius: 10px;
     }
 
-    h1 {
+    h1
+    {
       font-size: 36px;
     }
   }
 
-  &__subtitle {
+  &__subtitle
+  {
     font-size: 12px;
     color: var(--colors-subtitle);
     margin-left: 1rem;
     margin-top: 0;
   }
 
-  &__relatedContentContainer {
+  &__relatedContentContainer
+  {
     width: 25%;
   }
 
-  &__title {
+  &__title
+  {
     color: var(--colors-font);
     margin: 0;
     font-size: 24px;
   }
 
-  &__title2 {
+  &__title2
+  {
     color: var(--colors-font);
     margin: 0;
     font-size: 20px;
   }
 
-  &--leftMargin {
+  &--leftMargin
+  {
     margin-left: 2.5rem;
   }
 
-  @media (max-width: 700px) {
+  @media (max-width: 700px)
+  {
     margin: 5%;
     align-items: center;
     flex-direction: column;
-    &__indexContainer {
+
+    &__indexContainer
+    {
       position: absolute;
       width: 70%;
     }
   }
 }
 
-.relatedContentContainer {
+.relatedContentContainer
+{
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -154,45 +186,52 @@
   opacity: 0.8;
   margin: 3.5rem 4rem;
 
-  img {
+  img
+  {
     max-height: 6rem;
     object-fit: cover;
     border-radius: 10px;
   }
 
-  &__title {
+  &__title
+  {
     color: var(--colors-font);
     margin: 0;
     font-size: 13px;
     text-decoration: none;
   }
 
-  &__mainTitle {
+  &__mainTitle
+  {
     color: var(--colors-font);
     margin: 0;
     font-size: 16px;
     text-decoration: none;
   }
 
-  &__subtitle {
+  &__subtitle
+  {
     color: var(--colors-subtitle);
     margin: 0;
     font-size: 12px;
   }
 
-  &__content {
+  &__content
+  {
     display: flex;
     flex-direction: column;
     text-align: left;
     justify-content: center;
     width: 100%;
 
-    h3 {
+    h3
+    {
       text-decoration: none;
     }
   }
 
-  &__link {
+  &__link
+  {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 0.5rem;
@@ -201,7 +240,8 @@
     width: 100%;
   }
 
-  &__link:hover {
+  &__link:hover
+  {
     transform: scale(1.05);
     cursor: pointer;
     border-radius: 10px;
@@ -209,42 +249,49 @@
   }
 }
 
-.embedContentContainer {
+.embedContentContainer
+{
   display: flex;
   justify-content: flex-start;
   align-items: center;
   max-width: 70%;
 
-  &__content {
+  &__content
+  {
     display: flex;
     flex-direction: column;
     margin-left: 1rem;
     justify-content: space-around;
 
-    p {
+    p
+    {
       margin: 0.2rem 0 0 0.2rem;
     }
   }
 
-  &__title {
+  &__title
+  {
     font-size: 16px;
     color: var(--colors-font);
     margin: 0;
   }
 
-  &__subtitle {
+  &__subtitle
+  {
     font-size: 12px;
     color: var(--colors-subtitle);
     margin: 0.2rem 0 0 0.2rem;
   }
 
-  img {
+  img
+  {
     max-height: 10rem;
     object-fit: cover;
     border-radius: 10px;
   }
 
-  p {
+  p
+  {
     margin-top: 0.5rem;
   }
 }

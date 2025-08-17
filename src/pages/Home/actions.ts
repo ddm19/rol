@@ -11,6 +11,6 @@ export const fetchArticles = () =>
         })
         .catch((err: any) =>
         {
-            console.log(err);
+            console.error(err);
         });
 }; 

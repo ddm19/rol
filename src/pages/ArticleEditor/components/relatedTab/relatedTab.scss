@@ -1,0 +1,22 @@
+.relatedTab {
+  &__formContainer {
+    display: grid;
+    height: 80%;
+    width: 100%;
+    grid-template-rows: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    box-sizing: border-box;
+    padding: 5%;
+    justify-content: center;
+    @media (max-width: 700px) {
+      grid-template-columns: 1fr;
+    }
+  }
+  &__removeButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    gap: var(--spacing-1);
+  }
+}

@@ -25,7 +25,7 @@ function App() {
           ></Route>
           <Route path="/Article/:articleId" element={<Article />} />
           <Route path="/Article" element={<ArticleEditor />} />
-          <Route path="/Advantages" element={<AdvantagesPage />} />
+          <Route path="/Utilities/Advantages" element={<AdvantagesPage />} />
           <Route path="/Cards" element={<CardsPage />} />
           <Route path="*" element={<NoPage />} />
         </Routes>

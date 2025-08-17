@@ -115,7 +115,7 @@ const Home: React.FC = () => {
 
       <div className="emailContainer">
         <div className="titleContainer">
-          <h1 className=" emailTitle">Entérate cuando haya algo nuevo</h1>
+          <h2 className=" emailTitle">Entérate cuando haya algo nuevo</h2>
           <p className="emailDescription">
             Partidas, nuevo lore, personajes interesantes...
           </p>

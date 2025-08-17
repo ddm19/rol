@@ -16,6 +16,5 @@ export default defineConfig({
       devextreme: resolve(__dirname, "node_modules/devextreme"),
     },
   },
-  server: {  allowedHosts: ["dd00-2a0c-5a82-1200-5600-a8fa-3163-4e34-81fe.ngrok-free.app"]
-},
+  server: {},
 });

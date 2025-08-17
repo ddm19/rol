@@ -1,9 +1,15 @@
-.formTab {
+.formTab
+{
   width: 70%;
   height: 70%;
   border: 2px solid var(--colors-border);
+  border-radius: 10px;
+  padding: 0 var(--spacing-1);
+
   input,
-  textarea {
+  textarea,
+  select
+  {
     width: 90%;
     height: var(--input-size-1);
     padding: var(--spacing-1) var(--spacing-2);
@@ -13,44 +19,166 @@
     border-radius: 3px;
     font-size: var(--font-size-2);
     text-align: left;
+    field-sizing: content;
   }
-  textarea {
-    resize: none;
-    height: 100%;
+
+  textarea
+  {
+    resize: vertical;
+
+    &:not(#image)
+    {
+      height: 100%;
+    }
   }
-  label {
+
+  &__tooltip
+  {
+    margin: 0 var(--spacing-1);
+    color: var(--colors-darkRedLowOpacy);
+    border-radius: 70%;
+    font-size: var(--font-size-2);
+  }
+
+  label
+  {
     display: flex;
     font-size: var(--font-size-3);
     padding: var(--spacing-1);
     color: var(--colors-subtitle);
 
     font-weight: var(--font-weight-4);
-    .formTab__tooltip {
-      margin: 0 var(--spacing-1);
-      color: var(--colors-darkRedLowOpacy);
-      border: 1px solid var(--colors-darkRedLowOpacy);
-      border-radius: 70%;
-      padding: 1%;
-      font-size: var(--font-size-1);
-    }
   }
-  @media (max-width: 700px) {
+
+  @media (max-width: 700px)
+  {
     width: 95%;
     height: 95%;
   }
+
+  &__image
+  {
+    &--valid
+    {
+      color: var(--colors-green);
+    }
+
+    &--invalid
+    {
+      color: var(--colors-mediumRed);
+    }
+  }
+
+  &__imageTooltip
+  {
+    max-width: var(--image-size-2);
+    max-height: var(--image-size-2);
+  }
+
+  &__formElement
+  {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    text-align: start;
+
+    &--short
+    {
+      width: var(--input-size-4);
+    }
+  }
+
+  &__formElement--long
+  {
+    height: -webkit-fill-available;
+  }
+
+
+  &__formElement--inline
+  {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    justify-content: center;
+
+  }
+
+  &__tick[type="checkbox"]
+  {
+    background: var(--colors-border);
+    border-radius: 50%;
+    width: var(--input-size-2);
+    margin: 0 var(--spacing-1);
+    transition: all 0.3s ease-in-out;
+  }
+
+
+
+  &__addRelated
+  {
+    position: sticky;
+    width: var(--input-size-8);
+    gap: var(--spacing-1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 45%;
+
+    @media (max-width: 700px)
+    {
+      width: var(--input-size-7);
+      margin-left: 0;
+    }
+
+    &__error
+    {
+      position: absolute;
+      bottom: 26%;
+      right: 35%;
+      color: var(--colors-mediumRed);
+      font-size: var(--font-size-2);
+
+      @media (max-width: 700px)
+      {
+        bottom: 38%;
+        right: 20%;
+      }
+    }
+  }
 }
-.customTabsPanel {
+
+.articleEditorContainer
+{
   width: 70%;
-  &_customTab {
-    transition: all 0.25s ease-in-out;
+  border: 1px solid var(--colors-border);
+  border-radius: 10px;
+  margin-top: var(--spacing-5);
+
+  @media (max-width: 700px)
+  {
+    width: 95%;
   }
-  &__customTab:hover {
-    transform: translateY(4px);
-  }
-  &__customTab[aria-selected="true"] {
-    transform: translateY(5px);
-  }
-  .MuiTabs-indicator {
-    background-color: var(--colors-darkRed);
+
+  &__helpButton
+  {
+    position: absolute;
+    top: 20%;
+    right: var(--spacing-5);
+
+
+    a
+    {
+      display: flex;
+      align-items: center;
+      gap: var(--spacing-2);
+      color: var(--colors-darkRedLowOpacy);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      font-size: var(--font-size-5);
+
+
+    }
   }
 }

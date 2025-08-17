@@ -28,20 +28,23 @@ const NavBar: React.FC = () => {
       name: "Utilidades",
       url: "/Utilities",
       sublinks: [
-        { name: "Ventajas y Desventajas", url: "/PerksFlaws" },
+        { name: "Ventajas y Desventajas", url: "/Advantages" },
         { name: "Creador de Personajes", url: "/PJMaker" },
         { name: "Lanzadados", url: "/DiceRoller" },
       ],
     },
-    { name: "Ventajas y Desventajas", url: "/Advantages" },
-    {name: "ROH", url: "/Cards"}
+    { name: "ROH", url: "/Cards" }
   ];
 
   return (
     <div className="navbar">
       <div className="logoContainer">
         <Link className="navLink" to="/">
-          <img className="logo" alt="WebLogo" src={"/Logo.png"} />
+          <img
+            className="logo"
+            alt="WebLogo"
+            src={"/Logo.png"}
+          />
         </Link>
       </div>
       <nav className="parentNav">
