@@ -1,10 +1,12 @@
 import "./generalTab.scss";
 import ImageInput from "../imageInput/imageInput";
 import { FormDataArticle } from "pages/ArticleEditor/articleEditorFunctions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { Tooltip } from "@mui/material";
+import { Category } from "components/Article/types";
+import { addCategory, getCategories } from "pages/ArticleEditor/actions";
 
 interface GeneralTabProps {
   formData: FormDataArticle;
@@ -13,6 +15,13 @@ interface GeneralTabProps {
 const GeneralTab = (props: GeneralTabProps) => {
   const { formData, setFormData } = props;
   const [importedInput, setImportedInput] = useState("");
+  const [categories, setCategories] = useState<Category[]>([]);
+
+  useEffect(() => {
+    getCategories().then((data) => {
+      setCategories(data);
+    });
+  }, []);
 
   const addRelated = (relatedText: string) => {
     if (relatedText != null && relatedText != "")
@@ -37,6 +46,14 @@ const GeneralTab = (props: GeneralTabProps) => {
         errorSpan.remove();
       }, 1000);
     }
+  };
+
+  const handleAddCategory = () => {
+    const categoryName = prompt("Introduce el nombre de la nueva categoría:")?.trim() || "";
+
+    addCategory(categoryName).then((data) => {
+      setCategories([...categories, data]);
+    });
   };
 
   return (
@@ -101,6 +118,32 @@ const GeneralTab = (props: GeneralTabProps) => {
             onChange={(e) => setFormData({ ...formData, date: e.target.value })}
           />
         </div>
+        <div className="formTab__formElement">
+          <label htmlFor="category">Categoría*</label>
+          <select
+            id="category"
+            name="category"
+            required
+            value={formData.category?.id || ""}
+            onChange={(e) =>
+              setFormData({
+                ...formData,
+                category: categories.find((cat) => cat.id === e.target.value) || null,
+              })
+            }
+          >
+            <option value="">Selecciona una categoría</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+          <button className="formTab__formElement--short" onClick={() => handleAddCategory()}>
+            <FontAwesomeIcon icon={faPlus} />
+            Añadir Categoría
+          </button>
+        </div>
       </div>
       <div className="generalTab__formDivider">
         <div className="formTab__formElement">
@@ -148,6 +191,7 @@ const GeneralTab = (props: GeneralTabProps) => {
             <FontAwesomeIcon icon={faPlus} />
           </button>
         </div>
+
       </div>
     </div>
   );

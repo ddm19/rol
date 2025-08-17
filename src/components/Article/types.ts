@@ -6,6 +6,12 @@ export interface ImportedItem {
   shortDesc?: string;
   image?: string;
 }
+
+export interface Category {
+  id: string;
+  name: string;
+}
+
 export interface Section {
   id: string;
   title: string;
@@ -24,6 +30,7 @@ export interface RelatedArticle {
 
 export interface ArticleType {
   title: string;
+  category: Category;
   date: string;
   content: string;
   related: RelatedArticle[];

@@ -81,13 +81,14 @@ const SectionForm = ({
           onChange={(e) => updateField("content", e.target.value)}
         />
       </div>
-      <div className="formTab__formElement">
-        <label htmlFor="isNumbered">¿Enumerar?</label>
+      <div className="formTab__formElement formTab__formElement--inline">
         <input
           type="checkbox"
           checked={section.isNumbered}
           onChange={(e) => updateField("isNumbered", e.target.checked)}
+          className="formTab__tick"
         />
+        <label htmlFor="isNumbered">¿Enumerar?</label>
       </div>
       {section.subSections &&
         section.subSections.map((sub, i) => (
@@ -103,7 +104,7 @@ const SectionForm = ({
             />
           </>
         ))}
-      <button className="sectionsTab__addButton" onClick={addSub}>Agregar Sub-sección</button>
+      <button className="sectionsTab__addButton" onClick={addSub}><FontAwesomeIcon icon={faPlus} />Agregar Sub-sección</button>
     </div>
   );
 };
@@ -136,7 +137,7 @@ const SectionTab = (props: SectionsTabProps) => {
     <div className="formTab">
       {sections.map((section, index) => (
         <SectionForm
-          key={section.id}
+          key={section.id + index}
           section={section}
           onChange={(s) => updateSection(index, s)}
           onRemove={() => removeSection(index)}

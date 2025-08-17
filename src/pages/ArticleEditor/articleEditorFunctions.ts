@@ -1,7 +1,9 @@
-import { ArticleType, Section } from "components/Article/types";
+import { ArticleType, Category, Section } from "components/Article/types";
 
 export interface FormDataArticle {
+  id?: string;
   title?: string;
+  category?: Category;
   date?: string;
   content?: string;
   image?: string;
@@ -55,12 +57,7 @@ export function validateFormData(formData: FormDataArticle) {
       if (!vals.id || vals.id.trim() === "") {
         missingFields.push(`Importado ${index + 1}: Identificador`);
       }
-      if (!vals.title || vals.title.trim() === "") {
-        missingFields.push(`Importado ${index + 1}: Título`);
-      }
-      if (!vals.subtitle || vals.subtitle.trim() === "") {
-        missingFields.push(`Importado ${index + 1}: Subtítulo`);
-      }
+     
     });
   }
   if (!Array.isArray(formData.related) || formData.related.length < 0) {
@@ -86,9 +83,7 @@ export function validateFormData(formData: FormDataArticle) {
         "\n\n" +
         missingOptionalFields.join("\n"),
     );
-  } else {
-    alert("Todos los campos obligatorios han sido rellenados.");
-  }
+  } 
   return missingFields.length === 0;
 }
 
@@ -105,6 +100,7 @@ export function generateArticleJSON(formData: FormDataArticle): ArticleType {
     title: formData.title || "",
     date: formData.date || "",
     content: formData.content || "",
+    category: formData.category || { id: "", name: "" },
     image: formData.image || "",
     author: formData.author || "",
     timeToRead: formData.timeToRead || "",
@@ -128,5 +124,45 @@ export function generateArticleJSON(formData: FormDataArticle): ArticleType {
         }))
       : [],
     sections: formData.sections || [],
+  };
+}
+
+export function mapArticleToFormData(
+  article: ArticleType,
+  id?: string
+): FormDataArticle {
+  return {
+    id,
+    title: article.title,
+    date: article.date,
+    content: article.content,
+    category: article.category,
+    image: article.image,
+    author: article.author,
+    timeToRead: article.timeToRead,
+    shortDescription: article.shortDescription,
+    related: Array.isArray(article.related)
+      ? article.related.map((r) => ({
+          values: {
+            title: r.title,
+            subtitle: r.subtitle,
+            link: r.link,
+            image: r.image,
+          },
+        }))
+      : [],
+    imports: Array.isArray(article.imports)
+      ? article.imports.map((imp) => ({
+          values: {
+            id: imp.id,
+            link: imp.link,
+            title: imp.title,
+            subtitle: imp.subtitle,
+            shortDescription: imp.shortDesc,
+            image: imp.image,
+          },
+        }))
+      : [],
+    sections: article.sections || [],
   };
 }

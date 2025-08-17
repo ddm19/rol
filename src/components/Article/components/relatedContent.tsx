@@ -2,21 +2,18 @@ import { Link } from "react-router-dom";
 import { RelatedArticle } from "../types";
 import React from "react";
 
-interface RelatedContentProps
-{
+interface RelatedContentProps {
     relatedArray: Array<RelatedArticle>;
 }
 
-const RelatedContent = (props: RelatedContentProps) =>
-{
+const RelatedContent = (props: RelatedContentProps) => {
     const { relatedArray } = props;
     const defaultImage = `/NotFound.png`;
 
     return (
         <React.Fragment>
             <h2 className="relatedContentContainer__mainTitle">ENLACES RELACIONADOS</h2>
-            {relatedArray.map((related) =>
-            {
+            {relatedArray.map((related) => {
                 return (
                     <Link to={related.link} className="relatedContentContainer__link" target="blank">
                         <img src={related.image != null ? related.image : defaultImage} alt={related.title} />

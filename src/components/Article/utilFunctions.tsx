@@ -1,36 +1,45 @@
 import EmbedArticle from "./components/embedArticle";
 import { ArticleType } from "./types";
 
-export const contentParser = (content: string, article: ArticleType, isNumbered = false) =>
-{
-    let parsedContainer = [];
-    let contentArray = content.split(' ');
+export const contentParser = (content: string, article: ArticleType, isNumbered = false) => {
+    const parsedContainer: JSX.Element[] = [];
+    const paragraphClass = isNumbered ? "articleContainer--leftMargin" : "";
 
-    let element = "";
+    const normalized = (content || "").replace(/\r\n?/g, "\n");
 
-    contentArray.forEach((word: string) =>
-    {
-        if (word.includes('{'))
-        {
-            parsedContainer.push(<p >{element}</p>);
-            element = "";
-            const imageId = word.substring(1, word.length - 1);
-            const src = article.imports.filter((importedThing) => importedThing.id === imageId)[0];
-            if (src != null)
+    const lines = normalized.split(/\n+/);
+
+    lines.forEach((line) => {
+        if (line == null || line.trim() === "") return;
+
+        const regex = /\{([^}]+)\}/g;
+        let lastIndex = 0;
+        let match: RegExpExecArray | null;
+
+        while ((match = regex.exec(line)) !== null) {
+            const before = line.slice(lastIndex, match.index);
+            if (before && before.trim() !== "") {
+                parsedContainer.push(<p className={paragraphClass}>{before}</p>);
+            }
+
+            const imageId = match[1];
+            const src = article.imports.find((importedThing) => importedThing.id === imageId);
+            if (src) {
                 parsedContainer.push(<EmbedArticle related={src} />);
+            } else {
+                parsedContainer.push(
+                    <p className={paragraphClass}>{`{${imageId}}`}</p>
+                );
+            }
 
+            lastIndex = regex.lastIndex;
         }
-        else if (word.includes('\n'))
-        {
-            parsedContainer.push(<p>{element}</p>);
-            element = "";
-        }
-        else
-            element += word + ' ';
 
+        const after = line.slice(lastIndex);
+        if (after && after.trim() !== "") {
+            parsedContainer.push(<p className={paragraphClass}>{after}</p>);
+        }
     });
 
-    parsedContainer.push(<p className={isNumbered ? "articleContainer--leftMargin" : ""}>{element}</p>);
     return parsedContainer;
-
 };

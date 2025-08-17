@@ -46,12 +46,11 @@ const tabForm = (
           />
         </div>
         <div className="formTab__formElement">
-          <label htmlFor={`title-${index}`}>Título*</label>
+          <label htmlFor={`title-${index}`}>Título</label>
           <input
             type="text"
             id={`title-${index}`}
             name="title"
-            required
             placeholder="Título del Artículo"
             value={values.title || ""}
             onChange={(e) => {
@@ -60,12 +59,11 @@ const tabForm = (
           />
         </div>
         <div className="formTab__formElement">
-          <label htmlFor={`subtitle-${index}`}>Subtítulo*</label>
+          <label htmlFor={`subtitle-${index}`}>Subtítulo</label>
           <input
             type="text"
             id={`subtitle-${index}`}
             name="subtitle"
-            required
             placeholder="Subtítulo del Artículo"
             value={values.subtitle || ""}
             onChange={(e) => {

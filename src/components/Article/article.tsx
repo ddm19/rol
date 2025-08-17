@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { ArticleType } from "./types";
 import "./article.scss";
 import Error from "components/Error/error";
@@ -9,7 +9,7 @@ import RelatedContent from "./components/relatedContent";
 import Index from "./components/index";
 import { fetchArticleById } from "./actions";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowRight, faPencil } from "@fortawesome/free-solid-svg-icons";
 import Loading from "components/Loading/Loading";
 interface ArticleProps {
   articleContent?: ArticleType | null;
@@ -22,9 +22,10 @@ const Article = (props: ArticleProps) => {
   const [error, setError] = useState<String | null>(null);
   const [isIndexVisible, setIsIndexVisible] = useState<boolean>(false);
 
+  const navigate = useNavigate();
+
   useEffect(() => {
     if (articleContent) setArticle(articleContent);
-    console.log(articleContent);
   }, [articleContent]);
 
   useEffect(() => {
@@ -82,6 +83,8 @@ const Article = (props: ArticleProps) => {
               </div>
               <div className="relatedContentContainer">
                 <RelatedContent relatedArray={article.related} />
+                <button onClick={() => { navigate(`/Article?id=${articleId}&mode=create`) }}>Editar Artículo <FontAwesomeIcon icon={faPencil} className="articleContainer__editIcon" /></button>
+
               </div>
             </div>
           ) : (

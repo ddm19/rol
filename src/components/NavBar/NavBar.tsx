@@ -28,11 +28,12 @@ const NavBar: React.FC = () => {
       name: "Utilidades",
       url: "/Utilities",
       sublinks: [
-        { name: "Ventajas y Desventajas", url: "/PerksFlaws" },
+        { name: "Ventajas y Desventajas", url: "/Advantages" },
         { name: "Creador de Personajes", url: "/PJMaker" },
         { name: "Lanzadados", url: "/DiceRoller" },
       ],
     },
+    { name: "ROH", url: "/Cards" }
   ];
 
   return (

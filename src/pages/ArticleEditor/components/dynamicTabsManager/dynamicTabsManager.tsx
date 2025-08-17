@@ -29,30 +29,33 @@ const DynamicTabsManager = (props: DynamicTabsManagerProps) => {
 
   const initialTabs =
     formData[formKey] &&
-    Array.isArray(formData[formKey]) &&
-    formData[formKey].length > 0
+      Array.isArray(formData[formKey]) &&
+      formData[formKey].length > 0
       ? formData[formKey].map((tab: any, index: number) => ({
-          title: tab.title || `${initialTabMetadata.title} ${index + 1}`,
-          classname: tab.classname || initialTabMetadata.classname,
-        }))
+        title: tab.title || `${initialTabMetadata.title} ${index + 1}`,
+        classname: tab.classname || initialTabMetadata.classname,
+      }))
       : [];
   const initialValues =
     formData[formKey] &&
-    Array.isArray(formData[formKey]) &&
-    formData[formKey].length > 0
+      Array.isArray(formData[formKey]) &&
+      formData[formKey].length > 0
       ? formData[formKey].map((tab: any) => tab.values || {})
       : [{}];
-  const [tabs, setTabs] = useState(initialTabs);
-  const [values, setValues] = useState(initialValues);
+  type TabMeta = { title: string; classname: string };
+  const [tabs, setTabs] = useState<TabMeta[]>(initialTabs as TabMeta[]);
+  const [values, setValues] = useState<Record<string, any>[]>(
+    initialValues as Record<string, any>[]
+  );
   const addNewTab = () => {
-    setTabs((prev) => [
+    setTabs((prev: TabMeta[]) => [
       ...prev,
       {
         title: `${initialTabMetadata.title} ${prev.length + 1}`,
         classname: initialTabMetadata.classname,
       },
     ]);
-    setValues((prev) => [...prev, {}]);
+    setValues((prev: Record<string, any>[]) => [...prev, {}]);
   };
   const removeTab = (index: number) => {
     const newTabs = [...tabs];
@@ -63,7 +66,7 @@ const DynamicTabsManager = (props: DynamicTabsManagerProps) => {
     setValues(newValues);
   };
   const handleFieldChange = (index: number, field: string, value: any) => {
-    setValues((prev) => {
+    setValues((prev: Record<string, any>[]) => {
       const newVals = [...prev];
       newVals[index] = { ...newVals[index], [field]: value };
       return newVals;
@@ -72,7 +75,7 @@ const DynamicTabsManager = (props: DynamicTabsManagerProps) => {
   useEffect(() => {
     setFormData({
       ...formData,
-      [formKey]: tabs.map((tab, index) => ({
+      [formKey]: tabs.map((tab: TabMeta, index: number) => ({
         title: tab.title,
         content: renderTabForm(
           index,
@@ -85,7 +88,7 @@ const DynamicTabsManager = (props: DynamicTabsManagerProps) => {
       })),
     });
   }, [tabs, values]);
-  const computedTabs: TabItem[] = tabs.map((tab, index) => ({
+  const computedTabs: TabItem[] = tabs.map((tab: TabMeta, index: number) => ({
     title: tab.title,
     content: renderTabForm(
       index,
