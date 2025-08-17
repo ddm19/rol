@@ -1,30 +1,43 @@
-:root {
-  --header-size: 116px;
-  --footer-size: 116px;
-  --loading-size: 100px;
+:root
+{
+  :root
+  {
+    --header-size: 116px;
+    --footer-size: 116px;
+    --loading-size: 100px;
 
-  --image-size-1: 100px;
-  --image-size-2: 200px;
-  --image-size-3: 300px;
-  --image-size-4: 400px;
-  --image-size-5: 500px;
+    --image-size-1: 100px;
+    --image-size-2: 200px;
+    --image-size-3: 300px;
+    --image-size-4: 400px;
+    --image-size-5: 500px;
 
-  --input-size-1: 30px;
-  --input-size-2: 60px;
-  --input-size-3: 90px;
-  --input-size-4: 120px;
-  --input-size-5: 150px;
-  --input-size-6: 180px;
-  --input-size-7: 210px;
-  --input-size-8: 240px;
+    --input-size-1: 30px;
+    --input-size-2: 60px;
+    --input-size-3: 90px;
+    --input-size-4: 120px;
+    --input-size-5: 150px;
+    <<<<<<< HEAD --input-size-6: 180px;
+    --input-size-7: 210px;
+    --input-size-8: 240px;
 
-  @media (max-width: 700px) {
-    --image-size-1: 75px;
-    --image-size-2: 150px;
-    --image-size-3: 225px;
-    --image-size-4: 325px;
-    --image-size-5: 375px;
+    @media (max-width: 700px)
+    {
+      =======@media (max-width: 700px)
+      {
+        >>>>>>>baab2d74b2f4d2d1694c09c9b0cb1e2288fadc7b --image-size-1: 75px;
+        --image-size-2: 150px;
+        --image-size-3: 225px;
+        --image-size-4: 325px;
+        --image-size-5: 375px;
+      }
+
+      <<<<<<< HEAD --mobileMaxWidth: 700px;
+      --tabletMaxWidth: 900px;
+    }
+
+    =======--mobileMaxWidth: 700px;
+    --tabletMaxWidth: 900px;
   }
-  --mobileMaxWidth: 700px;
-  --tabletMaxWidth: 900px;
-}
+
+  >>>>>>>baab2d74b2f4d2d1694c09c9b0cb1e2288fadc7b

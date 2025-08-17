@@ -1,0 +1,193 @@
+.advantagesPage
+{
+  &__row
+  {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  &__column
+  {
+    flex: 1;
+  }
+
+  &__list
+  {
+    list-style: none;
+    padding: var(--spacing-2);
+  }
+
+  &__itemButton
+  {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: var(--input-size-4);
+    background-color: var(--colors-darkYellow);
+    color: var(--background-color);
+    padding: var(--spacing-2);
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover
+    {
+      background-color: var(--colors-darkYellow);
+      scale: 1.05;
+    }
+
+    &--selected
+    {
+      scale: 0.98;
+      background-color: var(--colors-darkRedLowOpacy);
+    }
+
+    &--disabled
+    {
+      background-color: var(--color-secondary);
+      cursor: not-allowed;
+      scale: 1;
+
+      &:hover
+      {
+        scale: 0.98;
+        background-color: var(--colors-darkYellow);
+      }
+    }
+  }
+
+  &__itemTitle
+  {
+    font-size: var(--font-size-6);
+    font-weight: bold;
+    margin-bottom: var(--spacing-1);
+    text-align: center;
+    color: var(--background-color);
+  }
+
+  &__itemDescription
+  {
+    font-size: var(--font-size-3);
+    margin-bottom: var(--spacing-1);
+    text-align: center;
+    color: var(--background-color);
+  }
+
+  .lila:not(.advantagesPage__itemButton--selected)
+  {
+    background-color: var(--portal-color-3);
+  }
+
+  .naranja:not(.advantagesPage__itemButton--selected)
+  {
+    background-color: var(--colors-darkOrange);
+  }
+
+  .lilaFont:not(.advantagesPage__itemButton--selected)
+  {
+    color: var(--portal-color-3);
+  }
+
+  .naranjaFont:not(.advantagesPage__itemButton--selected)
+  {
+    color: var(--colors-darkOrange);
+  }
+
+
+  .advantagesPage__openModalButton
+  {
+    position: fixed;
+    left: 12%;
+    top: 10%;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: var(--colors-darkRed);
+    z-index: 5;
+
+    &:hover
+    {
+      scale: 1.05;
+    }
+  }
+
+  &__modalBackdrop
+  {
+    position: fixed;
+    top: 15%;
+    left: 2%;
+    width: 30%;
+    z-index: 5;
+    border-radius: 5%;
+    background: var(--colors-white);
+    box-shadow: 0 0 var(--spacing-2) rgba(0, 0, 0, 0.5);
+
+    opacity: 0;
+    transform: scale(0.95);
+    pointer-events: none;
+    visibility: hidden;
+
+    transition:
+      opacity 300ms ease,
+      transform 300ms ease,
+      visibility 0s linear 300ms;
+
+    &--open
+    {
+      opacity: 1;
+      transform: scale(1);
+      pointer-events: auto;
+      visibility: visible;
+      transition:
+        opacity 300ms ease,
+        transform 300ms ease,
+        visibility 0s;
+    }
+
+
+
+
+
+
+    .advantagesPage
+    {
+      &__selectedHeader
+      {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        padding: var(--spacing-2);
+        background-color: var(--colors-white);
+        border-radius: var(--spacing-1);
+      }
+
+
+      &__selectedContainer
+      {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: var(--spacing-2);
+        padding: var(--spacing-2);
+      }
+
+      &__ventajas,
+      &__desventajas
+      {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+
+      &__selectedItemTitle
+      {
+        font-size: var(--font-size-3);
+        font-weight: bold;
+        margin-bottom: var(--spacing-1);
+        text-align: center;
+      }
+
+
+    }
+  }
+}

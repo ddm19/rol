@@ -7,6 +7,8 @@ import { Routes, Route } from "react-router-dom";
 import Article from "components/Article/article";
 import ArticleEditor from "pages/ArticleEditor/articleEditor";
 import DiceRollerPage from "pages/diceRoller/diceRoller";
+import AdvantagesPage from "pages/Advantages/AdvantagesPage";
+import CardsPage from "pages/CardsPage/cardsPage";
 
 function App() {
   return (
@@ -23,6 +25,8 @@ function App() {
           ></Route>
           <Route path="/Article/:articleId" element={<Article />} />
           <Route path="/Article" element={<ArticleEditor />} />
+          <Route path="/Advantages" element={<AdvantagesPage />} />
+          <Route path="/Cards" element={<CardsPage />} />
           <Route path="*" element={<NoPage />} />
         </Routes>
       </main>

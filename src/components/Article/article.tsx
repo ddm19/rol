@@ -48,8 +48,8 @@ const Article = (props: ArticleProps) => {
             <div className="articleContainer">
               <button
                 className={`${isIndexVisible
-                    ? "articleContainer__indexButton--hidden"
-                    : "articleContainer__indexButton articleContainer__indexButton--float"
+                  ? "articleContainer__indexButton--hidden"
+                  : "articleContainer__indexButton articleContainer__indexButton--float"
                   }`}
                 onClick={() => setIsIndexVisible(!isIndexVisible)}
               >
@@ -58,8 +58,8 @@ const Article = (props: ArticleProps) => {
 
               <div
                 className={`articleContainer__indexContainer${!isIndexVisible
-                    ? " articleContainer__indexContainer--hidden"
-                    : ""
+                  ? " articleContainer__indexContainer--hidden"
+                  : ""
                   }`}
               >
                 <span className="articleContainer--bold">CONTENIDO</span>

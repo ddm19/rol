@@ -25,7 +25,6 @@
         border: 1px solid var(--colors-border);
         border-radius: 3px;
         font-size: var(--font-size-2);
-        background: var(--colors-white);
         color: var(--colors-black);
 
         &--long
@@ -39,5 +38,25 @@
         margin-left: var(--spacing-4);
         border-left: 2px dashed var(--colors-border);
         padding-left: var(--spacing-2);
+    }
+}
+
+.sectionForm
+{
+    margin: var(--spacing-2) 0;
+    padding: var(--spacing-2);
+    border: 1px solid var(--colors-border);
+    border-radius: 5px;
+
+    &__title
+    {
+        font-weight: bold;
+        font-size: var(--font-size-3);
+        margin-bottom: var(--spacing-1);
+    }
+
+    &__title--text
+    {
+        color: var(--colors-primary);
     }
 }

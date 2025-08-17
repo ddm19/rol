@@ -23,13 +23,17 @@
     "html2canvas": "^1.4.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "typescript": "^4.9.5",
     "vite": "^6.1.1",
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4",
+    "sharp": "^0.33.3",
+    "fast-glob": "^3.3.2",
     "web-vitals": "^2.1.4"
   },
   "scripts": {
     "start": "vite",
+    "prebuild": "node scripts/svg2png.mjs",
     "build": "tsc && vite build",
     "serve": "vite preview"
   },
@@ -54,18 +58,17 @@
   "devDependencies": {
     "@eslint/js": "^9.20.0",
     "@types/lodash.debounce": "^4.0.9",
-    "@types/node": "^22.13.4",
-    "@types/react-scroll": "^1.8.10",
     "@typescript-eslint/parser": "^5.62.0",
     "eslint": "^8.57.1",
     "eslint-plugin-react": "^7.37.4",
-    "gh-pages": "^6.0.0",
     "globals": "^15.15.0",
     "prettier": "^3.5.1",
     "prettier-eslint": "^16.3.0",
-    "react-router-dom": "^6.17.0",
-    "sass": "^1.69.5",
     "typescript": "^4.9.5",
-    "typescript-eslint": "^8.24.1"
+    "typescript-eslint": "^8.24.1",
+    "@types/node": "^22.13.4",
+    "@types/react-scroll": "^1.8.10",
+    "react-router-dom": "^6.17.0",
+    "sass": "^1.69.5"
   }
 }

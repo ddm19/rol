@@ -3,6 +3,7 @@ import { Section } from "components/Article/types";
 import { FormDataArticle } from "pages/ArticleEditor/articleEditorFunctions";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "./sectionTab.scss";
 
 interface SectionsTabProps {
   formData: FormDataArticle;
