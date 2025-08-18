@@ -166,6 +166,12 @@
     top: 20%;
     right: var(--spacing-5);
 
+    @media (max-width: 768px)
+    {
+      position: relative;
+      top: auto;
+      right: auto;
+    }
 
     a
     {
@@ -177,7 +183,6 @@
       display: flex;
       align-items: center;
       font-size: var(--font-size-5);
-
 
     }
   }

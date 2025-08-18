@@ -111,6 +111,11 @@
     flex-direction: column;
     gap: var(--spacing-2);
 
+    @media (max-width: 768px)
+    {
+      width: 100%;
+    }
+
     img
     {
       max-height: 20rem;
