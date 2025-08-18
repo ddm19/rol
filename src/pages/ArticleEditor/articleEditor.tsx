@@ -116,7 +116,7 @@ const ArticleEditor = () => {
         <button onClick={() => handleSend()}>Guardar</button>
         <button onClick={resetDraft}>Descartar Cambios</button>
       </div>
-      <button className="articleEditorContainer__helpButton"><a target="_blank" href="/Cómo Crear un Artículo.pdf"><FontAwesomeIcon icon={faExternalLink} />Necesitas ayuda? <FontAwesomeIcon icon={faQuestionCircle} /></a></button>
+      <button className="articleEditorContainer__helpButton"><a target="_blank" href="https://docs.google.com/document/d/1ORha9GpTTVzFaHuEqcBfwbl1A523Y7JHX6kzroDsNu8/edit?usp=sharing"><FontAwesomeIcon icon={faExternalLink} />Necesitas ayuda? <FontAwesomeIcon icon={faQuestionCircle} /></a></button>
     </>
   );
 };
