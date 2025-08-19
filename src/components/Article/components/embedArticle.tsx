@@ -6,10 +6,11 @@ interface RelatedProps {
 const EmbedArticle = (props: RelatedProps) => {
     const { related } = props;
     const defaultImage = `/NotFound.png`;
-    const stack = (related.width || 0) > 150;
+    const defaultWidth = 150;
+    const stack = (related.width || 0) > 350;
     return (
         <div className={`embedContentContainer articleContainer--leftMargin${stack ? " embedContentContainer--stack" : ""}`}>
-            <img src={related.image ? related.image : defaultImage} alt={related.title} width={related.width} />
+            <img src={related.image ? related.image : defaultImage} alt={related.title} width={related.width || defaultWidth} />
             <div className="embedContentContainer__content">
                 <h3 className="embedContentContainer__title">{related.title}</h3>
                 <span className="embedContentContainer__subtitle">{related.subtitle}</span>

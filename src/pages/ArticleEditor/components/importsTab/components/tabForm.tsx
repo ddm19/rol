@@ -95,7 +95,7 @@ const tabForm = (
           />
         </div>
         <div className="formTab__formElement">
-          <label htmlFor={`width-${index}`}>Ancho</label>
+          <label htmlFor={`width-${index}`}>Tamaño</label>
           <input
             type="number"
             id={`width-${index}`}
