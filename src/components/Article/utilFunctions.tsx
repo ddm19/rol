@@ -1,45 +1,43 @@
+import ReactMarkdown from "react-markdown";
 import EmbedArticle from "./components/embedArticle";
 import { ArticleType } from "./types";
 
-export const contentParser = (content: string, article: ArticleType, isNumbered = false) => {
-    const parsedContainer: JSX.Element[] = [];
-    const paragraphClass = isNumbered ? "articleContainer--leftMargin" : "";
-
-    const normalized = (content || "").replace(/\r\n?/g, "\n");
-
-    const lines = normalized.split(/\n+/);
-
-    lines.forEach((line) => {
-        if (line == null || line.trim() === "") return;
-
-        const regex = /\{([^}]+)\}/g;
-        let lastIndex = 0;
-        let match: RegExpExecArray | null;
-
-        while ((match = regex.exec(line)) !== null) {
-            const before = line.slice(lastIndex, match.index);
-            if (before && before.trim() !== "") {
-                parsedContainer.push(<p className={paragraphClass}>{before}</p>);
-            }
-
-            const imageId = match[1];
-            const src = article.imports.find((importedThing) => importedThing.id === imageId);
-            if (src) {
-                parsedContainer.push(<EmbedArticle related={src} />);
-            } else {
-                parsedContainer.push(
-                    <p className={paragraphClass}>{`{${imageId}}`}</p>
-                );
-            }
-
-            lastIndex = regex.lastIndex;
+export const contentParser = (
+  content: string,
+  article: ArticleType,
+  isNumbered = false
+): JSX.Element => {
+  const paragraphClass = isNumbered ? "articleContainer--leftMargin" : "";
+  const components = {
+    p({ node, children }: any) {
+      if (children && children.length === 1 && typeof children[0] === "string") {
+        const match = (children[0] as string).match(/^\{([^}]+)\}$/);
+        if (match) {
+          const src = article.imports.find(
+            (importedThing) => importedThing.id === match[1]
+          );
+          if (src) return <EmbedArticle related={src} />;
         }
-
-        const after = line.slice(lastIndex);
-        if (after && after.trim() !== "") {
-            parsedContainer.push(<p className={paragraphClass}>{after}</p>);
-        }
-    });
-
-    return parsedContainer;
+      }
+      return <p className={paragraphClass}>{children}</p>;
+    },
+    text({ node }: any) {
+      const parts = node.value.split(/(\{[^}]+\})/g);
+      return (
+        <>
+          {parts.map((part: string, index: number) => {
+            const match = part.match(/^\{([^}]+)\}$/);
+            if (match) {
+              const src = article.imports.find(
+                (importedThing) => importedThing.id === match[1]
+              );
+              if (src) return <EmbedArticle key={index} related={src} />;
+            }
+            return part;
+          })}
+        </>
+      );
+    }
+  };
+  return <ReactMarkdown components={components}>{content}</ReactMarkdown>;
 };
