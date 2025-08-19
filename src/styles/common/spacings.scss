@@ -1,15 +1,28 @@
+@use "sass:math";
+
+// Breakpoints (alineados con sizes.scss)
+$mobileMaxWidth: 700px;
+$desktopMaxWidth: 1200px;
+$fluid-range: $desktopMaxWidth - $mobileMaxWidth;
+
+@function fluid($min, $max)
+{
+  $slope: math.div(($max - $min), $fluid-range);
+  @return clamp(#{$min}, calc(#{$min} + (100vw - #{$mobileMaxWidth}) * #{$slope}), #{$max});
+}
+
 :root
 {
-  --spacing-1: 5px;
-  --spacing-2: 10px;
-  --spacing-3: 15px;
-  --spacing-4: 20px;
-  --spacing-5: 25px;
-  --spacing-6: 30px;
-  --spacing-7: 35px;
-  --spacing-8: 40px;
-  --spacing-9: 45px;
-  --spacing-10: 50px;
-  --spacing-11: 55px;
-  --spacing-12: 60px;
+  --spacing-1: #{fluid(4px, 5px)};
+  --spacing-2: #{fluid(8px, 10px)};
+  --spacing-3: #{fluid(12px, 15px)};
+  --spacing-4: #{fluid(16px, 20px)};
+  --spacing-5: #{fluid(20px, 25px)};
+  --spacing-6: #{fluid(24px, 30px)};
+  --spacing-7: #{fluid(28px, 35px)};
+  --spacing-8: #{fluid(32px, 40px)};
+  --spacing-9: #{fluid(36px, 45px)};
+  --spacing-10: #{fluid(40px, 50px)};
+  --spacing-11: #{fluid(44px, 55px)};
+  --spacing-12: #{fluid(48px, 60px)};
 }

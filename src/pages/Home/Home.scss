@@ -57,7 +57,7 @@
     border-radius: 5%;
     padding: var(--spacing-3);
     font-size: var(--font-size-2);
-    width: 100%;
+    width: auto;
     text-align: center;
   }
 
@@ -65,10 +65,12 @@
   {
     position: absolute;
     opacity: 70%;
-    width: var(--image-size-4);
+    width: auto;
     border-radius: 8%;
     margin-top: var(--spacing-2);
     transition: all 0.25s ease-in-out;
+    max-height: var(--image-size-4);
+
   }
 
   &__title
@@ -137,7 +139,13 @@
   grid-auto-flow: row dense;
 
   gap: 2.5rem;
-  margin: 5%;
+
+  margin: var(--spacing-10);
+
+  @media (max-width: 700px)
+  {
+    grid-template-columns: 1fr;
+  }
 }
 
 .article
@@ -145,11 +153,29 @@
   border-radius: 5%;
   padding: 1%;
   text-decoration: none;
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr auto;
+  align-items: center;
+  justify-items: center;
+
+  *
+  {
+    height: auto;
+  }
 
   img
   {
     max-width: 90%;
     border-radius: 8%;
+    height: max-content;
+    max-height: var(--image-size-5);
+    margin-bottom: var(--spacing-5);
+
+    @media (max-width: 700px)
+    {
+      max-height: var(--image-size-3);
+    }
   }
 }
 

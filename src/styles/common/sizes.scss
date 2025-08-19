@@ -1,41 +1,39 @@
+@use "sass:math";
+
+$mobileMaxWidth: 700px;
+$tabletMaxWidth: 900px;
+$desktopMaxWidth: 1200px;
+
+$fluid-range: $desktopMaxWidth - $mobileMaxWidth;
+
+@function fluid($min, $max)
+{
+  $slope: math.div(($max - $min), $fluid-range);
+  @return clamp(#{$min}, calc(#{$min} + (100vw - #{$mobileMaxWidth}) * #{$slope}), #{$max});
+}
+
 :root
 {
+  --mobileMaxWidth: #{$mobileMaxWidth};
+  --tabletMaxWidth: #{$tabletMaxWidth};
+  --desktopMaxWidth: #{$desktopMaxWidth};
 
-  --header-size: 116px;
-  --footer-size: 116px;
-  --loading-size: 100px;
+  --header-size: #{fluid(116px, 116px)};
+  --footer-size: #{fluid(116px, 116px)};
+  --loading-size: #{fluid(100px, 100px)};
 
-  --image-size-1: 100px;
-  --image-size-2: 200px;
-  --image-size-3: 300px;
-  --image-size-4: 400px;
-  --image-size-5: 500px;
+  --image-size-1: #{fluid(75px, 100px)};
+  --image-size-2: #{fluid(150px, 200px)};
+  --image-size-3: #{fluid(225px, 300px)};
+  --image-size-4: #{fluid(325px, 400px)};
+  --image-size-5: #{fluid(375px, 500px)};
 
-  --input-size-1: 30px;
-  --input-size-2: 60px;
-  --input-size-3: 90px;
-  --input-size-4: 120px;
-  --input-size-5: 150px;
-  --input-size-6: 180px;
-  --input-size-7: 210px;
-  --input-size-8: 240px;
-
-  @media (max-width: 700px)
-  {
-    @media (max-width: 700px)
-    {
-      --image-size-1: 75px;
-      --image-size-2: 150px;
-      --image-size-3: 225px;
-      --image-size-4: 325px;
-      --image-size-5: 375px;
-    }
-
-    --mobileMaxWidth: 700px;
-    --tabletMaxWidth: 900px;
-  }
-
-  --mobileMaxWidth: 700px;
-  --tabletMaxWidth: 900px;
-  --desktopMaxWidth: 1200px;
+  --input-size-1: #{fluid(30px, 30px)};
+  --input-size-2: #{fluid(60px, 60px)};
+  --input-size-3: #{fluid(90px, 90px)};
+  --input-size-4: #{fluid(120px, 120px)};
+  --input-size-5: #{fluid(150px, 150px)};
+  --input-size-6: #{fluid(180px, 180px)};
+  --input-size-7: #{fluid(210px, 210px)};
+  --input-size-8: #{fluid(240px, 240px)};
 }

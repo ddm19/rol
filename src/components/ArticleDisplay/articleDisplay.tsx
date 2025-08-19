@@ -18,9 +18,11 @@ const ArticleDisplay = (props: ArticleDisplayProps) => {
   ) : (
     <Link className="article" to={`article/${articleId}`}>
       <img src={image} alt="article1" />
-      <h3 className="articleTitle">{title}</h3>
-      <p className="articleInfo">{articleInfo}</p>
-      <p className="articleDescription">{description}</p>
+      <div className="articleContent">
+        <h3 className="articleTitle">{title}</h3>
+        <p className="articleInfo">{articleInfo}</p>
+        <p className="articleDescription">{description}</p>
+      </div>
     </Link>
   );
 };
