@@ -28,7 +28,7 @@ export const contentParser = (content: string, article: ArticleType, isNumbered 
                 if (imported.title || imported.subtitle || imported.shortDesc || imported.link) {
                     parsedContainer.push(<EmbedArticle related={imported} />);
                 } else if (imported.image) {
-                    parsedContainer.push(<img src={imported.image} alt={imported.id} width={imported.width} height={imported.height} />);
+                    parsedContainer.push(<img src={imported.image} alt={imported.id} width={imported.width} />);
                 }
             } else {
                 parsedContainer.push(

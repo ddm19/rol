@@ -6,7 +6,6 @@ export interface ImportedItem {
   shortDesc?: string;
   image?: string;
   width?: number;
-  height?: number;
 }
 
 export interface Category {

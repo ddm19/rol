@@ -13,7 +13,6 @@ const tabForm = (
     image?: string;
     shortDescription?: string;
     width?: number;
-    height?: number;
   } = {},
   key: number,
   removeTab: (index: number) => void,
@@ -101,21 +100,10 @@ const tabForm = (
             type="number"
             id={`width-${index}`}
             name="width"
+            max={160}
             value={values.width ?? ""}
             onChange={(e) => {
               onFieldChange("width", e.target.value === "" ? undefined : Number(e.target.value));
-            }}
-          />
-        </div>
-        <div className="formTab__formElement">
-          <label htmlFor={`height-${index}`}>Alto</label>
-          <input
-            type="number"
-            id={`height-${index}`}
-            name="height"
-            value={values.height ?? ""}
-            onChange={(e) => {
-              onFieldChange("height", e.target.value === "" ? undefined : Number(e.target.value));
             }}
           />
         </div>
