@@ -3,8 +3,7 @@ import { faFileAudio, faUsers, faPuzzlePiece, faUserCog, faBook, faDiceD20 } fro
 import './Footer.scss'
 import { Link } from 'react-router-dom';
 
-const Footer: React.FC = () =>
-{
+const Footer: React.FC = () => {
     const externalTools = [
         { icon: faPuzzlePiece, title: "W2G - Musiquilla", link: "https://w2g.tv/2ywai0s3ggt1bsq7kp" },
         { icon: faUserCog, title: "TokenStamp - Creador de Tokens", link: "https://rolladvantage.com/tokenstamp/" },
@@ -17,14 +16,13 @@ const Footer: React.FC = () =>
         <div className="footerContainer">
             <div>
                 <h2 className='footerText'>Hispania</h2>
-                <p className='footerText'>© 2023 Ddm19Dev.</p>
+                <p className='footerText'>© 2025 Ddm19Dev.</p>
                 <p className='footerText'>  All rights reserved.</p>
             </div>
             <div className='externalToolsContainer'>
                 <h4 className='footerText alignLeft externalToolsTitle'>Enlaces Externos</h4>
                 <div className='externalTools footerText'>
-                    {externalTools.map((tool, index) =>
-                    {
+                    {externalTools.map((tool, index) => {
                         return (
                             <div key={index} className='externalTool link'>
                                 <FontAwesomeIcon icon={tool.icon}></FontAwesomeIcon>
