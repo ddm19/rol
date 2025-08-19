@@ -148,13 +148,12 @@ const GeneralTab = (props: GeneralTabProps) => {
       <div className="generalTab__formDivider">
         <div className="formTab__formElement">
           <label htmlFor="shortDescription">Descripción Corta*</label>
-          <input
+          <textarea
             value={formData.shortDescription || ""}
             id="shortDescription"
             name="shortDescription"
             placeholder="Descripción corta, se mostrará en la Página Principal"
             required
-            type="text"
             onChange={(e) =>
               setFormData({ ...formData, shortDescription: e.target.value })
             }

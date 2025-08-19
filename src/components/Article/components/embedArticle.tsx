@@ -7,7 +7,8 @@ const EmbedArticle = (props: RelatedProps) => {
     const { related } = props;
     const defaultImage = `/NotFound.png`;
     const defaultWidth = 150;
-    const stack = (related.width || 0) > 350;
+    const isMobile = window.innerWidth <= 768;
+    const stack = isMobile || (related.width || 0) > 250;
     return (
         <div className={`embedContentContainer articleContainer--leftMargin${stack ? " embedContentContainer--stack" : ""}`}>
             <img src={related.image ? related.image : defaultImage} alt={related.title} width={related.width || defaultWidth} />

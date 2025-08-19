@@ -100,17 +100,16 @@ const tabForm = (
             type="number"
             id={`width-${index}`}
             name="width"
-            max={160}
+            max={1000}
             value={values.width ?? ""}
             onChange={(e) => {
-              onFieldChange("width", e.target.value === "" ? undefined : Number(e.target.value));
+              onFieldChange("width", e.target.value === "" ? undefined : Math.min(Number(e.target.value), 1000));
             }}
           />
         </div>
         <div className="formTab__formElement">
           <label htmlFor={`shortDescription-${index}`}>Descripción Corta</label>
-          <input
-            type="text"
+          <textarea
             id={`shortDescription-${index}`}
             name="shortDescription"
             placeholder="Un texto que acompañará al importado"

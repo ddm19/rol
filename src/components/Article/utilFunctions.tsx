@@ -14,7 +14,7 @@ export const contentParser = (
     const lines = normalized.split(/\n+/);
 
     lines.forEach((line, lineIndex) => {
-        if (line == null || line.trim() === "") return;
+        if (line.trim() === "") return;
 
         const regex = /\{([^}]+)\}/g;
         let lastIndex = 0;
@@ -24,7 +24,7 @@ export const contentParser = (
         while ((match = regex.exec(line)) !== null) {
             hasEmbeds = true;
             const before = line.slice(lastIndex, match.index);
-            if (before && before.trim() !== "") {
+            if (before.trim()) {
                 parsedContainer.push(
                     <ReactMarkdown
                         key={`${lineIndex}-before-${match.index}`}
@@ -37,30 +37,23 @@ export const contentParser = (
                 );
             }
 
-            const imageId = match[1];
-            const imported = article.imports.find(
-                (importedThing) => importedThing.id === imageId
-            );
-            if (imported) {
-                if (
-                    imported.title ||
-                    imported.subtitle ||
-                    imported.shortDesc ||
-                    imported.link
-                ) {
+            const id = match[1];
+            const imp = article.imports.find((i) => i.id === id);
+            if (imp) {
+                if (imp.title || imp.subtitle || imp.shortDesc || imp.link) {
                     parsedContainer.push(
                         <EmbedArticle
                             key={`${lineIndex}-embed-${match.index}`}
-                            related={imported}
+                            related={imp}
                         />
                     );
-                } else if (imported.image) {
+                } else if (imp.image) {
                     parsedContainer.push(
                         <img
                             key={`${lineIndex}-img-${match.index}`}
-                            src={imported.image}
-                            alt={imported.id}
-                            width={imported.width}
+                            src={imp.image}
+                            alt={imp.id}
+                            width={imp.width}
                         />
                     );
                 }
@@ -70,7 +63,7 @@ export const contentParser = (
                         key={`${lineIndex}-placeholder-${match.index}`}
                         className={paragraphClass}
                     >
-                        {`{${imageId}}`}
+                        {`{${id}}`}
                     </p>
                 );
             }
@@ -78,21 +71,21 @@ export const contentParser = (
             lastIndex = regex.lastIndex;
         }
 
-        const remaining = line.slice(lastIndex);
-        if (remaining && remaining.trim() !== "") {
-            parsedContainer.push(
-                <ReactMarkdown
-                    key={`${lineIndex}-remaining`}
-                    components={{
-                        p: ({ children }) => <p className={paragraphClass}>{children}</p>,
-                    }}
-                >
-                    {remaining}
-                </ReactMarkdown>
-            );
-        }
-
-        if (!hasEmbeds) {
+        if (hasEmbeds) {
+            const remaining = line.slice(lastIndex);
+            if (remaining.trim()) {
+                parsedContainer.push(
+                    <ReactMarkdown
+                        key={`${lineIndex}-remaining`}
+                        components={{
+                            p: ({ children }) => <p className={paragraphClass}>{children}</p>,
+                        }}
+                    >
+                        {remaining}
+                    </ReactMarkdown>
+                );
+            }
+        } else {
             parsedContainer.push(
                 <ReactMarkdown
                     key={`${lineIndex}-full`}
