@@ -1,0 +1,25 @@
+.markdownEditor {
+  display: flex;
+  flex-direction: column;
+}
+.markdownEditor__toolbar {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.markdownEditor__toolbar button,
+.markdownEditor__toolbar a {
+  background: none;
+  border: 1px solid #ccc;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.markdownEditor__help {
+  text-decoration: none;
+}
+.markdownEditor textarea {
+  min-height: 150px;
+}
