@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { Tooltip } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faQuestion, faImage } from "@fortawesome/free-solid-svg-icons";
+import { faQuestion, faImage, faLink, faUpload } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
 
 interface ImageInputProps {
@@ -15,7 +15,7 @@ interface ImageInputProps {
 const ImageInput = (props: ImageInputProps) => {
   const {
     label = "Imagen",
-    placeholder = "URL de la imagen (https://i.imgur.com/IWg8EK5.gif)",
+    placeholder = "URL de la imagen Ej: (https://i.imgur.com/IWg8EK5.gif)",
     value,
     onChange,
     required = true,
@@ -57,6 +57,10 @@ const ImageInput = (props: ImageInputProps) => {
         >
           <FontAwesomeIcon icon={faQuestion} />
         </Tooltip>
+        <Link to='https://nas.thedm.es/s/wdcpnqm2drcWzFf' className="formTab__uploadLink" target="_blank">
+          <label>Subir una imagen</label>
+          <FontAwesomeIcon icon={faUpload} />
+        </Link>
         {value && (
           <Link to={value} reloadDocument target="_blank">
             <Tooltip

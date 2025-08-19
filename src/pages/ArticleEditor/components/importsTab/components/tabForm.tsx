@@ -34,7 +34,7 @@ const tabForm = (
             id={`id-${index}`}
             name="id"
             required
-            placeholder="ImagenQuelsor1 (Debe ser único!)"
+            placeholder="Ej: ImagenQuelsor1 (Debe ser único en este artículo!)"
             value={values.id || ""}
             onChange={(e) => {
               //replace spaces and '{' '}'

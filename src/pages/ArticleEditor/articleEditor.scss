@@ -51,7 +51,7 @@
     font-size: var(--font-size-3);
     padding: var(--spacing-1);
     color: var(--colors-subtitle);
-
+    align-items: center;
     font-weight: var(--font-weight-4);
   }
 
@@ -150,6 +150,29 @@
         right: 20%;
       }
     }
+  }
+
+  &__uploadLink
+  {
+    transition: transform 0.2s ease-in-out;
+
+    label,
+    svg
+    {
+      color: var(--colors-darkRed);
+      cursor: pointer;
+      align-self: center;
+    }
+
+    &:hover
+    {
+      transform: translateY(-2px);
+    }
+
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
   }
 }
 

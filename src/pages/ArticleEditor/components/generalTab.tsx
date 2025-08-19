@@ -1,4 +1,4 @@
-import { faImage, faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faImage, faLink, faQuestion } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Tooltip } from "@mui/material";
 import "./generalTab.scss";
@@ -46,6 +46,13 @@ const GeneralTab = (props: GeneralTabProps) => {
               className="formTab__tooltip"
             >
               <FontAwesomeIcon icon={faQuestion} />
+            </Tooltip>
+            <label>Subir una imagen</label>
+            <Tooltip
+              title="Subir una imagen"
+              className="formTab__tooltip"
+            >
+              <FontAwesomeIcon icon={faLink} />
             </Tooltip>
             {formData.image && (
               <Link to={formData.image} reloadDocument target="_blank">
@@ -132,7 +139,7 @@ const GeneralTab = (props: GeneralTabProps) => {
           />
         </div>
         <div className="generalTab__formElement generalTab__formElement--long">
-          <label htmlFor="description">Descripción Completa</label>
+          <label htmlFor="description">Descripción Completaaaaa</label>
           <textarea
             id="description"
             placeholder="Descripción completa, mostrada dentro del Artículo"
