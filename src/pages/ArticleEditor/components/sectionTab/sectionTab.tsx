@@ -4,6 +4,7 @@ import { FormDataArticle } from "pages/ArticleEditor/articleEditorFunctions";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./sectionTab.scss";
+import RichTextEditor from "components/RichTextEditor/richTextEditor";
 
 interface SectionsTabProps {
   formData: FormDataArticle;
@@ -76,9 +77,9 @@ const SectionForm = ({
       </div>
       <div className="formTab__formElement sectionsTab__editable--long" >
         <label htmlFor="content">Contenido</label>
-        <textarea
+        <RichTextEditor
           value={section.content}
-          onChange={(e) => updateField("content", e.target.value)}
+          onChange={(val) => updateField("content", val)}
         />
       </div>
       <div className="formTab__formElement formTab__formElement--inline">
