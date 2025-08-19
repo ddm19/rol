@@ -3,6 +3,7 @@ import { Section } from "components/Article/types";
 import { FormDataArticle } from "pages/ArticleEditor/articleEditorFunctions";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MarkdownEditor from "components/MarkdownEditor/markdownEditor";
 import "./sectionTab.scss";
 
 interface SectionsTabProps {
@@ -76,10 +77,7 @@ const SectionForm = ({
       </div>
       <div className="formTab__formElement sectionsTab__editable--long" >
         <label htmlFor="content">Contenido</label>
-        <textarea
-          value={section.content}
-          onChange={(e) => updateField("content", e.target.value)}
-        />
+        <MarkdownEditor value={section.content} onChange={(v) => updateField("content", v)} />
       </div>
       <div className="formTab__formElement formTab__formElement--inline">
         <input

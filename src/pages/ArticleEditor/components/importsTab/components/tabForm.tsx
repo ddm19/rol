@@ -12,6 +12,7 @@ const tabForm = (
     link?: string;
     image?: string;
     shortDescription?: string;
+    width?: number;
   } = {},
   key: number,
   removeTab: (index: number) => void,
@@ -94,9 +95,21 @@ const tabForm = (
           />
         </div>
         <div className="formTab__formElement">
-          <label htmlFor={`shortDescription-${index}`}>Descripción Corta</label>
+          <label htmlFor={`width-${index}`}>Tamaño</label>
           <input
-            type="text"
+            type="number"
+            id={`width-${index}`}
+            name="width"
+            max={1000}
+            value={values.width ?? ""}
+            onChange={(e) => {
+              onFieldChange("width", e.target.value === "" ? undefined : Math.min(Number(e.target.value), 1000));
+            }}
+          />
+        </div>
+        <div className="formTab__formElement">
+          <label htmlFor={`shortDescription-${index}`}>Descripción Corta</label>
+          <textarea
             id={`shortDescription-${index}`}
             name="shortDescription"
             placeholder="Un texto que acompañará al importado"

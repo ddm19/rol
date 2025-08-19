@@ -8,8 +8,8 @@
 
   img
   {
-    max-height: 20rem;
-    object-fit: cover;
+    max-height: 40rem;
+    object-fit: contain;
     border-radius: 10px;
     -webkit-user-drag: none;
     -khtml-user-drag: none;
@@ -118,8 +118,8 @@
 
     img
     {
-      max-height: 20rem;
-      object-fit: cover;
+      max-height: 40rem;
+      object-fit: contain;
       border-radius: 10px;
     }
 
@@ -159,6 +159,11 @@
   &--leftMargin
   {
     margin-left: 2.5rem;
+
+    @media (max-width: 768px)
+    {
+      margin-left: 0;
+    }
   }
 
   @media (max-width: 700px)
@@ -256,7 +261,8 @@
 
 .embedContentContainer
 {
-  display: flex;
+  display: grid;
+  grid-template-columns: 40% 1fr;
   justify-content: flex-start;
   align-items: center;
   max-width: 70%;
@@ -290,13 +296,29 @@
 
   img
   {
-    max-height: 10rem;
-    object-fit: cover;
+    object-fit: contain;
     border-radius: 10px;
+
+    @media (max-width: 768px)
+    {
+      max-width: 150px;
+    }
   }
 
   p
   {
     margin-top: 0.5rem;
   }
+}
+
+.embedContentContainer--stack
+{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.embedContentContainer--stack .embedContentContainer__content
+{
+  margin-left: 0;
 }
