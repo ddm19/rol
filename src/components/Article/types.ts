@@ -5,6 +5,8 @@ export interface ImportedItem {
   subtitle?: string;
   shortDesc?: string;
   image?: string;
+  width?: number;
+  height?: number;
 }
 
 export interface Category {

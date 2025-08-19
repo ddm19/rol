@@ -8,7 +8,7 @@ const EmbedArticle = (props: RelatedProps) => {
     const defaultImage = `/NotFound.png`;
     return (
         <div className="embedContentContainer articleContainer--leftMargin">
-            <img src={related.image ? related.image : defaultImage} alt={related.title} />
+            <img src={related.image ? related.image : defaultImage} alt={related.title} width={related.width} height={related.height} />
             <div className="embedContentContainer__content">
                 <h3 className="embedContentContainer__title">{related.title}</h3>
                 <span className="embedContentContainer__subtitle">{related.subtitle}</span>

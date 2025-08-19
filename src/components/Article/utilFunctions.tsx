@@ -23,9 +23,13 @@ export const contentParser = (content: string, article: ArticleType, isNumbered 
             }
 
             const imageId = match[1];
-            const src = article.imports.find((importedThing) => importedThing.id === imageId);
-            if (src) {
-                parsedContainer.push(<EmbedArticle related={src} />);
+            const imported = article.imports.find((importedThing) => importedThing.id === imageId);
+            if (imported) {
+                if (imported.title || imported.subtitle || imported.shortDesc || imported.link) {
+                    parsedContainer.push(<EmbedArticle related={imported} />);
+                } else if (imported.image) {
+                    parsedContainer.push(<img src={imported.image} alt={imported.id} width={imported.width} height={imported.height} />);
+                }
             } else {
                 parsedContainer.push(
                     <p className={paragraphClass}>{`{${imageId}}`}</p>
