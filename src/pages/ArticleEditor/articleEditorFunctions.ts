@@ -29,6 +29,7 @@ interface ImportFormValues {
   link?: string;
   shortDescription?: string;
   image?: string;
+  width?: number;
 }
 
 export function validateFormData(formData: FormDataArticle) {
@@ -121,6 +122,7 @@ export function generateArticleJSON(formData: FormDataArticle): ArticleType {
           subtitle: item.values?.subtitle || "",
           shortDesc: item.values?.shortDescription || "",
           image: item.values?.image || "",
+          width: item.values?.width,
         }))
       : [],
     sections: formData.sections || [],
@@ -160,6 +162,7 @@ export function mapArticleToFormData(
             subtitle: imp.subtitle,
             shortDescription: imp.shortDesc,
             image: imp.image,
+            width: imp.width,
           },
         }))
       : [],
