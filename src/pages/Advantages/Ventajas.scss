@@ -4,6 +4,12 @@
   {
     display: flex;
     justify-content: space-between;
+
+    @media (max-width: 768px)
+    {
+      flex-direction: column;
+      align-items: center;
+    }
   }
 
   &__column
@@ -105,6 +111,13 @@
     background-color: var(--colors-darkRed);
     z-index: 5;
 
+    @media (max-width: 768px)
+    {
+      left: 50%;
+      transform: translateX(-50%);
+      top: 10%;
+    }
+
     &:hover
     {
       scale: 1.05;
@@ -132,6 +145,13 @@
       transform 300ms ease,
       visibility 0s linear 300ms;
 
+    @media (max-width: 768px)
+    {
+      width: 90%;
+      left: 5%;
+      top: 10%;
+    }
+
     &--open
     {
       opacity: 1;
@@ -149,6 +169,7 @@
 
 
 
+
     .advantagesPage
     {
       &__selectedHeader
@@ -160,6 +181,8 @@
         padding: var(--spacing-2);
         background-color: var(--colors-white);
         border-radius: var(--spacing-1);
+
+
       }
 
 
