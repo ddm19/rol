@@ -9,8 +9,8 @@ import ArticleEditor from "pages/ArticleEditor/articleEditor";
 import DiceRollerPage from "pages/diceRoller/diceRoller";
 import AdvantagesPage from "pages/Advantages/AdvantagesPage";
 import CardsPage from "pages/CardsPage/cardsPage";
-import UtilitiesPage from "pages/Utilities/UtilitiesPage";
 import ArticleSearch from "pages/ArticleSearch/ArticleSearch";
+import UtilitiesPage from "pages/Utilities/UtilitiesPage";
 
 function App() {
   return (
