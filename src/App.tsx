@@ -21,7 +21,10 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/Articles" element={<ArticleSearch />} />
+          <Route path="/Hispania" element={<ArticleSearch />} />
+          <Route path="/Hispania/Creatures" element={<ArticleSearch category={{ "id": "Criatura1757350726991", "name": "Criatura" }} />} />
+          <Route path="/Hispania/Places" element={<ArticleSearch category={{ "id": "Lugar1757351194344", "name": "Lugar" }} />} />
+          <Route path="/Hispania/Objects" element={<ArticleSearch category={{ "id": "Objeto Mágico1755530300443", "name": "Objeto Mágico" }} />} />
           <Route
             path="/Utilities/DiceRoller"
             element={<DiceRollerPage />}
@@ -31,6 +34,8 @@ function App() {
           <Route path="/Utilities/Advantages" element={<AdvantagesPage />} />
           <Route path="/Cards" element={<CardsPage />} />
           <Route path="/Utilities" element={<UtilitiesPage />} />
+          <Route path="/Campaigns" element={<ArticleSearch category={{ "id": "campaign", "name": "Campaña" }} />} />
+
           <Route path="*" element={<NoPage />} />
         </Routes>
       </main>
