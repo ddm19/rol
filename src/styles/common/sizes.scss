@@ -36,4 +36,8 @@ $fluid-range: $desktopMaxWidth - $mobileMaxWidth;
   --input-size-6: #{fluid(180px, 180px)};
   --input-size-7: #{fluid(210px, 210px)};
   --input-size-8: #{fluid(240px, 240px)};
+  --input-size-9: #{fluid(270px, 270px)};
+  --input-size-10: #{fluid(300px, 300px)};
+  --input-size-11: #{fluid(330px, 330px)};
+  --input-size-12: #{fluid(360px, 360px)};
 }

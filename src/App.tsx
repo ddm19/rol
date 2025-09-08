@@ -9,6 +9,7 @@ import ArticleEditor from "pages/ArticleEditor/articleEditor";
 import DiceRollerPage from "pages/diceRoller/diceRoller";
 import AdvantagesPage from "pages/Advantages/AdvantagesPage";
 import CardsPage from "pages/CardsPage/cardsPage";
+import UtilitiesPage from "pages/Utilities/UtilitiesPage";
 
 function App() {
   return (
@@ -27,6 +28,7 @@ function App() {
           <Route path="/Article" element={<ArticleEditor />} />
           <Route path="/Utilities/Advantages" element={<AdvantagesPage />} />
           <Route path="/Cards" element={<CardsPage />} />
+          <Route path="/Utilities" element={<UtilitiesPage />} />
           <Route path="*" element={<NoPage />} />
         </Routes>
       </main>

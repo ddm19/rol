@@ -1,0 +1,53 @@
+.utilitiesPageContainer
+{
+    display: grid;
+    grid-template-rows: repeat(auto-fit, 1fr);
+    grid-template-columns: repeat(auto-fit, minmax(var(--input-size-12), 1fr));
+    width: 80%;
+    height: 80%;
+    justify-content: center;
+    align-items: center;
+    gap: var(--spacing-4);
+    overflow: auto;
+    margin-bottom: var(--spacing-5);
+
+    @media (max-width: 768px)
+    {
+        grid-template-columns: repeat(1, 1fr);
+        width: 90%;
+        height: 100%;
+    }
+
+
+    &__link
+    {
+        display: flex;
+        flex-direction: column;
+        width: 90%;
+        height: var(--input-size-8);
+        align-items: center;
+        justify-content: center;
+        flex-grow: 1;
+        padding: var(--spacing-1);
+        cursor: pointer;
+        color: var(--colors-darkRed);
+        border: 3px solid var(--colors-darkRed);
+        border-radius: var(--spacing-4);
+        font-size: var(--font-size-10);
+        text-align: center;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+
+        &:hover
+        {
+            transform: scale(0.98) translateY(-2px);
+        }
+
+        @media (max-width: 768px)
+        {
+            font-size: var(--font-size-8);
+            height: var(--input-size-5);
+        }
+    }
+}
