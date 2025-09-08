@@ -14,6 +14,7 @@ export interface NavigationLink {
 const NavBar: React.FC = () => {
   const navigationLinks: Array<NavigationLink> = [
     { name: "Inicio", url: "/" },
+    { name: "Artículos", url: "/Articles" },
     { name: "Campañas", url: "/Campaigns" },
     {
       name: "Conoce Hispania",

@@ -10,6 +10,7 @@ import DiceRollerPage from "pages/diceRoller/diceRoller";
 import AdvantagesPage from "pages/Advantages/AdvantagesPage";
 import CardsPage from "pages/CardsPage/cardsPage";
 import UtilitiesPage from "pages/Utilities/UtilitiesPage";
+import ArticleSearch from "pages/ArticleSearch/ArticleSearch";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
+          <Route path="/Articles" element={<ArticleSearch />} />
           <Route
             path="/Utilities/DiceRoller"
             element={<DiceRollerPage />}
