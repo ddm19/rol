@@ -9,6 +9,7 @@ import Loading from "components/Loading/Loading";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus } from "@fortawesome/free-solid-svg-icons";
+import submitNewsletter from "services/newletter";
 
 const Home: React.FC = () => {
   const noImage = `${import.meta.env.VITE_PUBLIC_URL}/background.png`;
@@ -16,10 +17,20 @@ const Home: React.FC = () => {
   const [mainArticle, setMainArticle] = useState<ArticleDisplayType>();
 
   const navigate = useNavigate();
+
   const submitEmail = (e: any): FormEventHandler<HTMLButtonElement> | any => {
     e.preventDefault();
-    alert("Método de envío de Emails no implementado!");
+    const email = e.target.email.value;
+    submitNewsletter(email)
+      .then(() => {
+        alert("¡Gracias por suscribirte!");
+        e.target.reset();
+      })
+      .catch((err: any) => {
+        console.error(err);
+      });
   };
+
   useEffect(() => {
     fetchArticles()
       .then((res: ArticleDisplayType[]) => {

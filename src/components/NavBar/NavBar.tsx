@@ -1,9 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import "./NavBar.scss";
 import { Link } from "react-router-dom";
 import PhoneNavBar from "components/NavBar/PhoneNavbar/PhoneNavBar";
 import NavigationLinksRender from "./NavigationLinksRender/NavigationLinksRender";
 import { DiscordButton } from "components/NavBar/DiscordButton/DiscordButton";
+import { Button } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faUser } from "@fortawesome/free-solid-svg-icons";
+import AuthPopup from "components/AuthPopup/authPopup";
+import UserButton from "components/UserButton/userButton";
 
 export interface NavigationLink {
   name: string;
@@ -12,6 +17,8 @@ export interface NavigationLink {
   isMobile?: boolean;
 }
 const NavBar: React.FC = () => {
+
+
   const navigationLinks: Array<NavigationLink> = [
     { name: "Inicio", url: "/" },
     { name: "Campañas", url: "/Campaigns" },
@@ -38,6 +45,7 @@ const NavBar: React.FC = () => {
 
   return (
     <div className="navbar">
+
       <div className="logoContainer">
         <Link className="navLink" to="/">
           <img
@@ -53,12 +61,16 @@ const NavBar: React.FC = () => {
             navigationLinks={navigationLinks}
           ></NavigationLinksRender>
         </ul>
+
         <DiscordButton></DiscordButton>
+
       </nav>
+
       {/* Dispositivos móviles */}
       <div className="mobileMenu">
         <PhoneNavBar navigationLinks={navigationLinks}></PhoneNavBar>
       </div>
+      <UserButton />
     </div>
   );
 };

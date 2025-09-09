@@ -1,0 +1,72 @@
+#loginButton
+{
+    display: flex;
+    align-items: center;
+    margin-right: var(--spacing-5);
+    width: var(--input-size-8);
+    color: var(--colors-darkRed);
+
+    @media (max-width: 768px)
+    {
+        margin-right: var(--spacing-2);
+        width: var(--input-size-6);
+    }
+}
+
+.userButton__avatar
+{
+    width: auto;
+    height: var(--input-size-2);
+    object-fit: cover;
+    margin-right: var(--spacing-2);
+}
+
+.userButton__username
+{
+    font-size: var(--font-size-3);
+    color: var(--colors-text);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    max-width: 100px;
+}
+
+.userButton__dropdown
+{
+    margin-top: var(--spacing-1);
+    min-width: 200px;
+    background-color: var(--colors-background);
+    border: 1px solid var(--colors-border);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-elevation-2);
+    z-index: 1000;
+}
+
+.userButton__item
+{
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-2);
+    color: var(--colors-text);
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.userButton__item:hover
+{
+    background-color: var(--colors-hover);
+}
+
+.userButton__icon
+{
+    width: var(--input-size-2);
+    height: var(--input-size-2);
+    margin-right: var(--spacing-2);
+}
+
+.userButton__separator
+{
+    height: 1px;
+    background-color: var(--colors-border);
+    margin: var(--spacing-1) 0;
+}
