@@ -54,6 +54,7 @@ const UserButton = () => {
                 </Button>
             ) : (
                 <Button onClick={toggleAuthPopup} id="loginButton">
+                    Inicia Sesión
                     <FontAwesomeIcon icon={faUser} />
                 </Button>
             )}

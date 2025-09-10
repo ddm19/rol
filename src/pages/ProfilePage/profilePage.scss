@@ -154,6 +154,17 @@
         padding: var(--spacing-4);
         display: grid;
         gap: var(--spacing-4);
+        align-self: flex-start;
+        margin-top: 5%;
+
+        @media (max-width: 768px)
+        {
+            width: 90%;
+            max-height: 40%;
+            margin-top: 25%;
+
+
+        }
     }
 
     &__sectionTitle
@@ -169,7 +180,14 @@
         grid-template-columns: repeat(6, minmax(var(--input-size-2), 1fr));
         gap: var(--spacing-2);
         overflow-y: auto;
+        overflow-x: hidden;
         max-height: 60%;
+
+        @media (max-width: 768px)
+        {
+            grid-template-columns: repeat(2, minmax(var(--input-size-2), 1fr));
+            max-height: 30%;
+        }
     }
 
     &__avatarOption
@@ -193,8 +211,8 @@
     &__avatarThumb,
     &__avatarImg
     {
-        width: auto;
-        height: var(--input-size-10);
+        width: 100%;
+        height: auto;
         object-fit: cover;
         border-radius: 5%;
         box-shadow: 0 0 var(--spacing-2) rgba(0, 0, 0, 0.2);
@@ -204,10 +222,16 @@
         {
             transform: scale(1.05);
         }
+
+        @media (max-width: 768px)
+        {
+            height: var(--input-size-6);
+        }
     }
 
     &__avatarImg
     {
+        max-width: var(--input-size-8);
         pointer-events: none;
     }
 

@@ -1,8 +1,8 @@
 @use "sass:math";
 
-$mobileMaxWidth: 700px;
-$tabletMaxWidth: 900px;
-$desktopMaxWidth: 1200px;
+$mobileMaxWidth: 43.75rem;
+$tabletMaxWidth: 56.25rem;
+$desktopMaxWidth: 75rem;
 
 $fluid-range: $desktopMaxWidth - $mobileMaxWidth;
 
@@ -18,26 +18,26 @@ $fluid-range: $desktopMaxWidth - $mobileMaxWidth;
   --tabletMaxWidth: #{$tabletMaxWidth};
   --desktopMaxWidth: #{$desktopMaxWidth};
 
-  --header-size: #{fluid(116px, 116px)};
-  --footer-size: #{fluid(116px, 116px)};
-  --loading-size: #{fluid(100px, 100px)};
+  --header-size: #{fluid(7.25rem, 7.25rem)};
+  --footer-size: #{fluid(7.25rem, 7.25rem)};
+  --loading-size: #{fluid(6.25rem, 6.25rem)};
 
-  --image-size-1: #{fluid(75px, 100px)};
-  --image-size-2: #{fluid(150px, 200px)};
-  --image-size-3: #{fluid(225px, 300px)};
-  --image-size-4: #{fluid(325px, 400px)};
-  --image-size-5: #{fluid(375px, 500px)};
+  --image-size-1: #{fluid(4.6875rem, 6.25rem)};
+  --image-size-2: #{fluid(9.375rem, 12.5rem)};
+  --image-size-3: #{fluid(14.0625rem, 18.75rem)};
+  --image-size-4: #{fluid(20.3125rem, 25rem)};
+  --image-size-5: #{fluid(23.4375rem, 31.25rem)};
 
-  --input-size-1: #{fluid(30px, 30px)};
-  --input-size-2: #{fluid(60px, 60px)};
-  --input-size-3: #{fluid(90px, 90px)};
-  --input-size-4: #{fluid(120px, 120px)};
-  --input-size-5: #{fluid(150px, 150px)};
-  --input-size-6: #{fluid(180px, 180px)};
-  --input-size-7: #{fluid(210px, 210px)};
-  --input-size-8: #{fluid(240px, 240px)};
-  --input-size-9: #{fluid(270px, 270px)};
-  --input-size-10: #{fluid(300px, 300px)};
-  --input-size-11: #{fluid(330px, 330px)};
-  --input-size-12: #{fluid(360px, 360px)};
+  --input-size-1: #{fluid(1.875rem, 1.875rem)};
+  --input-size-2: #{fluid(3.75rem, 3.75rem)};
+  --input-size-3: #{fluid(5.625rem, 5.625rem)};
+  --input-size-4: #{fluid(7.5rem, 7.5rem)};
+  --input-size-5: #{fluid(9.375rem, 9.375rem)};
+  --input-size-6: #{fluid(11.25rem, 11.25rem)};
+  --input-size-7: #{fluid(13.125rem, 13.125rem)};
+  --input-size-8: #{fluid(15rem, 15rem)};
+  --input-size-9: #{fluid(16.875rem, 16.875rem)};
+  --input-size-10: #{fluid(18.75rem, 18.75rem)};
+  --input-size-11: #{fluid(20.625rem, 20.625rem)};
+  --input-size-12: #{fluid(22.5rem, 22.5rem)};
 }
