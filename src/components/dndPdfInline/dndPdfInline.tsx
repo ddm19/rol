@@ -24,6 +24,7 @@ export default function DnDPdfInline() {
     const [saving, setSaving] = useState(false);
     const [showControls, setShowControls] = useState(true);
 
+
     const { data } = supabase.storage.from("sheets").getPublicUrl("templates/rellenable_castellano.pdf");
     const pdfUrl = data.publicUrl;
     const src = `/pdfjs/viewer.html?file=${encodeURIComponent(pdfUrl)}`;

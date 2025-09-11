@@ -25,10 +25,60 @@
       #viewer.pdfViewer {
         padding: 16px;
       }
+
+      /* Máscara de carga */
+      .loading-mask {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: rgba(17, 17, 17, 0.96);
+        color: #fff;
+        z-index: 9999;
+        font-family:
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          Arial,
+          sans-serif;
+        flex-direction: column;
+        gap: 12px;
+      }
+      .loading-mask__spinner {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 3px solid rgba(255, 255, 255, 0.2);
+        border-top-color: #fff;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+      .loading-mask__text {
+        opacity: 0.85;
+        font-size: 14px;
+      }
     </style>
   </head>
   <body>
     <div id="container"><div id="viewer" class="pdfViewer"></div></div>
+
+    <div id="loadingMask" class="loading-mask" aria-live="polite">
+      <div class="loading-mask__spinner"></div>
+      <div id="loadingOverlay">
+        <div id="loadingBox">
+          <h2>Cargando ficha…</h2>
+          <div class="spinner" aria-hidden="true"></div>
+          <p>Hay un kobold escribiendo tu ficha a mano.</p>
+          <div id="loadingHint">Si tarda mucho, lo sustituiremos por otro.</div>
+        </div>
+      </div>
+    </div>
 
     <script type="module">
       import * as pdfjsLib from "./build/pdf.mjs";
@@ -43,6 +93,20 @@
           '<p style="color:white;padding:16px">Falta el parámetro ?file=</p>';
         throw new Error("Missing file param");
       }
+
+      // ---- Carga / máscara ----
+      const MAX_WAIT_MS = 7000;
+      const loadingMask = document.getElementById("loadingMask");
+      let valuesAppliedOnce = false;
+      let maskRemoved = false;
+      const removeMask = () => {
+        if (maskRemoved) return;
+        maskRemoved = true;
+        loadingMask?.remove();
+      };
+      setTimeout(() => {
+        if (!valuesAppliedOnce) removeMask();
+      }, MAX_WAIT_MS);
 
       const eventBus = new EventBus();
       const container = document.getElementById("container");
@@ -106,26 +170,38 @@
             deferUntilInputsReady(() => {
               applyPdfFormValues(data.values || {});
               ensureCalculatedFieldsVisible();
+              attachRecomputeListeners();
               recompute();
+              valuesAppliedOnce = true;
+              removeMask();
             });
             break;
         }
       });
 
+      // Permitir al host leer los valores actuales
+      window.addEventListener("message", (ev) => {
+        if (!ev.data || ev.data.type !== "GET_PDF_FIELDS") return;
+        const values = collectPdfFormValues();
+        ev.source?.postMessage({ type: "PDF_FIELDS", values }, ev.origin);
+      });
+
       // ---------- Utilidades de timing ----------
       function inputsReady() {
-        // hay muchos campos; comprobamos uno "fijo" del PDF
         return (
           !!document.querySelector('input[name="CharacterName"]') ||
           document.querySelector("input, textarea, select")
         );
       }
-      function deferUntilInputsReady(fn, tries = 50) {
+      function deferUntilInputsReady(fn, tries = 80) {
         if (inputsReady()) {
           fn();
           return;
         }
-        if (tries <= 0) return;
+        if (tries <= 0) {
+          fn();
+          return;
+        }
         setTimeout(() => deferUntilInputsReady(fn, tries - 1), 100);
       }
 
@@ -169,17 +245,10 @@
         }
       }
 
-      window.addEventListener("message", (ev) => {
-        if (!ev.data || ev.data.type !== "GET_PDF_FIELDS") return;
-        const values = collectPdfFormValues();
-        ev.source?.postMessage({ type: "PDF_FIELDS", values }, ev.origin);
-      });
-
       // ---------- Cálculos ----------
       function parseIntSafe(v) {
         if (v === null || v === undefined) return NaN;
         const s = String(v).trim();
-        // acepta "+2", "-1", " 2 ", etc.
         const m = s.match(/^[+\-]?\d+/);
         return m ? parseInt(m[0], 10) : NaN;
       }
@@ -269,23 +338,24 @@
       }
 
       function attachRecomputeListeners() {
-        // Recalcular cuando cambien puntuaciones, competencia y casillas de proficiencia
         const namesToWatch = [
+          // scores
           "STRscore",
           "DEXscore",
           "CONscore",
           "INTscore",
           "WISscore",
           "CHAscore",
+          // proficiency bonus
           "ProfBonus",
-          // casillas prof de saves
+          // prof. saving throws
           "STRsavePROF",
           "DEXsavePROF",
           "CONsavePROF",
           "INTsavePROF",
           "WISsavePROF",
           "CHAsavePROF",
-          // casillas prof de habilidades
+          // prof. skills
           "acroPROF",
           "athPROF",
           "decepPROF",
@@ -336,19 +406,17 @@
         setValue("CHAbonus", formatSigned(mods.CHA ?? ""));
 
         // 2) Proficiency bonus
-        const profBonusRaw = getValue("ProfBonus");
-        const profBonus = parseIntSafe(profBonusRaw) || 0;
+        const profBonus = parseIntSafe(getValue("ProfBonus")) || 0;
 
         // 3) Saving throws (total)
-        const saveMap = [
+        [
           { out: "STRsave", mod: mods.STR, profBox: "STRsavePROF" },
           { out: "DEXsave", mod: mods.DEX, profBox: "DEXsavePROF" },
           { out: "CONsave", mod: mods.CON, profBox: "CONsavePROF" },
           { out: "INTsave", mod: mods.INT, profBox: "INTsavePROF" },
           { out: "WISsave", mod: mods.WIS, profBox: "WISsavePROF" },
           { out: "CHAsave", mod: mods.CHA, profBox: "CHAsavePROF" },
-        ];
-        saveMap.forEach(({ out, mod, profBox }) => {
+        ].forEach(({ out, mod, profBox }) => {
           if (mod === null) {
             setValue(out, "");
             return;
@@ -358,7 +426,6 @@
         });
 
         // 4) Skills
-        // Mapa: nombreCampoSalida -> { mod: 'DEX' | 'STR'..., profBox: 'acroPROF'... }
         const skillDefs = {
           Acrobatics: { mod: "DEX", prof: "acroPROF" },
           Athletics: { mod: "STR", prof: "athPROF" },
@@ -379,7 +446,6 @@
           Survival: { mod: "WIS", prof: "survPROF" },
           AnHan: { mod: "WIS", prof: "anhanPROF" }, // Animal Handling
         };
-
         Object.entries(skillDefs).forEach(([out, { mod, prof }]) => {
           const m = mods[mod];
           if (m === null) {
@@ -390,7 +456,7 @@
           setValue(out, formatSigned(total));
         });
 
-        // 5) Percepción Pasiva (10 + WIS mod + prof si tiene competencia en Perception)
+        // 5) Percepción Pasiva (10 + WIS mod + prof si Perception es competente)
         if (mods.WIS !== null) {
           const passive =
             10 + mods.WIS + (getChecked("perPROF") ? profBonus : 0);
