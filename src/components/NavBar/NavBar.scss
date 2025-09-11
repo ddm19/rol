@@ -2,7 +2,7 @@
 {
   max-height: var(--header-size);
   display: flex;
-  gap: 16px;
+  gap: var(--spacing-2);
   top: 0;
   width: 100%;
 }
@@ -20,6 +20,7 @@
   width: auto;
   border-radius: 10%;
 }
+
 
 .navbar .navContainer,
 .discordButton
@@ -179,7 +180,7 @@
   {
     justify-content: center;
     display: flex;
-    width: 60%;
+    width: auto;
     align-items: center;
     margin: auto;
 
@@ -235,7 +236,7 @@
   .navbar
   {
     height: 100%;
-    gap: 5vw;
+    gap: var(--spacing-1);
     justify-content: center;
     align-items: center;
     display: flex;
@@ -248,7 +249,7 @@
 
   .menu-icon
   {
-    font-size: 1.8rem;
+    font-size: var(--font-size-6);
     color: var(--colors-darkRed);
   }
 }

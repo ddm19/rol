@@ -1,0 +1,79 @@
+.sheetsList
+{
+    padding: var(--spacing-5);
+
+    &__title
+    {
+        font-size: var(--font-size-5);
+    }
+
+    &__grid
+    {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        gap: var(--spacing-4);
+        grid-template-rows: repeat(auto-fit, 1fr);
+        grid-template-columns: repeat(6, 1fr);
+
+        @media (max-width: 1200px)
+        {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        @media (max-width: 768px)
+        {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    &__item
+    {
+        display: grid;
+        grid-template-columns: 1fr 1fr auto;
+        grid-template-rows: 1fr;
+        gap: var(--spacing-4);
+        align-items: center;
+        border: 1px solid var(--spacing-1);
+        border-radius: var(--spacing-2);
+        padding: var(--spacing-4);
+        background: var(--colors-darkYellow);
+        cursor: pointer;
+        transition: transform 120ms ease;
+
+        &:hover
+        {
+            transform: scale(0.98) translateY(-1%);
+        }
+    }
+
+    &__dateLabel
+    {
+        font-weight: normal;
+        font-size: var(--font-size-3);
+    }
+
+    &__name
+    {
+        font-weight: 600;
+
+    }
+
+    &__date
+    {
+        opacity: 0.8;
+        font-size: var(--font-size-3);
+    }
+
+    &__btn
+    {
+        padding: var(--spacing-1) var(--spacing-2);
+        border-radius: var(--spacing-1);
+        background: var(--colors-darkYellow);
+        color: var(--colors-white);
+        cursor: pointer;
+        font-size: var(--font-size-4);
+        color: var(--colors-darkRed);
+        font-weight: bold;
+    }
+}

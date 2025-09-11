@@ -19,7 +19,6 @@ const GeneralTab = (props: GeneralTabProps) => {
       img.onload = () => resolve(true);
       img.onerror = () => resolve(false);
       img.src = url;
-      debugger;
     });
   }
   return (
