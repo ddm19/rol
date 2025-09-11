@@ -22,7 +22,6 @@ export async function getSheet(id: string): Promise<Sheet> {
 }
 
 export async function upsertSheet(id: string, content: any): Promise<Sheet> {
-  debugger
   const user = (await supabase.auth.getUser()).data.user
   if (!user) throw new Error("No session")
   const payload = { id, owner: user.id, content, updated_at: new Date().toISOString() }

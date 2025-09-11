@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getSheet, createSheetWithId, upsertSheet } from "services/sheets";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import "./dndPdfInline.scss";
 
 export default function DnDPdfInline() {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -91,26 +92,29 @@ export default function DnDPdfInline() {
     };
 
     return (
-        <>
-            <label style={{ marginRight: 8 }}>
-                Sheet name:
-                <input
-                    value={sheetName}
-                    onChange={e => setSheetName(e.target.value)}
-                    disabled={!isNew}
-                    style={{ marginLeft: 6 }}
-                />
-            </label>
-            <button onClick={() => navigate(-1)}><FontAwesomeIcon icon={faArrowLeft} /> Volver</button>
-            <button onClick={handleSave} disabled={saving}>
-                {saving ? "Saving…" : isNew ? "Create" : "Save"}
-            </button>
+        <div className="dndPdfInline">
+            <div className="dndPdfInline__labelsContainer">
+                <button onClick={() => navigate(-1)}><FontAwesomeIcon icon={faArrowLeft} /> Volver</button>
+                <div className="dndPdfInline__info">
 
+                    <label >
+                        Nombre de la ficha:
+                    </label>
+                    <input
+                        value={sheetName}
+                        onChange={e => setSheetName(e.target.value)}
+                        disabled={!isNew}
+                    />
+                </div>
+                <button onClick={handleSave} disabled={saving}>
+                    {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
+                </button>
+            </div>
             <iframe
+                className="dndPdfInline__iframe"
                 ref={iframeRef}
                 src={src}
-                style={{ width: "100%", height: "100vh", border: 0 }}
             />
-        </>
+        </div>
     );
 }
