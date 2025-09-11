@@ -15,7 +15,9 @@ import AuthCallback from "pages/AuthCallBack/authCallBack";
 import ProfilePage from "pages/ProfilePage/profilePage";
 import DnDPdfInline from "components/dndPdfInline/dndPdfInline";
 
+
 function App() {
+  const notFooterRoutes = ["/sheets/.*"];
   return (
     <div className="App">
       <header className="App-header">
@@ -45,7 +47,7 @@ function App() {
           <Route path="*" element={<NoPage />} />
         </Routes>
       </main>
-      <footer className="App-footer">
+      <footer className={`App-footer ${notFooterRoutes.some(r => window.location.pathname.match(r)) ? "App-footer--hidden" : ""}`}>
         <Footer></Footer>
       </footer>
     </div>

@@ -3,22 +3,41 @@ import { supabase } from "services/supabaseClient";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSheet, createSheetWithId, upsertSheet } from "services/sheets";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
+import {
+    faArrowLeft,
+    faArrowsAltH,
+    faArrowsAltV,
+    faMagnifyingGlassMinus,
+    faMagnifyingGlassPlus,
+    faTimes,
+} from "@fortawesome/free-solid-svg-icons";
+import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import "./dndPdfInline.scss";
 
 export default function DnDPdfInline() {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
     const { id: routeId = "" } = useParams();
     const navigate = useNavigate();
-
     const isNew = routeId === "new";
     const [sheetName, setSheetName] = useState(isNew ? "" : routeId);
     const [loadedValues, setLoadedValues] = useState<Record<string, any>>({});
     const [saving, setSaving] = useState(false);
+    const [showControls, setShowControls] = useState(true);
 
     const { data } = supabase.storage.from("sheets").getPublicUrl("templates/rellenable_castellano.pdf");
     const pdfUrl = data.publicUrl;
     const src = `/pdfjs/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
+
+    const sendMessage = (message: Record<string, any>) => {
+        if (iframeRef.current && iframeRef.current.contentWindow) {
+            iframeRef.current.contentWindow.postMessage(message, window.location.origin);
+        }
+    };
+
+    const zoomIn = () => sendMessage({ type: "ZOOM_IN" });
+    const zoomOut = () => sendMessage({ type: "ZOOM_OUT" });
+    const fitWidth = () => sendMessage({ type: "FIT_WIDTH" });
+    const fitPage = () => sendMessage({ type: "FIT_PAGE" });
 
     useEffect(() => {
         if (!isNew && routeId) {
@@ -30,11 +49,12 @@ export default function DnDPdfInline() {
 
     useEffect(() => {
         if (!iframeRef.current) return;
-        const send = () =>
+        const send = () => {
             iframeRef.current?.contentWindow?.postMessage(
                 { type: "SET_PDF_FIELDS", values: loadedValues || {} },
                 window.location.origin
             );
+        };
         const onLoad = () => {
             send();
             setTimeout(send, 500);
@@ -54,7 +74,7 @@ export default function DnDPdfInline() {
                 }
             };
             window.addEventListener("message", onMsg);
-            iframeRef.current?.contentWindow?.postMessage({ type: "GET_PDF_FIELDS" }, window.location.origin);
+            sendMessage({ type: "GET_PDF_FIELDS" });
         });
     }
 
@@ -67,7 +87,6 @@ export default function DnDPdfInline() {
         try {
             const values = await requestPdfValues();
             localStorage.setItem(`sheet:${sheetName}`, JSON.stringify(values));
-
             if (isNew) {
                 try {
                     await createSheetWithId(sheetName.trim(), values);
@@ -85,21 +104,24 @@ export default function DnDPdfInline() {
             }
         } catch (err) {
             console.error(err);
-            alert("Ha ocurrido un error al guardar la ficha: " + (err as Error).message || String(err));
+            alert("Ha ocurrido un error al guardar la ficha: " + ((err as Error).message || String(err)));
         } finally {
             setSaving(false);
         }
     };
 
+    const toggleControls = () => {
+        setShowControls(prev => !prev);
+    };
+
     return (
         <div className="dndPdfInline">
             <div className="dndPdfInline__labelsContainer">
-                <button onClick={() => navigate(-1)}><FontAwesomeIcon icon={faArrowLeft} /> Volver</button>
+                <button onClick={() => navigate(-1)}>
+                    <FontAwesomeIcon icon={faArrowLeft} /> Volver
+                </button>
                 <div className="dndPdfInline__info">
-
-                    <label >
-                        Nombre de la ficha:
-                    </label>
+                    <label>Nombre de la ficha:</label>
                     <input
                         value={sheetName}
                         onChange={e => setSheetName(e.target.value)}
@@ -110,11 +132,32 @@ export default function DnDPdfInline() {
                     {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
                 </button>
             </div>
-            <iframe
-                className="dndPdfInline__iframe"
-                ref={iframeRef}
-                src={src}
-            />
+            <button className="dndPdfInline__toggleControls" onClick={toggleControls}>
+                {!showControls ? (
+                    <FontAwesomeIcon icon={faEllipsisV} />
+                ) : (
+                    <FontAwesomeIcon icon={faTimes} />
+                )}
+
+            </button>
+
+            <div className={showControls ? "dndPdfInline__controls--show dndPdfInline__controls" : "dndPdfInline__controls"}>
+                <button onClick={zoomIn}>
+                    <FontAwesomeIcon icon={faMagnifyingGlassPlus} />
+                </button>
+                <button onClick={zoomOut}>
+                    <FontAwesomeIcon icon={faMagnifyingGlassMinus} />
+                </button>
+                <button onClick={fitWidth}>
+                    <FontAwesomeIcon icon={faArrowsAltH} />
+                </button>
+                <button onClick={fitPage}>
+                    <FontAwesomeIcon icon={faArrowsAltV} />
+                </button>
+            </div>
+
+
+            <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} />
         </div>
     );
 }

@@ -1,113 +1,404 @@
 <!doctype html>
 <html>
-<head>
-  <meta charset="utf-8" />
-  <title>PDF Viewer</title>
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <link rel="stylesheet" href="./web/pdf_viewer.css" />
-  <style>
-    :root { --VARIABLESEPARADORA1: #111; --VARIABLESEPARADORA2: #222; }
-    html,body { height:100%; margin:0; background: var(--VARIABLESEPARADORA1); }
-    #container { position:fixed; inset:0; overflow:auto; background: var(--VARIABLESEPARADORA2); }
-    #viewer.pdfViewer { padding: 16px; }
-  </style>
-</head>
-<body>
-  <div id="container"><div id="viewer" class="pdfViewer"></div></div>
+  <head>
+    <meta charset="utf-8" />
+    <title>PDF Viewer</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="./web/pdf_viewer.css" />
+    <style>
+      :root {
+        --bg-primary: #111;
+        --bg-secondary: #222;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        background: var(--bg-primary);
+      }
+      #container {
+        position: fixed;
+        inset: 0;
+        overflow: auto;
+        background: var(--bg-secondary);
+      }
+      #viewer.pdfViewer {
+        padding: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="container"><div id="viewer" class="pdfViewer"></div></div>
 
-  <script type="module">
-    import * as pdfjsLib from './build/pdf.mjs';
-    import { PDFViewer, EventBus } from './web/pdf_viewer.mjs';
+    <script type="module">
+      import * as pdfjsLib from "./build/pdf.mjs";
+      import { PDFViewer, EventBus } from "./web/pdf_viewer.mjs";
 
-    pdfjsLib.GlobalWorkerOptions.workerSrc = './build/pdf.worker.mjs';
+      pdfjsLib.GlobalWorkerOptions.workerSrc = "./build/pdf.worker.mjs";
 
-    const params = new URLSearchParams(location.search);
-    const url = params.get('file');
-    if (!url) {
-      document.body.innerHTML = '<p style="color:white;padding:16px">Falta el parámetro ?file=</p>';
-      throw new Error('Missing file param');
-    }
+      const params = new URLSearchParams(location.search);
+      const url = params.get("file");
+      if (!url) {
+        document.body.innerHTML =
+          '<p style="color:white;padding:16px">Falta el parámetro ?file=</p>';
+        throw new Error("Missing file param");
+      }
 
-    const eventBus = new EventBus();
-    const container = document.getElementById('container');
-    const viewer = new PDFViewer({
-      container,
-      eventBus,
-      annotationMode: pdfjsLib.AnnotationMode.ENABLE_FORMS, // formularios editables
-      textLayerMode: 2
-    });
-
-    const loadingTask = pdfjsLib.getDocument({
-      url,
-      cMapUrl: './cmaps/',
-      cMapPacked: true
-    });
-
-    const pdf = await loadingTask.promise;
-    viewer.setDocument(pdf);
-    container.addEventListener('pagesinit', () => {
-      viewer.currentScaleValue = 'page-width';
-    });
-  </script>
-  <script>
-    function collectPdfFormValues() {
-      const root = document.getElementById('container');
-      const sel = 'input, textarea, select';
-      const fields = root.querySelectorAll(sel);
-      const out = {};
-      fields.forEach(el => {
-        const key =
-          el.name ||
-          el.getAttribute('data-annotation-id') ||
-          el.getAttribute('aria-label') ||
-          el.getAttribute('title');
-        if (!key) return;
-        if (el.type === 'checkbox') out[key] = !!el.checked;
-        else out[key] = el.value ?? '';
+      const eventBus = new EventBus();
+      const container = document.getElementById("container");
+      const viewer = new PDFViewer({
+        container,
+        eventBus,
+        annotationMode: pdfjsLib.AnnotationMode.ENABLE_FORMS,
+        textLayerMode: 2,
       });
-      return out;
-    }
 
-    window.addEventListener('message', ev => {
-      if (!ev.data || ev.data.type !== 'GET_PDF_FIELDS') return;
-      const values = collectPdfFormValues();
-      ev.source?.postMessage({ type: 'PDF_FIELDS', values }, ev.origin);
-    });
-</script>
-<script>
-  function setPdfFormValues(values, attempt = 0) {
-    const root = document.getElementById('container');
-    const fields = root.querySelectorAll('input, textarea, select');
-    if (!fields.length && attempt < 15) {
-      return setTimeout(() => setPdfFormValues(values, attempt + 1), 200);
-    }
-    const byName = {};
-    fields.forEach(el => {
-      const key = el.name || el.getAttribute('data-annotation-id') || el.getAttribute('aria-label') || el.getAttribute('title');
-      if (key) byName[key] = el;
-    });
+      // Recalcular cuando la capa de anotaciones esté lista (inputs disponibles)
+      eventBus.on("annotationlayerrendered", () => {
+        ensureCalculatedFieldsVisible();
+        attachRecomputeListeners();
+        // pequeño defer por si el layout sigue pintando
+        setTimeout(() => {
+          ensureCalculatedFieldsVisible();
+          recompute();
+        }, 0);
+      });
 
-    let missing = 0;
-    Object.entries(values || {}).forEach(([k, v]) => {
-      const el = byName[k];
-      if (!el) { missing++; return; }
-      if (el.type === 'checkbox') el.checked = !!v;
-      else el.value = v ?? '';
-      el.dispatchEvent(new Event('input', { bubbles: true }));
-      el.dispatchEvent(new Event('change', { bubbles: true }));
-    });
+      const loadingTask = pdfjsLib.getDocument({
+        url,
+        cMapUrl: "./cmaps/",
+        cMapPacked: true,
+      });
+      const pdf = await loadingTask.promise;
+      viewer.setDocument(pdf);
 
-    if (missing > 0 && attempt < 15) {
-      setTimeout(() => setPdfFormValues(values, attempt + 1), 250);
-    }
-  }
+      container.addEventListener("pagesinit", () => {
+        viewer.currentScaleValue = "page-width";
+        setTimeout(() => {
+          ensureCalculatedFieldsVisible();
+          attachRecomputeListeners();
+          recompute();
+        }, 250);
+      });
 
-  window.addEventListener('message', ev => {
-    if (ev.data?.type === 'SET_PDF_FIELDS') setPdfFormValues(ev.data.values || {});
-  });
-</script>
+      // Controles externos (zoom/fit/print y set/apply fields)
+      window.addEventListener("message", (e) => {
+        const data = e.data;
+        if (!data || typeof data.type !== "string") return;
+        switch (data.type) {
+          case "ZOOM_IN":
+            viewer.currentScale *= 1.1;
+            break;
+          case "ZOOM_OUT":
+            viewer.currentScale /= 1.1;
+            break;
+          case "FIT_WIDTH":
+            viewer.currentScaleValue = "page-width";
+            break;
+          case "FIT_PAGE":
+            viewer.currentScaleValue = "page-fit";
+            break;
+          case "PRINT_PDF":
+            window.print();
+            break;
+          case "SET_PDF_FIELDS":
+            // Aplícalo cuando ya haya inputs
+            deferUntilInputsReady(() => {
+              applyPdfFormValues(data.values || {});
+              ensureCalculatedFieldsVisible();
+              recompute();
+            });
+            break;
+        }
+      });
 
+      // ---------- Utilidades de timing ----------
+      function inputsReady() {
+        // hay muchos campos; comprobamos uno "fijo" del PDF
+        return (
+          !!document.querySelector('input[name="CharacterName"]') ||
+          document.querySelector("input, textarea, select")
+        );
+      }
+      function deferUntilInputsReady(fn, tries = 50) {
+        if (inputsReady()) {
+          fn();
+          return;
+        }
+        if (tries <= 0) return;
+        setTimeout(() => deferUntilInputsReady(fn, tries - 1), 100);
+      }
 
+      // ---------- Helpers de formularios ----------
+      function collectPdfFormValues() {
+        const root = document.getElementById("container");
+        const fields = root.querySelectorAll("input, textarea, select");
+        const out = {};
+        fields.forEach((el) => {
+          const key =
+            el.name ||
+            el.getAttribute("data-annotation-id") ||
+            el.getAttribute("aria-label") ||
+            el.getAttribute("title");
+          if (!key) return;
+          if (el.type === "checkbox") out[key] = !!el.checked;
+          else out[key] = el.value || "";
+        });
+        return out;
+      }
 
-</body>
+      function applyPdfFormValues(values) {
+        const root = document.getElementById("container");
+        const fields = root.querySelectorAll("input, textarea, select");
+        const byName = {};
+        fields.forEach((el) => {
+          const key =
+            el.name ||
+            el.getAttribute("data-annotation-id") ||
+            el.getAttribute("aria-label") ||
+            el.getAttribute("title");
+          if (key) byName[key] = el;
+        });
+        for (const [k, v] of Object.entries(values)) {
+          const el = byName[k];
+          if (!el) continue;
+          if (el.type === "checkbox") el.checked = !!v;
+          else el.value = v ?? "";
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+        }
+      }
+
+      window.addEventListener("message", (ev) => {
+        if (!ev.data || ev.data.type !== "GET_PDF_FIELDS") return;
+        const values = collectPdfFormValues();
+        ev.source?.postMessage({ type: "PDF_FIELDS", values }, ev.origin);
+      });
+
+      // ---------- Cálculos ----------
+      function parseIntSafe(v) {
+        if (v === null || v === undefined) return NaN;
+        const s = String(v).trim();
+        // acepta "+2", "-1", " 2 ", etc.
+        const m = s.match(/^[+\-]?\d+/);
+        return m ? parseInt(m[0], 10) : NaN;
+      }
+      function abilityMod(scoreVal) {
+        const n = parseIntSafe(scoreVal);
+        if (Number.isNaN(n)) return null;
+        return Math.floor((n - 10) / 2);
+      }
+      function formatSigned(n) {
+        if (n === null || n === undefined || Number.isNaN(n)) return "";
+        return n >= 0 ? `+${n}` : `${n}`;
+      }
+      function getEl(name) {
+        return document.querySelector(`[name="${CSS.escape(name)}"]`);
+      }
+      function getValue(name) {
+        const el = getEl(name);
+        if (!el) return "";
+        return el.type === "checkbox" ? (el.checked ? "Yes" : "") : el.value;
+      }
+      function getChecked(name) {
+        const el = getEl(name);
+        return !!(el && el.type === "checkbox" && el.checked);
+      }
+      function setValue(name, val) {
+        const el = getEl(name);
+        if (!el) return;
+        el.value =
+          val === "" || val === null || val === undefined ? "" : String(val);
+      }
+      function ensureVisible(name) {
+        const el = getEl(name);
+        if (!el) return;
+        el.hidden = false;
+        el.disabled = false;
+        el.removeAttribute("hidden");
+        el.style.display = "block";
+        el.style.visibility = "visible";
+        el.readOnly = false;
+      }
+
+      // Campos de salida que estaban ocultos en el PDF
+      const abilityBonusFields = [
+        "STRbonus",
+        "DEXbonus",
+        "CONbonus",
+        "INTbonus",
+        "WISbonus",
+        "CHAbonus",
+      ];
+      const saveTotalFields = [
+        "STRsave",
+        "DEXsave",
+        "CONsave",
+        "INTsave",
+        "WISsave",
+        "CHAsave",
+      ];
+      const skillOutFields = [
+        "Acrobatics",
+        "Athletics",
+        "Deception",
+        "History",
+        "Performance",
+        "Intimidation",
+        "Investigation",
+        "SleightofHand",
+        "Arcana",
+        "Medicine",
+        "Nature",
+        "Perception",
+        "Insight",
+        "Persuasion",
+        "Religion",
+        "Stealth",
+        "Survival",
+        "AnHan", // Animal Handling
+      ];
+
+      function ensureCalculatedFieldsVisible() {
+        [
+          ...abilityBonusFields,
+          ...saveTotalFields,
+          ...skillOutFields,
+          "PWP",
+        ].forEach(ensureVisible);
+      }
+
+      function attachRecomputeListeners() {
+        // Recalcular cuando cambien puntuaciones, competencia y casillas de proficiencia
+        const namesToWatch = [
+          "STRscore",
+          "DEXscore",
+          "CONscore",
+          "INTscore",
+          "WISscore",
+          "CHAscore",
+          "ProfBonus",
+          // casillas prof de saves
+          "STRsavePROF",
+          "DEXsavePROF",
+          "CONsavePROF",
+          "INTsavePROF",
+          "WISsavePROF",
+          "CHAsavePROF",
+          // casillas prof de habilidades
+          "acroPROF",
+          "athPROF",
+          "decepPROF",
+          "histPROF",
+          "perfPROF",
+          "intimPROF",
+          "investPROF",
+          "sohPROF",
+          "arcanaPROF",
+          "medPROF",
+          "naturePROF",
+          "perPROF",
+          "insightPROF",
+          "persPROF",
+          "religPROF",
+          "stealthPROF",
+          "survPROF",
+          "anhanPROF",
+        ];
+        const sel = namesToWatch
+          .map((n) => `[name="${CSS.escape(n)}"]`)
+          .join(",");
+        document.querySelectorAll(sel).forEach((el) => {
+          if (el.__recomputeHooked) return;
+          el.addEventListener("input", recompute, { passive: true });
+          el.addEventListener("change", recompute, { passive: true });
+          el.__recomputeHooked = true;
+        });
+      }
+
+      function recompute() {
+        ensureCalculatedFieldsVisible();
+
+        // 1) Bonos de característica
+        const mods = {
+          STR: abilityMod(getValue("STRscore")),
+          DEX: abilityMod(getValue("DEXscore")),
+          CON: abilityMod(getValue("CONscore")),
+          INT: abilityMod(getValue("INTscore")),
+          WIS: abilityMod(getValue("WISscore")),
+          CHA: abilityMod(getValue("CHAscore")),
+        };
+        setValue("STRbonus", formatSigned(mods.STR ?? ""));
+        setValue("DEXbonus", formatSigned(mods.DEX ?? ""));
+        setValue("CONbonus", formatSigned(mods.CON ?? ""));
+        setValue("INTbonus", formatSigned(mods.INT ?? ""));
+        setValue("WISbonus", formatSigned(mods.WIS ?? ""));
+        setValue("CHAbonus", formatSigned(mods.CHA ?? ""));
+
+        // 2) Proficiency bonus
+        const profBonusRaw = getValue("ProfBonus");
+        const profBonus = parseIntSafe(profBonusRaw) || 0;
+
+        // 3) Saving throws (total)
+        const saveMap = [
+          { out: "STRsave", mod: mods.STR, profBox: "STRsavePROF" },
+          { out: "DEXsave", mod: mods.DEX, profBox: "DEXsavePROF" },
+          { out: "CONsave", mod: mods.CON, profBox: "CONsavePROF" },
+          { out: "INTsave", mod: mods.INT, profBox: "INTsavePROF" },
+          { out: "WISsave", mod: mods.WIS, profBox: "WISsavePROF" },
+          { out: "CHAsave", mod: mods.CHA, profBox: "CHAsavePROF" },
+        ];
+        saveMap.forEach(({ out, mod, profBox }) => {
+          if (mod === null) {
+            setValue(out, "");
+            return;
+          }
+          const total = mod + (getChecked(profBox) ? profBonus : 0);
+          setValue(out, formatSigned(total));
+        });
+
+        // 4) Skills
+        // Mapa: nombreCampoSalida -> { mod: 'DEX' | 'STR'..., profBox: 'acroPROF'... }
+        const skillDefs = {
+          Acrobatics: { mod: "DEX", prof: "acroPROF" },
+          Athletics: { mod: "STR", prof: "athPROF" },
+          Deception: { mod: "CHA", prof: "decepPROF" },
+          History: { mod: "INT", prof: "histPROF" },
+          Performance: { mod: "CHA", prof: "perfPROF" },
+          Intimidation: { mod: "CHA", prof: "intimPROF" },
+          Investigation: { mod: "INT", prof: "investPROF" },
+          SleightofHand: { mod: "DEX", prof: "sohPROF" },
+          Arcana: { mod: "INT", prof: "arcanaPROF" },
+          Medicine: { mod: "WIS", prof: "medPROF" },
+          Nature: { mod: "INT", prof: "naturePROF" },
+          Perception: { mod: "WIS", prof: "perPROF" },
+          Insight: { mod: "WIS", prof: "insightPROF" },
+          Persuasion: { mod: "CHA", prof: "persPROF" },
+          Religion: { mod: "INT", prof: "religPROF" },
+          Stealth: { mod: "DEX", prof: "stealthPROF" },
+          Survival: { mod: "WIS", prof: "survPROF" },
+          AnHan: { mod: "WIS", prof: "anhanPROF" }, // Animal Handling
+        };
+
+        Object.entries(skillDefs).forEach(([out, { mod, prof }]) => {
+          const m = mods[mod];
+          if (m === null) {
+            setValue(out, "");
+            return;
+          }
+          const total = m + (getChecked(prof) ? profBonus : 0);
+          setValue(out, formatSigned(total));
+        });
+
+        // 5) Percepción Pasiva (10 + WIS mod + prof si tiene competencia en Perception)
+        if (mods.WIS !== null) {
+          const passive =
+            10 + mods.WIS + (getChecked("perPROF") ? profBonus : 0);
+          setValue("PWP", String(passive));
+        } else {
+          setValue("PWP", "");
+        }
+      }
+    </script>
+  </body>
 </html>

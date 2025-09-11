@@ -27,7 +27,7 @@ export async function upsertSheet(id: string, content: any): Promise<Sheet> {
   const payload = { id, owner: user.id, content, updated_at: new Date().toISOString() }
   const { data, error } = await supabase
     .from("sheets")
-    .upsert(payload, { onConflict: "id" })
+    .upsert(payload, { onConflict: "id, owner" })
     .select("id, owner, content, updated_at")
     .single()
   if (error) throw error
