@@ -13,7 +13,7 @@ import ArticleSearch from "pages/ArticleSearch/ArticleSearch";
 import UtilitiesPage from "pages/Utilities/UtilitiesPage";
 import AuthCallback from "pages/AuthCallBack/authCallBack";
 import ProfilePage from "pages/ProfilePage/profilePage";
-import SheetEditor from "pages/sheetEditor/sheetEditor";
+import DnDPdfInline from "components/dndPdfInline/dndPdfInline";
 
 function App() {
   return (
@@ -40,7 +40,7 @@ function App() {
           <Route path="/Campaigns" element={<ArticleSearch category={{ "id": "campaign", "name": "Campaña" }} />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/sheets/:id" element={<SheetEditor />} />
+          <Route path="/sheets/:id" element={<DnDPdfInline />} />
 
           <Route path="*" element={<NoPage />} />
         </Routes>

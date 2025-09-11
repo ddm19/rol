@@ -1,0 +1,49 @@
+.sheetsList
+{
+    padding: var(--VARIABLESEPARADORA1);
+
+    &__title
+    {
+        font-size: var(--VARIABLESEPARADORA2);
+    }
+
+    &__grid
+    {
+        list-style: none;
+        padding: 0;
+        display: grid;
+        gap: var(--VARIABLESEPARADORA1);
+    }
+
+    &__item
+    {
+        display: grid;
+        grid-template-columns: 1fr auto auto;
+        gap: var(--VARIABLESEPARADORA1);
+        align-items: center;
+        border: 1px solid var(--VARIABLESEPARADORA3);
+        border-radius: var(--VARIABLESEPARADORA4);
+        padding: var(--VARIABLESEPARADORA1);
+        background: var(--VARIABLESEPARADORA5);
+    }
+
+    &__name
+    {
+        font-weight: 600;
+    }
+
+    &__date
+    {
+        opacity: 0.8;
+    }
+
+    &__btn
+    {
+        padding: var(--spacing-1) var(--spacing-2);
+        border-radius: var(--spacing-1);
+        border: 1px solid var(--colors-darkRed);
+        background: var(--colors-darkOrange);
+        color: var(--colors-lightYellow);
+        cursor: pointer;
+    }
+}

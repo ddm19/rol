@@ -6,8 +6,7 @@
     min-height: 80vh;
     width: fit-content;
 
-    &__closeBtn,
-    .MuiButtonBase-root
+    &__closeBtn.MuiButtonBase-root
     {
         position: absolute;
         top: var(--spacing-4);

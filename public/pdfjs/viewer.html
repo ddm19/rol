@@ -1,0 +1,113 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>PDF Viewer</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="./web/pdf_viewer.css" />
+  <style>
+    :root { --VARIABLESEPARADORA1: #111; --VARIABLESEPARADORA2: #222; }
+    html,body { height:100%; margin:0; background: var(--VARIABLESEPARADORA1); }
+    #container { position:fixed; inset:0; overflow:auto; background: var(--VARIABLESEPARADORA2); }
+    #viewer.pdfViewer { padding: 16px; }
+  </style>
+</head>
+<body>
+  <div id="container"><div id="viewer" class="pdfViewer"></div></div>
+
+  <script type="module">
+    import * as pdfjsLib from './build/pdf.mjs';
+    import { PDFViewer, EventBus } from './web/pdf_viewer.mjs';
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc = './build/pdf.worker.mjs';
+
+    const params = new URLSearchParams(location.search);
+    const url = params.get('file');
+    if (!url) {
+      document.body.innerHTML = '<p style="color:white;padding:16px">Falta el parámetro ?file=</p>';
+      throw new Error('Missing file param');
+    }
+
+    const eventBus = new EventBus();
+    const container = document.getElementById('container');
+    const viewer = new PDFViewer({
+      container,
+      eventBus,
+      annotationMode: pdfjsLib.AnnotationMode.ENABLE_FORMS, // formularios editables
+      textLayerMode: 2
+    });
+
+    const loadingTask = pdfjsLib.getDocument({
+      url,
+      cMapUrl: './cmaps/',
+      cMapPacked: true
+    });
+
+    const pdf = await loadingTask.promise;
+    viewer.setDocument(pdf);
+    container.addEventListener('pagesinit', () => {
+      viewer.currentScaleValue = 'page-width';
+    });
+  </script>
+  <script>
+    function collectPdfFormValues() {
+      const root = document.getElementById('container');
+      const sel = 'input, textarea, select';
+      const fields = root.querySelectorAll(sel);
+      const out = {};
+      fields.forEach(el => {
+        const key =
+          el.name ||
+          el.getAttribute('data-annotation-id') ||
+          el.getAttribute('aria-label') ||
+          el.getAttribute('title');
+        if (!key) return;
+        if (el.type === 'checkbox') out[key] = !!el.checked;
+        else out[key] = el.value ?? '';
+      });
+      return out;
+    }
+
+    window.addEventListener('message', ev => {
+      if (!ev.data || ev.data.type !== 'GET_PDF_FIELDS') return;
+      const values = collectPdfFormValues();
+      ev.source?.postMessage({ type: 'PDF_FIELDS', values }, ev.origin);
+    });
+</script>
+<script>
+  function setPdfFormValues(values, attempt = 0) {
+    const root = document.getElementById('container');
+    const fields = root.querySelectorAll('input, textarea, select');
+    if (!fields.length && attempt < 15) {
+      return setTimeout(() => setPdfFormValues(values, attempt + 1), 200);
+    }
+    const byName = {};
+    fields.forEach(el => {
+      const key = el.name || el.getAttribute('data-annotation-id') || el.getAttribute('aria-label') || el.getAttribute('title');
+      if (key) byName[key] = el;
+    });
+
+    let missing = 0;
+    Object.entries(values || {}).forEach(([k, v]) => {
+      const el = byName[k];
+      if (!el) { missing++; return; }
+      if (el.type === 'checkbox') el.checked = !!v;
+      else el.value = v ?? '';
+      el.dispatchEvent(new Event('input', { bubbles: true }));
+      el.dispatchEvent(new Event('change', { bubbles: true }));
+    });
+
+    if (missing > 0 && attempt < 15) {
+      setTimeout(() => setPdfFormValues(values, attempt + 1), 250);
+    }
+  }
+
+  window.addEventListener('message', ev => {
+    if (ev.data?.type === 'SET_PDF_FIELDS') setPdfFormValues(ev.data.values || {});
+  });
+</script>
+
+
+
+</body>
+</html>

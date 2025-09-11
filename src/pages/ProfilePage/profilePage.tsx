@@ -1,6 +1,6 @@
 // ProfilePage.tsx
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import "./profilePage.scss";
 import { supabase } from "services/supabaseClient";
 import { AVATARS } from "services/avatars";
@@ -8,7 +8,10 @@ import { getMyProfile, saveMyProfile } from "services/profiles";
 import Loading from "components/Loading/Loading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
+import AvatarSelector from "./components/avatarSelector";
+import SheetsList from "components/SheetList/sheetsList";
 import { Button } from "@mui/material";
+
 
 
 type Profile = { id: string; username?: string; avatar_key?: string };
@@ -108,45 +111,15 @@ const ProfilePage: React.FC = () => {
             </div>
 
             {editingAvatar && (
-                <div className="profilePage__avatarModal">
-                    <div className="profilePage__avatarPanel">
-                        <h2 className="profilePage__sectionTitle">Elige tu avatar</h2>
-                        <Button className="profilePage__closeBtn">
-                            <FontAwesomeIcon icon={faXmark} onClick={closeAvatarEditor} />
-                        </Button>
-                        <div className="profilePage__avatarGrid">
-                            {AVATARS.map((a) => {
-                                const selected = a.key === avatarKey;
-                                return (
-
-                                    <img
-                                        src={a.url}
-                                        alt={a.key}
-                                        key={a.key}
-                                        className="profilePage__avatarThumb"
-
-                                        onClick={() => handlePickAvatar(a.key)}
-                                    />
-                                );
-                            })}
-                        </div>
-                        <div className="profilePage__actions">
-                            <button
-                                className="profilePage__btn profilePage__btn--ghost"
-                                onClick={closeAvatarEditor}
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                className="profilePage__btn profilePage__btn--primary"
-                                onClick={handleSaveAvatar}
-                            >
-                                Guardar avatar
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <AvatarSelector
+                    avatarKey={avatarKey}
+                    onPick={handlePickAvatar}
+                    onClose={closeAvatarEditor}
+                    onSave={handleSaveAvatar}
+                />
             )}
+            <button className="profilePage__btn " onClick={() => navigate('/sheets/new')}>Crear nueva ficha</button>
+            <SheetsList />
         </div>
     );
 };
