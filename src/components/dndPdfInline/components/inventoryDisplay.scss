@@ -1,9 +1,26 @@
 .inventoryDisplay
 {
     width: 100%;
-    padding: var(--spacing-4) 0;
+    padding: var(--spacing-4);
     align-items: center;
     justify-content: center;
+    align-items: center;
+    justify-items: center;
+
+
+    @media (max-width: 768px)
+    {
+        padding: 0;
+
+    }
+
+    .markdownEditor
+    {
+        width: 90%;
+
+
+    }
+
 
     &__selector
     {
@@ -13,6 +30,15 @@
         gap: var(--spacing-4);
         margin: var(--spacing-4);
         width: 100%;
+        align-items: center;
+
+
+        @media (max-width: 768px)
+        {
+            flex-direction: column;
+        }
+
+        ;
 
         select
         {
@@ -45,6 +71,10 @@
         display: flex;
         flex-wrap: wrap;
         gap: var(--spacing-4);
+        align-items: center;
+        justify-content: center;
+        margin-top: var(--spacing-4);
+
     }
 
     &__item
