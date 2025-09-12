@@ -6,7 +6,8 @@ import { ArticleType } from "components/Article/types";
 import ArticleDisplay from "components/ArticleDisplay/articleDisplay";
 import { getArticleInfo } from "pages/Home/Home";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLink, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Link } from "react-router-dom";
 
 export type MagicItem = {
     id: string;
@@ -88,6 +89,9 @@ const InventoryDisplay = (props: InventoryDisplayProps) => {
                 <button onClick={handleAddToInventory}>
                     Añadir al inventario
                 </button>
+                <Link to={'/article'} className="inventoryDisplay__link">
+                    No encuentras el que buscas? Créalo <FontAwesomeIcon icon={faExternalLink} />
+                </Link>
             </div>
             <div className="inventoryDisplay__itemsDisplay">
                 {magicItemsOnInventory.map((item) =>
