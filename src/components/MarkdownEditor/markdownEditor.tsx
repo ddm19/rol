@@ -1,7 +1,8 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBold, faItalic, faLink, faListUl, faListOl, faQuestion, faQuoteRight, faHeading } from "@fortawesome/free-solid-svg-icons";
+import { faBold, faItalic, faLink, faListUl, faListOl, faQuestion, faQuoteRight, faHeading, faEyeLowVision, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import "./markdownEditor.scss";
+import ReactMarkdown from "react-markdown";
 
 interface MarkdownEditorProps {
   value: string;
@@ -9,6 +10,7 @@ interface MarkdownEditorProps {
 }
 
 const MarkdownEditor = ({ value, onChange }: MarkdownEditorProps) => {
+  const [isEditing, setIsEditing] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const applyFormatting = (prefix: string, suffix = prefix) => {
@@ -149,16 +151,42 @@ const MarkdownEditor = ({ value, onChange }: MarkdownEditorProps) => {
   return (
     <div className="markdownEditor">
       <div className="markdownEditor__toolbar">
-        <button type="button" title="Negrita" onClick={() => applyFormatting("**")}> <FontAwesomeIcon icon={faBold} /> </button>
-        <button type="button" title="Cursiva" onClick={() => applyFormatting("*")}> <FontAwesomeIcon icon={faItalic} /> </button>
-        <button type="button" title="Enlace" onClick={insertLink}> <FontAwesomeIcon icon={faLink} /> </button>
-        <button type="button" title="Lista" onClick={() => applyList(false)}> <FontAwesomeIcon icon={faListUl} /> </button>
-        <button type="button" title="Lista numerada" onClick={() => applyList(true)}> <FontAwesomeIcon icon={faListOl} /> </button>
-        <button type="button" title="Encabezado" onClick={toggleHeading}> <FontAwesomeIcon icon={faHeading} /> </button>
-        <button type="button" title="Cita" onClick={toggleQuote}> <FontAwesomeIcon icon={faQuoteRight} /> </button>
-        <a href="https://commonmark.org/help" target="_blank" rel="noreferrer" className="markdownEditor__help" title="Ayuda"> <FontAwesomeIcon icon={faQuestion} /> </a>
+        {isEditing &&
+          <>
+            <button type="button" title="Negrita" onClick={() => applyFormatting("**")}> <FontAwesomeIcon icon={faBold} /> </button>
+            <button type="button" title="Cursiva" onClick={() => applyFormatting("*")}> <FontAwesomeIcon icon={faItalic} /> </button>
+            <button type="button" title="Enlace" onClick={insertLink}> <FontAwesomeIcon icon={faLink} /> </button>
+            <button type="button" title="Lista" onClick={() => applyList(false)}> <FontAwesomeIcon icon={faListUl} /> </button>
+            <button type="button" title="Lista numerada" onClick={() => applyList(true)}> <FontAwesomeIcon icon={faListOl} /> </button>
+            <button type="button" title="Encabezado" onClick={toggleHeading}> <FontAwesomeIcon icon={faHeading} /> </button>
+            <button type="button" title="Cita" onClick={toggleQuote}> <FontAwesomeIcon icon={faQuoteRight} /> </button>
+            <a href="https://commonmark.org/help" target="_blank" rel="noreferrer" className="markdownEditor__help" title="Ayuda"> <FontAwesomeIcon icon={faQuestion} /> </a>
+          </>
+        }
+        <button type="button" title="Edit" onClick={() => setIsEditing(!isEditing)}>
+          {isEditing ?
+            <><FontAwesomeIcon icon={faEyeLowVision} /> {" Ver"}</> :
+            <><FontAwesomeIcon icon={faPenToSquare} /> {" Editar"}</>
+          }
+        </button>
+
       </div>
-      <textarea ref={textareaRef} value={value} onChange={(e) => onChange(e.target.value)} onKeyDown={handleKeyDown} />
+      {isEditing ?
+        <textarea ref={textareaRef} value={value} onChange={(e) => onChange(e.target.value)} onKeyDown={handleKeyDown} />
+        :
+        //put _blank
+        <ReactMarkdown components={{
+          a: ({ node, ...props }) => (
+            <a
+              {...props}
+              target="_blank"
+              rel="noopener noreferrer"
+            />
+          ),
+        }}>
+          {value}
+        </ReactMarkdown>
+      }
     </div>
   );
 };

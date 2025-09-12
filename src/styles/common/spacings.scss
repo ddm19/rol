@@ -14,6 +14,7 @@ $fluid-range: $desktopMaxWidth - $mobileMaxWidth;
 :root
 {
   --spacing-1: #{fluid(4px, 5px)};
+  --spacing-1-5: #{fluid(6px, 7px)};
   --spacing-2: #{fluid(8px, 10px)};
   --spacing-3: #{fluid(12px, 15px)};
   --spacing-4: #{fluid(16px, 20px)};
