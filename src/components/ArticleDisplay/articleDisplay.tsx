@@ -6,9 +6,10 @@ interface ArticleDisplayProps {
   articleInfo?: string;
   description?: string;
   articleId?: string | number;
+  isBlank?: boolean;
 }
 const ArticleDisplay = (props: ArticleDisplayProps) => {
-  const { image, title, articleInfo, description, articleId } = props;
+  const { image, title, articleInfo, description, articleId, isBlank } = props;
 
   return articleId === null || articleInfo == null || description == null ? (
     <Link className="article" to={`/article?mode=create`}>
@@ -16,7 +17,7 @@ const ArticleDisplay = (props: ArticleDisplayProps) => {
       <h3 className="articleTitle">{title}</h3>
     </Link>
   ) : (
-    <Link className="article" to={`/article/${articleId}`}>
+    <Link className="article" to={`/article/${articleId}`} target={isBlank ? "_blank" : ""} rel={isBlank ? "noopener noreferrer" : ""} >
       <img src={image} alt="article1" />
       <div className="articleContent">
         <h3 className="articleTitle">{title}</h3>

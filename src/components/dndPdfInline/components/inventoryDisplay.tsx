@@ -101,8 +101,9 @@ const InventoryDisplay = (props: InventoryDisplayProps) => {
                             image={item.content.image || ""}
                             title={item.content.title}
                             description={item.content.shortDescription}
-                            articleId={item.id}
+                            articleId={item.content.title}
                             articleInfo={getArticleInfo(item.content)}
+                            isBlank
                         />
                         <button
                             onClick={() => handleDeleteFromInventory(item.id)}
