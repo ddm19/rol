@@ -89,7 +89,7 @@ const InventoryDisplay = (props: InventoryDisplayProps) => {
                 <button onClick={handleAddToInventory}>
                     Añadir al inventario
                 </button>
-                <Link to={'/article'} className="inventoryDisplay__link">
+                <Link to={'/article'} className="inventoryDisplay__link" target="_blank" rel="noopener noreferrer">
                     No encuentras el que buscas? Créalo <FontAwesomeIcon icon={faExternalLink} />
                 </Link>
             </div>
