@@ -20,4 +20,12 @@ export const AVATARS = [
     { key: 'kobold3', url: '/characters/kobold3.webp' },
     { key: 'kobold4', url: '/characters/kobold4.webp' },
     { key: 'aaracokra1', url: '/characters/aaracokra1.webp' },
+    { key: 'delion1', url: '/characters/delion1.png' },
+    { key: 'fairy1', url: '/characters/fairy1.png' },
+    { key: 'warlock1', url: '/characters/warlock1.png' },
+    { key: 'warlock2', url: '/characters/warlock2.png' },
+
+
+
+
 ];

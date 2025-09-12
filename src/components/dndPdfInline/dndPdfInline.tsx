@@ -68,7 +68,6 @@ export default function DnDPdfInline() {
         const autoSave = async () => {
             try {
                 const values = await requestPdfValues();
-                debugger
                 const completeValues = {
                     ...values,
                     inventory,

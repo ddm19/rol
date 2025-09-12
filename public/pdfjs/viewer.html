@@ -7,8 +7,9 @@
     <link rel="stylesheet" href="./web/pdf_viewer.css" />
     <style>
       :root {
-        --bg-primary: #111;
-        --bg-secondary: #222;
+        --bg-primary: #fff1d7;
+        --bg-secondary: #fff1d7;
+        --colors-darkRed: #5e0202;
       }
       html,
       body {
@@ -21,6 +22,19 @@
         inset: 0;
         overflow: auto;
         background: var(--bg-secondary);
+
+        scrollbar-width: thin;
+        scrollbar-color: var(--colors-darkRed) transparent;
+      }
+      #container::-webkit-scrollbar {
+        width: 8px;
+      }
+      #container::-webkit-scrollbar-track {
+        background: var(--bg-secondary);
+      }
+      #container::-webkit-scrollbar-thumb {
+        background-color: var(--colors-darkRed);
+        border-radius: 4px;
       }
       #viewer.pdfViewer {
         padding: 16px;
