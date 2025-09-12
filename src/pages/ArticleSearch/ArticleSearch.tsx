@@ -126,7 +126,7 @@ const ArticleSearch = (props: ArticleSearchProps) => {
         )}
         <ArticleDisplay
           image="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Plus_symbol.svg/1200px-Plus_symbol.svg.png"
-          title="Crear Articulo"
+          title="Crear Artículo"
         />
       </div>
     </div>

@@ -10,7 +10,7 @@ const EmbedArticle = (props: RelatedProps) => {
     const isMobile = window.innerWidth <= 768;
     const stack = isMobile || (related.width || 0) > 250;
     return (
-        <div className={`embedContentContainer articleContainer--leftMargin${stack ? " embedContentContainer--stack" : ""}`}>
+        <div className={`embedContentContainer articleContainer--leftMargin${stack ? " embedContentContainer--stack" : ""}`} onClick={() => window.open(related.link, "_blank")}>
             <img src={related.image ? related.image : defaultImage} alt={related.title} width={related.width || defaultWidth} />
             <div className="embedContentContainer__content">
                 <h3 className="embedContentContainer__title">{related.title}</h3>

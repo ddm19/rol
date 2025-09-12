@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { supabase } from "services/supabaseClient";
 import { useNavigate, useParams } from "react-router-dom";
-import { getSheet, createSheetWithId, upsertSheet } from "services/sheets";
+import { getSheet, createSheetWithId, upsertSheet, deleteSheet } from "services/sheets";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faArrowLeft,
@@ -10,6 +10,7 @@ import {
     faMagnifyingGlassMinus,
     faMagnifyingGlassPlus,
     faTimes,
+    faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import "./dndPdfInline.scss";
@@ -206,6 +207,14 @@ export default function DnDPdfInline() {
                         </span>
                     )}
                 </div>
+                <button onClick={async () => {
+                    if (window.confirm("¿Estás seguro de que quieres borrar esta ficha? Esta acción es irreversible.")) {
+                        await deleteSheet(routeId);
+                        navigate("/profile");
+                    }
+                }}>
+                    <FontAwesomeIcon icon={faTrash} /> Borrar ficha
+                </button>
 
             </div>
             <button className="dndPdfInline__toggleControls" onClick={toggleControls}>
