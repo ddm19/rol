@@ -17,7 +17,7 @@ import DnDPdfInline from "components/dndPdfInline/dndPdfInline";
 
 
 function App() {
-  const notFooterRoutes = ["/sheets/.*"];
+  const notFooterRoutes = ["/sheets/*"];
   return (
     <div className="App">
       <header className="App-header">

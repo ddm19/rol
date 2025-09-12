@@ -13,6 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import "./dndPdfInline.scss";
+import InventoryDisplay, { MagicItem } from "./components/inventoryDisplay";
 
 export default function DnDPdfInline() {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -23,6 +24,9 @@ export default function DnDPdfInline() {
     const [loadedValues, setLoadedValues] = useState<Record<string, any>>({});
     const [saving, setSaving] = useState(false);
     const [showControls, setShowControls] = useState(true);
+    const [inventory, setInventory] = useState("");
+    const [magicItems, setMagicItems] = useState<MagicItem[]>([]);
+    const [lastSaved, setLastSaved] = useState<string>("");
 
 
     const { data } = supabase.storage.from("sheets").getPublicUrl("templates/rellenable_castellano.pdf");
@@ -43,8 +47,56 @@ export default function DnDPdfInline() {
     useEffect(() => {
         if (!isNew && routeId) {
             getSheet(routeId)
-                .then(s => setLoadedValues(s?.content || {}))
-                .catch(() => setLoadedValues({}));
+                .then(s => {
+                    setLoadedValues(s?.content || {});
+                    setInventory(s?.content?.inventory || "");
+                    setMagicItems(s?.content?.magicItems || []);
+                    setLastSaved(s?.updated_at || "");
+                })
+                .catch(() => {
+                    setLoadedValues({});
+                    setInventory("");
+                    setMagicItems([]);
+                });
+        }
+    }, [isNew, routeId]);
+
+    useEffect(() => {
+        if (isNew || !routeId) return;
+
+        const autoSave = async () => {
+            try {
+                const values = await requestPdfValues();
+                debugger
+                const completeValues = {
+                    ...values,
+                    inventory,
+                    magicItems
+                };
+                const saved = await upsertSheet(routeId, completeValues);
+                setLastSaved(saved.updated_at);
+            } catch (err) {
+                console.error("Error en autoguardado:", err);
+            }
+        };
+
+        const interval = setInterval(autoSave, 20 * 60 * 1000); // 20 min
+        return () => clearInterval(interval);
+    }, [isNew, routeId, inventory, magicItems]);
+
+    useEffect(() => {
+        if (!isNew && routeId) {
+            getSheet(routeId)
+                .then(s => {
+                    setLoadedValues(s?.content || {});
+                    setInventory(s?.content?.inventory || "");
+                    setMagicItems(s?.content?.magicItems || []);
+                })
+                .catch(() => {
+                    setLoadedValues({});
+                    setInventory("");
+                    setMagicItems([]);
+                });
         }
     }, [isNew, routeId]);
 
@@ -87,10 +139,16 @@ export default function DnDPdfInline() {
         setSaving(true);
         try {
             const values = await requestPdfValues();
-            localStorage.setItem(`sheet:${sheetName}`, JSON.stringify(values));
+            const completeValues = {
+                ...values,
+                inventory,
+                magicItems
+            };
+            localStorage.setItem(`sheet:${sheetName}`, JSON.stringify(completeValues));
             if (isNew) {
                 try {
-                    await createSheetWithId(sheetName.trim(), values);
+                    const saved = await createSheetWithId(sheetName.trim(), completeValues);
+                    setLastSaved(saved.updated_at);
                 } catch (e: any) {
                     if (e?.code === "23505") {
                         alert("Ese nombre de ficha ya existe. Elige otro.");
@@ -100,7 +158,8 @@ export default function DnDPdfInline() {
                 }
                 navigate(`/sheets/${encodeURIComponent(sheetName.trim())}`, { replace: true });
             } else {
-                await upsertSheet(routeId, values);
+                const saved = await upsertSheet(routeId, completeValues);
+                setLastSaved(saved.updated_at);
                 alert("Ficha guardada con éxito.");
             }
         } catch (err) {
@@ -109,6 +168,14 @@ export default function DnDPdfInline() {
         } finally {
             setSaving(false);
         }
+    };
+
+    const handleInventoryChange = (value: string) => {
+        setInventory(value);
+    };
+
+    const handleMagicItemsChange = (items: MagicItem[]) => {
+        setMagicItems(items);
     };
 
     const toggleControls = () => {
@@ -129,9 +196,17 @@ export default function DnDPdfInline() {
                         disabled={!isNew}
                     />
                 </div>
-                <button onClick={handleSave} disabled={saving}>
-                    {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
-                </button>
+                <div className="dndPdfInline__info">
+                    <button onClick={handleSave} disabled={saving}>
+                        {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
+                    </button>
+                    {lastSaved && (
+                        <span className="dndPdfInline__lastSaved">
+                            Última vez: {new Date(lastSaved).toLocaleString('es-ES')}
+                        </span>
+                    )}
+                </div>
+
             </div>
             <button className="dndPdfInline__toggleControls" onClick={toggleControls}>
                 {!showControls ? (
@@ -139,7 +214,6 @@ export default function DnDPdfInline() {
                 ) : (
                     <FontAwesomeIcon icon={faTimes} />
                 )}
-
             </button>
 
             <div className={showControls ? "dndPdfInline__controls--show dndPdfInline__controls" : "dndPdfInline__controls"}>
@@ -157,8 +231,15 @@ export default function DnDPdfInline() {
                 </button>
             </div>
 
-
-            <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} />
+            <div className="dndPdfInline__iframeContainer">
+                <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} />
+                <InventoryDisplay
+                    inventory={inventory}
+                    magicItems={magicItems}
+                    onInventoryChange={handleInventoryChange}
+                    handleMagicItemsChange={handleMagicItemsChange}
+                />
+            </div>
         </div>
     );
 }

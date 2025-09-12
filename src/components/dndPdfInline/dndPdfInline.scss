@@ -63,8 +63,9 @@
 
     &__iframe
     {
-        width: 100vw;
+        width: 100%;
         height: 100vh;
+        align-self: start;
     }
 
     &__toggleControls
@@ -78,6 +79,8 @@
         font-size: var(--font-size-4);
         transition: opacity 0.3s ease;
         padding: var(--spacing-2) var(--spacing-4);
+        z-index: var(--z-dropdown);
+
     }
 
     &__controls
@@ -87,7 +90,7 @@
         transition: opacity 0.3s ease;
         position: absolute;
         left: var(--spacing-2);
-        bottom: var(--spacing-9);
+        bottom: var(--spacing-4);
         gap: var(--spacing-4);
         margin: var(--spacing-2) 0;
         font-size: var(--font-size-4);
@@ -96,6 +99,7 @@
         border-radius: var(--spacing-2);
         padding: var(--spacing-1);
         box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        z-index: var(--z-dropdown);
 
         button
         {
@@ -131,6 +135,26 @@
             padding: var(--spacing-1);
             font-size: var(--font-size-4);
         }
+    }
+
+    &__iframeContainer
+    {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        display: grid;
+        gap: var(--spacing-4);
+        grid-template-columns: 1fr 1fr;
+
+    }
+
+    &__lastSaved
+    {
+        font-size: var(--font-size-2);
+        color: var(--colors-darkRed);
+        font-weight: bold;
+        word-wrap: break-word;
+        text-align: center;
     }
 
 

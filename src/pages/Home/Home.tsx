@@ -152,7 +152,7 @@ const Home: React.FC = () => {
   );
 };
 export default Home;
-function getArticleInfo(content: ArticleType): string {
+export function getArticleInfo(content: ArticleType): string {
   const timeToRead = content.timeToRead ? `Leído en ${content.timeToRead}` : "";
   const author = content.author ? content.author : "";
 

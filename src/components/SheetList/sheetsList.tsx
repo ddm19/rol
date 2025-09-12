@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import "./sheetsList.scss";
 import { useNavigate } from "react-router-dom";
 import { listMySheets } from "services/sheets";
+import { faEye } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type SheetRow = { id: string; updatedAt: string };
 
@@ -32,6 +34,7 @@ const SheetsList: React.FC = () => {
                             className="sheetsList__btn"
                             onClick={() => navigate(`/sheets/${encodeURIComponent(x.id)}`)}
                         >
+                            <FontAwesomeIcon icon={faEye} />
                             Ver ficha
                         </button>
                     </li>

@@ -27,7 +27,7 @@
       }
 
       /* Máscara de carga */
-      .loading-mask {
+      .loadingMask {
         position: fixed;
         inset: 0;
         display: flex;
@@ -46,7 +46,7 @@
         flex-direction: column;
         gap: 12px;
       }
-      .loading-mask__spinner {
+      .loadingMask__spinner {
         width: 36px;
         height: 36px;
         border-radius: 50%;
@@ -59,7 +59,7 @@
           transform: rotate(360deg);
         }
       }
-      .loading-mask__text {
+      .loadingMask__text {
         opacity: 0.85;
         font-size: 14px;
       }
@@ -68,8 +68,8 @@
   <body>
     <div id="container"><div id="viewer" class="pdfViewer"></div></div>
 
-    <div id="loadingMask" class="loading-mask" aria-live="polite">
-      <div class="loading-mask__spinner"></div>
+    <div id="loadingMask" class="loadingMask" aria-live="polite">
+      <div class="loadingMask__spinner"></div>
       <div id="loadingOverlay">
         <div id="loadingBox">
           <h2>Cargando ficha…</h2>

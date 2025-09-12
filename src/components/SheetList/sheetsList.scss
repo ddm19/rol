@@ -75,5 +75,14 @@
         font-size: var(--font-size-4);
         color: var(--colors-darkRed);
         font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        transition: transform 120ms ease;
+
+        &:hover
+        {
+            background-color: none;
+        }
     }
 }
