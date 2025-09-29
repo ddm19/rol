@@ -37,3 +37,14 @@ export async function saveMyProfile(input: { username?: string; avatar_key?: str
   if (error) throw error
   return data
 }
+
+export async function isVillazarcilloPlayer() {
+  const user = await getCurrentUser()
+  const { data, error } = await supabase
+    .from('villazarcillo_players')
+    .select()
+    .eq('player', user.id)
+    .single()
+  if (error && error.code !== 'PGRST116') throw error // Empty error code
+  return !!data
+}

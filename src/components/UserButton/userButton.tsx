@@ -13,6 +13,7 @@ const UserButton = () => {
     const [session, setSession] = useState<any>(null);
     const [profile, setProfile] = useState<any>(null);
 
+
     useEffect(() => {
         const fetchSessionAndProfile = async () => {
             const { data: { session } } = await supabase.auth.getSession();
@@ -35,6 +36,7 @@ const UserButton = () => {
         avatarUrl = (AVATARS.find(a => a.key === profile.avatar_key)?.url) || AVATARS[0].url;
         displayName = profile.username || session?.user.email;
     }
+
 
     return (
         <>
