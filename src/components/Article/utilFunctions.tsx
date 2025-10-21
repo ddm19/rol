@@ -5,6 +5,7 @@ import remarkGfm from "remark-gfm"
 import rehypeRaw from "rehype-raw"
 import rehypeSanitize from "rehype-sanitize"
 import { defaultSchema as hastDefaultSchema } from "hast-util-sanitize"
+import "./components/tables.scss"
 
 const schema = {
     ...hastDefaultSchema,
