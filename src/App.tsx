@@ -19,7 +19,7 @@ import VillazarcilloPage from "pages/VillazarcilloPage/villazarciloPage";
 
 
 function App() {
-  const notFooterRoutes = ["/sheets/*"];
+  const notFooterRoutes = ["/sheets/*", "/Villazarcillo"];
   return (
     <div className="App">
       <header className="App-header">
@@ -60,6 +60,7 @@ function App() {
           } />
         </Routes>
       </main>
+
       <footer className={`App-footer ${notFooterRoutes.some(r => window.location.pathname.match(r)) ? "App-footer--hidden" : ""}`}>
         <Footer></Footer>
       </footer>

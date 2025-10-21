@@ -12,8 +12,7 @@ const VillazarcilloPage = () => {
 
     return (
         <>
-            <Button onClick={() => iframeRef.current?.contentWindow?.history.back()}><FontAwesomeIcon icon={faArrowLeft} /></Button>
-            <iframe ref={iframeRef} src="https://villazarcillo.vercel.app/" style={{ width: '100%', height: '100vh', border: 'none' }} title="Villazarcillo">
+            <iframe ref={iframeRef} src="https://villazarcillo.vercel.app/" style={{ width: '90%', height: '90vh', border: 'none' }} title="Villazarcillo">
 
             </iframe>
 

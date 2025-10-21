@@ -1,103 +1,94 @@
-import ReactMarkdown from "react-markdown";
-import EmbedArticle from "./components/embedArticle";
-import { ArticleType } from "./types";
+import ReactMarkdown from "react-markdown"
+import EmbedArticle from "./components/embedArticle"
+import { ArticleType } from "./types"
+import remarkGfm from "remark-gfm"
+import rehypeRaw from "rehype-raw"
+import rehypeSanitize from "rehype-sanitize"
+import { defaultSchema as hastDefaultSchema } from "hast-util-sanitize"
+
+const schema = {
+    ...hastDefaultSchema,
+    tagNames: [
+        ...(hastDefaultSchema.tagNames || []),
+        "table", "thead", "tbody", "tr", "th", "td"
+    ],
+    attributes: {
+        ...hastDefaultSchema.attributes,
+        table: [
+            ...(hastDefaultSchema.attributes?.table || []),
+            ["className"], ["border"], ["cellPadding"], ["cellSpacing"]
+        ],
+        th: [
+            ...(hastDefaultSchema.attributes?.th || []),
+            ["colspan"], ["rowspan"], ["align"], ["className"], ["colSpan"], ["rowSpan"]
+        ],
+        td: [
+            ...(hastDefaultSchema.attributes?.td || []),
+            ["colspan"], ["rowspan"], ["align"], ["className"], ["colSpan"], ["rowSpan"]
+        ],
+        a: [
+            ...(hastDefaultSchema.attributes?.a || []),
+            ["target"], ["rel"]
+        ],
+    },
+}
 
 export const contentParser = (
     content: string,
     article: ArticleType,
     isNumbered = false
 ) => {
-    const parsedContainer: JSX.Element[] = [];
-    const paragraphClass = isNumbered ? "articleContainer--leftMargin" : "";
+    const paragraphClass = isNumbered ? "articleContainer--leftMargin" : ""
+    const normalized = (content || "").replace(/\r\n?/g, "\n")
 
-    const normalized = (content || "").replace(/\r\n?/g, "\n");
-    const lines = normalized.split(/\n+/);
+    const blocks: Array<{ type: "md"; text: string } | { type: "embed"; id: string }> = []
+    const re = /\{([^}]+)\}/g
+    let last = 0
+    let m: RegExpExecArray | null
 
-    lines.forEach((line, lineIndex) => {
-        if (line.trim() === "") return;
+    while ((m = re.exec(normalized)) !== null) {
+        const before = normalized.slice(last, m.index)
+        if (before) blocks.push({ type: "md", text: before })
+        blocks.push({ type: "embed", id: m[1] })
+        last = re.lastIndex
+    }
+    const tail = normalized.slice(last)
+    if (tail) blocks.push({ type: "md", text: tail })
 
-        const regex = /\{([^}]+)\}/g;
-        let lastIndex = 0;
-        let match: RegExpExecArray | null;
-        let hasEmbeds = false;
+    const out: JSX.Element[] = []
 
-        while ((match = regex.exec(line)) !== null) {
-            hasEmbeds = true;
-            const before = line.slice(lastIndex, match.index);
-            if (before.trim()) {
-                parsedContainer.push(
-                    <ReactMarkdown
-                        key={`${lineIndex}-before-${match.index}`}
-                        components={{
-                            p: ({ children }) => <p className={paragraphClass}>{children}</p>,
-                        }}
-                    >
-                        {before}
-                    </ReactMarkdown>
-                );
-            }
-
-            const id = match[1];
-            const imp = article.imports.find((i) => i.id === id);
-            if (imp) {
-                if (imp.title || imp.subtitle || imp.shortDesc || imp.link) {
-                    parsedContainer.push(
-                        <EmbedArticle
-                            key={`${lineIndex}-embed-${match.index}`}
-                            related={imp}
-                        />
-                    );
-                } else if (imp.image) {
-                    parsedContainer.push(
-                        <img
-                            key={`${lineIndex}-img-${match.index}`}
-                            src={imp.image}
-                            alt={imp.id}
-                            width={imp.width}
-                        />
-                    );
-                }
-            } else {
-                parsedContainer.push(
-                    <p
-                        key={`${lineIndex}-placeholder-${match.index}`}
-                        className={paragraphClass}
-                    >
-                        {`{${id}}`}
-                    </p>
-                );
-            }
-
-            lastIndex = regex.lastIndex;
-        }
-
-        if (hasEmbeds) {
-            const remaining = line.slice(lastIndex);
-            if (remaining.trim()) {
-                parsedContainer.push(
-                    <ReactMarkdown
-                        key={`${lineIndex}-remaining`}
-                        components={{
-                            p: ({ children }) => <p className={paragraphClass}>{children}</p>,
-                        }}
-                    >
-                        {remaining}
-                    </ReactMarkdown>
-                );
-            }
-        } else {
-            parsedContainer.push(
+    blocks.forEach((b, i) => {
+        if (b.type === "md") {
+            out.push(
                 <ReactMarkdown
-                    key={`${lineIndex}-full`}
+                    key={`md-${i}`}
+                    remarkPlugins={[remarkGfm]}
+                    rehypePlugins={[rehypeRaw, [rehypeSanitize, schema]]}
                     components={{
                         p: ({ children }) => <p className={paragraphClass}>{children}</p>,
+                        a: ({ node, ...props }) => <a {...props} target="_blank" rel="noopener noreferrer" />,
+                        table: ({ node, className, ...props }) => {
+                            const cls = className ? `${className} dndTable` : "dndTable"
+                            return <table {...props} className={cls} />
+                        },
                     }}
                 >
-                    {line}
+                    {b.text}
                 </ReactMarkdown>
-            );
+            )
+        } else {
+            const imp = article.imports.find(x => x.id === b.id)
+            if (imp) {
+                if (imp.title || imp.subtitle || imp.shortDesc || imp.link) {
+                    out.push(<EmbedArticle key={`embed-${i}`} related={imp} />)
+                } else if (imp.image) {
+                    out.push(<img key={`img-${i}`} src={imp.image} alt={imp.id} width={imp.width} />)
+                }
+            } else {
+                out.push(<p key={`placeholder-${i}`} className={paragraphClass}>{`{${b.id}}`}</p>)
+            }
         }
-    });
+    })
 
-    return <>{parsedContainer}</>;
-};
+    return <>{out}</>
+}

@@ -24,4 +24,39 @@
   --portal-color-1: #b388eb8b;
   --portal-color-2: #765e9e90;
   --portal-color-3: #460aad90;
+
+  /* Tables */
+  --dndBg: #f7f1e1;
+  --dndBg2: #efe6d0;
+  --dndInk: #2b2217;
+  --dndInkSoft: #5a4a38;
+  --dndAccent: #7a1f1f;
+  --dndAccent2: #a1362c;
+  --dndGold: #b88a3b;
+  --dndLine: rgba(43, 34, 23, 0.25);
+  --dndRow: rgba(43, 34, 23, 0.04);
+  --dndRow2: rgba(122, 31, 31, 0.04);
+  --dndShadow: rgba(0, 0, 0, 0.08);
+}
+
+@media (prefers-color-scheme: dark)
+{
+  // :root
+  // {
+  //   --dndBg: #181511;
+  //   --dndBg2: #1f1c17;
+
+  //   --dndInk: #e8dcc3;
+  //   --dndInkSoft: #c4b397;
+
+  //   --dndAccent: #b33636;
+  //   --dndAccent2: #d94a3e;
+
+  //   --dndGold: #d6a84b;
+
+  //   --dndLine: rgba(232, 220, 195, 0.2);
+  //   --dndRow: rgba(255, 255, 255, 0.03);
+  //   --dndRow2: rgba(217, 74, 62, 0.05);
+  //   --dndShadow: rgba(0, 0, 0, 0.35);
+  // }
 }
