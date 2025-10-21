@@ -14,10 +14,12 @@ import UtilitiesPage from "pages/Utilities/UtilitiesPage";
 import AuthCallback from "pages/AuthCallBack/authCallBack";
 import ProfilePage from "pages/ProfilePage/profilePage";
 import DnDPdfInline from "components/dndPdfInline/dndPdfInline";
+import PrivateRoute from "components/NavBar/PrivateRoute/privateRoute";
+import VillazarcilloPage from "pages/VillazarcilloPage/villazarciloPage";
 
 
 function App() {
-  const notFooterRoutes = ["/sheets/*"];
+  const notFooterRoutes = ["/sheets/*", "/Villazarcillo"];
   return (
     <div className="App">
       <header className="App-header">
@@ -43,10 +45,22 @@ function App() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/sheets/:id" element={<DnDPdfInline />} />
-
           <Route path="*" element={<NoPage />} />
+
+          {/* Rutas Privadas */}
+          <Route path="/profile" element={
+            <PrivateRoute>
+              <ProfilePage />
+            </PrivateRoute>
+          } />
+          <Route path="/Villazarcillo" element={
+            <PrivateRoute>
+              <VillazarcilloPage />
+            </PrivateRoute>
+          } />
         </Routes>
       </main>
+
       <footer className={`App-footer ${notFooterRoutes.some(r => window.location.pathname.match(r)) ? "App-footer--hidden" : ""}`}>
         <Footer></Footer>
       </footer>

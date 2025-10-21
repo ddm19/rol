@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBold, faItalic, faLink, faListUl, faListOl, faQuestion, faQuoteRight, faHeading, faEyeLowVision, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import "./markdownEditor.scss";
 import ReactMarkdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
 
 interface MarkdownEditorProps {
   value: string;
@@ -174,7 +176,6 @@ const MarkdownEditor = ({ value, onChange }: MarkdownEditorProps) => {
       {isEditing ?
         <textarea ref={textareaRef} value={value} onChange={(e) => onChange(e.target.value)} onKeyDown={handleKeyDown} />
         :
-        //put _blank
         <ReactMarkdown components={{
           a: ({ node, ...props }) => (
             <a
@@ -183,7 +184,10 @@ const MarkdownEditor = ({ value, onChange }: MarkdownEditorProps) => {
               rel="noopener noreferrer"
             />
           ),
-        }}>
+        }}
+          remarkPlugins={[remarkGfm]}
+
+        >
           {value}
         </ReactMarkdown>
       }

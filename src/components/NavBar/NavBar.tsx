@@ -4,11 +4,8 @@ import { Link } from "react-router-dom";
 import PhoneNavBar from "components/NavBar/PhoneNavbar/PhoneNavBar";
 import NavigationLinksRender from "./NavigationLinksRender/NavigationLinksRender";
 import { DiscordButton } from "components/NavBar/DiscordButton/DiscordButton";
-import { Button } from "@mui/material";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faUser } from "@fortawesome/free-solid-svg-icons";
-import AuthPopup from "components/AuthPopup/authPopup";
 import UserButton from "components/UserButton/userButton";
+import VillazarcilloButton from "components/VillazarcilloButton/villazarcilloButton";
 
 export interface NavigationLink {
   name: string;
@@ -60,8 +57,10 @@ const NavBar: React.FC = () => {
           <NavigationLinksRender
             navigationLinks={navigationLinks}
           ></NavigationLinksRender>
-        </ul>
 
+          <VillazarcilloButton />
+
+        </ul>
         <DiscordButton></DiscordButton>
 
       </nav>

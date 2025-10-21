@@ -1,0 +1,115 @@
+.dndTable
+{
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: linear-gradient(180deg, var(--dndBg) 0%, var(--dndBg2) 100%);
+    color: var(--dndInk);
+    border: 1px solid var(--dndLine);
+    border-radius: 8px;
+    box-shadow: 0 8px 18px var(--dndShadow);
+    overflow: hidden;
+    font-family: ui-serif, Georgia, "Times New Roman", serif;
+    font-size: 0.95rem;
+}
+
+.dndTable thead th
+{
+    background: linear-gradient(180deg, var(--dndAccent2), var(--dndAccent));
+    color: #fff;
+    font-variant: small-caps;
+    letter-spacing: 0.035em;
+    padding: 10px 12px;
+    text-align: left;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    border-bottom: 2px solid var(--dndGold);
+}
+
+.dndTable th,
+.dndTable td
+{
+    padding: 8px 12px;
+    vertical-align: top;
+    line-height: 1.35;
+    border-right: 1px solid var(--dndLine);
+    max-width: 0;
+    text-overflow: ellipsis;
+}
+
+.dndTable th:last-child,
+.dndTable td:last-child
+{
+    border-right: 0;
+}
+
+.dndTable tbody tr:nth-child(odd)
+{
+    background: var(--dndRow);
+}
+
+.dndTable tbody tr:nth-child(even)
+{
+    background: var(--dndRow2);
+}
+
+.dndTable tbody tr:hover
+{
+    background: rgba(255, 255, 255, 0.08);
+    outline: 1px solid var(--dndGold);
+    outline-offset: -1px;
+}
+
+.dndTable tbody td:first-child
+{
+    font-weight: 600;
+    color: var(--dndInkSoft);
+}
+
+.dndTable tbody td
+{
+    border-top: 1px solid var(--dndLine);
+}
+
+.dndTable caption
+{
+    caption-side: top;
+    text-align: left;
+    padding: 8px 10px;
+    color: var(--dndInkSoft);
+    font-variant: small-caps;
+    letter-spacing: 0.06em;
+}
+
+.dndTable td a
+{
+    color: var(--dndAccent2);
+    text-decoration: none;
+    border-bottom: 1px dashed var(--dndAccent2);
+}
+
+.dndTable td a:hover
+{
+    filter: brightness(1.08);
+}
+
+.dndTable thead tr:first-child th:first-child
+{
+    border-top-left-radius: 8px;
+}
+
+.dndTable thead tr:first-child th:last-child
+{
+    border-top-right-radius: 8px;
+}
+
+.dndTable tbody tr:last-child td:first-child
+{
+    border-bottom-left-radius: 8px;
+}
+
+.dndTable tbody tr:last-child td:last-child
+{
+    border-bottom-right-radius: 8px;
+}
