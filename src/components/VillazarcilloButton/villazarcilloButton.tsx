@@ -12,7 +12,7 @@ const VillazarcilloButton = () => {
     }, []);
 
     return (
-        villazarcilloPlayer && (
+        villazarcilloPlayer ? (
             <>
                 <div className='navSeparator'></div>
 
@@ -22,7 +22,7 @@ const VillazarcilloButton = () => {
 
                 }} />
             </>
-        )
+        ) : null
 
     )
 }
