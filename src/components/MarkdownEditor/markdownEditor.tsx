@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBold, faItalic, faLink, faListUl, faListOl, faQuestion, faQuoteRight, faHeading, faEyeLowVision, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import "./markdownEditor.scss";
@@ -8,12 +8,19 @@ import remarkGfm from "remark-gfm";
 interface MarkdownEditorProps {
   value: string;
   onChange: (value: string) => void;
-  isEditing: boolean;
-  setIsEditing: (val: boolean) => void;
+  isEditing?: boolean;
+  setIsEditing?: (val: boolean) => void;
 
 }
 
 const MarkdownEditor = ({ value, onChange, isEditing, setIsEditing }: MarkdownEditorProps) => {
+
+  // if isEditing is undefined, manage internal state
+  if (isEditing === undefined || setIsEditing === undefined) {
+    const [internalIsEditing, setInternalIsEditing] = useState(true);
+    isEditing = internalIsEditing;
+    setIsEditing = setInternalIsEditing;
+  }
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const applyFormatting = (prefix: string, suffix = prefix) => {
@@ -166,7 +173,7 @@ const MarkdownEditor = ({ value, onChange, isEditing, setIsEditing }: MarkdownEd
             <a href="https://commonmark.org/help" target="_blank" rel="noreferrer" className="markdownEditor__help" title="Ayuda"> <FontAwesomeIcon icon={faQuestion} /> </a>
           </>
         }
-        <button type="button" title="Edit" onClick={() => setIsEditing(!isEditing)}>
+        <button type="button" title="Edit" onClick={() => setIsEditing !== undefined && setIsEditing(!isEditing)}>
           {isEditing ?
             <><FontAwesomeIcon icon={faEyeLowVision} /> {" Ver"}</> :
             <><FontAwesomeIcon icon={faPenToSquare} /> {" Editar"}</>
