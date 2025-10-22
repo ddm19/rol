@@ -6,8 +6,10 @@ import { ArticleType } from "components/Article/types";
 import ArticleDisplay from "components/ArticleDisplay/articleDisplay";
 import { getArticleInfo } from "pages/Home/Home";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLink, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLink, faMagicWandSparkles, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { beautifyInventoryMarkdown } from "services/sheets";
+import Loading from "components/Loading/Loading";
 
 export type MagicItem = {
     id: string;
@@ -27,6 +29,9 @@ const InventoryDisplay = (props: InventoryDisplayProps) => {
     const [availableMagicItems, setMagicItems] = useState<MagicItem[]>([]);
     const [magicItemsOnInventory, setMagicItemsOnInventory] = useState<MagicItem[]>(magicItems || []);
     const [selectedValue, setSelectedValue] = useState<MagicItem>();
+    const [isInventoryBeautifying, setIsInventoryBeautifying] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+
 
     useEffect(() => {
         fetchArticles().then((articles) => {
@@ -65,55 +70,94 @@ const InventoryDisplay = (props: InventoryDisplayProps) => {
         setMagicItemsOnInventory(newItems);
         handleMagicItemsChange(newItems);
     };
+    const handleBeautify = async () => {
+        const confirmBeautify = window.confirm(
+            "⚠️ La IA puede cometer errores al formatear tu inventario.\n\n¿Deseas copiar el texto actual antes de continuar?"
+        );
+
+        if (confirmBeautify) {
+            try {
+                await navigator.clipboard.writeText(inventoryValue);
+                alert("Inventario copiado al portapapeles ✅");
+            } catch {
+                alert("No se pudo copiar automáticamente. Copia el texto manualmente si lo necesitas.");
+            }
+        }
+
+        const proceed = window.confirm(
+            "¿Quieres continuar con el formateo automático de tu inventario?"
+        );
+
+        if (!proceed) return;
+
+        setIsInventoryBeautifying(true);
+        try {
+            const beautified = await beautifyInventoryMarkdown(inventoryValue);
+            setInventoryValue(beautified);
+            onInventoryChange(beautified);
+            setIsEditing(false);
+        } finally {
+            setIsInventoryBeautifying(false);
+        }
+    };
 
     return (
         <div className="inventoryDisplay">
-            <h2>Inventario</h2>
-            <MarkdownEditor value={inventoryValue} onChange={onChange} />
-            <h2>Objetos Mágicos</h2>
-            <div className="inventoryDisplay__selector">
-                <img src={selectedValue?.content.image} className="inventoryDisplay__image" alt={selectedValue?.content.title} />
-                <select
-                    value={selectedValue?.content.title}
-                    onChange={(e) => {
-                        const item = availableMagicItems.find((item) => item.content.title === e.target.value) || null;
-                        setSelectedValue(item || availableMagicItems[0]);
-                    }}
-                >
-                    {availableMagicItems && availableMagicItems.map((item) => (
-                        <option key={item.content.title} value={item.content.title}>
-                            {item.content.title}
-                        </option>
-                    ))}
-                </select>
-                <button onClick={handleAddToInventory}>
-                    Añadir al inventario
-                </button>
-                <Link to={'/article'} className="inventoryDisplay__link" target="_blank" rel="noopener noreferrer">
-                    No encuentras el que buscas? Créalo <FontAwesomeIcon icon={faExternalLink} />
-                </Link>
-            </div>
-            <div className="inventoryDisplay__itemsDisplay">
-                {magicItemsOnInventory.map((item) =>
-                    <div className="inventoryDisplay__item" key={item.id}>
-                        <ArticleDisplay
-                            key={item.id}
-                            image={item.content.image || ""}
-                            title={item.content.title}
-                            description={item.content.shortDescription}
-                            articleId={item.content.title}
-                            articleInfo={getArticleInfo(item.content)}
-                            isBlank
-                        />
-                        <button
-                            onClick={() => handleDeleteFromInventory(item.id)}
+            {isInventoryBeautifying ? <Loading text="Una cuadrilla de gnomos está ordenando tu inventario, esto puede tardar hasta 30 segundos" /> :
+                <>
+                    <h2>Inventario</h2>
+                    <button onClick={handleBeautify} className="inventoryDisplay__beautifyButton">
+                        Formatea tu Inventario con IA
+                        <FontAwesomeIcon icon={faMagicWandSparkles} />
+                    </button>
+
+                    <MarkdownEditor value={inventoryValue} onChange={onChange} isEditing={isEditing} setIsEditing={setIsEditing} />
+                    <h2>Objetos Mágicos</h2>
+                    <div className="inventoryDisplay__selector">
+                        <img src={selectedValue?.content.image} className="inventoryDisplay__image" alt={selectedValue?.content.title} />
+                        <select
+                            value={selectedValue?.content.title}
+                            onChange={(e) => {
+                                const item = availableMagicItems.find((item) => item.content.title === e.target.value) || null;
+                                setSelectedValue(item || availableMagicItems[0]);
+                            }}
                         >
-                            <FontAwesomeIcon icon={faTrash} />
+                            {availableMagicItems && availableMagicItems.map((item) => (
+                                <option key={item.content.title} value={item.content.title}>
+                                    {item.content.title}
+                                </option>
+                            ))}
+                        </select>
+                        <button onClick={handleAddToInventory}>
+                            Añadir al inventario
                         </button>
+                        <Link to={'/article'} className="inventoryDisplay__link" target="_blank" rel="noopener noreferrer">
+                            No encuentras el que buscas? Créalo <FontAwesomeIcon icon={faExternalLink} />
+                        </Link>
                     </div>
-                )}
-            </div>
+                    <div className="inventoryDisplay__itemsDisplay">
+                        {magicItemsOnInventory.map((item) =>
+                            <div className="inventoryDisplay__item" key={item.id}>
+                                <ArticleDisplay
+                                    key={item.id}
+                                    image={item.content.image || ""}
+                                    title={item.content.title}
+                                    description={item.content.shortDescription}
+                                    articleId={item.content.title}
+                                    articleInfo={getArticleInfo(item.content)}
+                                    isBlank
+                                />
+                                <button
+                                    onClick={() => handleDeleteFromInventory(item.id)}
+                                >
+                                    <FontAwesomeIcon icon={faTrash} />
+                                </button>
+                            </div>
+                        )}
+                    </div>
+                </>}
         </div>
+
     );
 
 }

@@ -1,4 +1,5 @@
 import { supabase } from "./supabaseClient"
+import axios from "axios";
 
 export type Sheet = { id: string; owner: string; content: any; updated_at: string }
 
@@ -55,4 +56,53 @@ export async function deleteSheet(id: string): Promise<void> {
     .from("sheets")
     .upsert({ id, owner: user.id, deleted: true, updated_at: new Date().toISOString() }, { onConflict: "id, owner" });
   if (error) throw error;
+}
+
+
+const OR = axios.create({
+  baseURL: "https://openrouter.ai/api/v1",
+  headers: {
+    Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+    "Content-Type": "application/json",
+    "HTTP-Referer": "https://hispania.thedm.es",
+    "X-Title": "HispaniaPage"
+  },
+  timeout: 30000
+});
+
+function stripThinkSafe(s: string) {
+  const hasOpen = s.includes("<think>");
+  const hasClose = s.includes("</think>");
+  if (hasOpen && hasClose) return s.replace(/<think>[\s\S]*?<\/think>/g, "").trim();
+  return s.trim();
+}
+
+function extractMarkdown(s: string) {
+  const m = s.match(/```(?:markdown)?\s*([\s\S]*?)```/i);
+  if (m) return m[1].trim();
+  return s.trim();
+}
+
+export async function beautifyInventoryMarkdown(raw: string) {
+  const model = "tngtech/deepseek-r1t-chimera:free";
+  const userPrompt = `Convierte este inventario de D&D a Markdown perfectamente estructurado:
+- Encabezados (pequeños) para secciones (Armas, Armaduras, Consumibles, Misceláneo)
+- Listas con viñetas para ítems
+- Tablas Markdown si hay cantidades o propiedades
+- Sin explicación ni texto extra. Devuelve únicamente el Markdown final.
+- Debe contener todos los ítems del inventario original, sin omitir ni añadir nada.
+
+Texto:
+${raw}`;
+  const r = await OR.post("/chat/completions", {
+    model,
+    messages: [
+      { role: "system", content: "Eres un formateador que devuelve exclusivamente Markdown válido para fichas de D&D." },
+      { role: "user", content: userPrompt }
+    ],
+    temperature: 0.2,
+    max_tokens: 1200
+  });
+  const out = r.data?.choices?.[0]?.message?.content ?? "";
+  return extractMarkdown(stripThinkSafe(out));
 }

@@ -1,18 +1,19 @@
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBold, faItalic, faLink, faListUl, faListOl, faQuestion, faQuoteRight, faHeading, faEyeLowVision, faPenToSquare } from "@fortawesome/free-solid-svg-icons";
 import "./markdownEditor.scss";
 import ReactMarkdown from "react-markdown";
-import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 
 interface MarkdownEditorProps {
   value: string;
   onChange: (value: string) => void;
+  isEditing: boolean;
+  setIsEditing: (val: boolean) => void;
+
 }
 
-const MarkdownEditor = ({ value, onChange }: MarkdownEditorProps) => {
-  const [isEditing, setIsEditing] = useState(true);
+const MarkdownEditor = ({ value, onChange, isEditing, setIsEditing }: MarkdownEditorProps) => {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const applyFormatting = (prefix: string, suffix = prefix) => {

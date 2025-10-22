@@ -176,6 +176,8 @@
           ensureCalculatedFieldsVisible();
           recompute();
         }, 0);
+
+        removeHtmlMaxLength();
       });
 
       const loadingTask = pdfjsLib.getDocument({
@@ -622,6 +624,16 @@
         } else {
           setValue("PWP", "");
         }
+      }
+
+      function removeHtmlMaxLength() {
+        document
+          .querySelectorAll(
+            '.annotationLayer input[type="text"], .annotationLayer textarea',
+          )
+          .forEach((el) => {
+            if (el.hasAttribute("maxlength")) el.removeAttribute("maxlength");
+          });
       }
     </script>
   </body>
