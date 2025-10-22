@@ -57,14 +57,15 @@ export async function deleteSheet(id: string): Promise<void> {
   if (error) throw error;
 }
 
+const KEY = import.meta.env.VITE_OPENROUTER_API_KEY;
 
 const OR = axios.create({
   baseURL: "https://openrouter.ai/api/v1",
   headers: {
-    Authorization: `Bearer ${import.meta.env.VITE_OPENROUTER_API_KEY}`,
+    Authorization: KEY ? `Bearer ${KEY}` : undefined,
     "Content-Type": "application/json",
-    "HTTP-Referer": "https://hispania.thedm.es",
-    "X-Title": "HispaniaPage"
+    "HTTP-Referer": location.origin,
+    "X-Title": "HispaniaPage",
   },
   timeout: 30000
 });
@@ -83,6 +84,10 @@ function extractMarkdown(s: string) {
 }
 
 export async function beautifyInventoryMarkdown(raw: string) {
+  if (!KEY) {
+    console.error("OpenRouter API key vacía en el cliente (revisa env + rebuild con cache limpia en Vercel).");
+    throw new Error("OpenRouter API key vacía en el cliente (revisa env + rebuild con cache limpia en Vercel).");
+  }
   const model = "tngtech/deepseek-r1t-chimera:free";
   const userPrompt = `Convierte este inventario de D&D a Markdown perfectamente estructurado:
 - Encabezados (pequeños) para secciones (Armas, Armaduras, Consumibles, Misceláneo)
