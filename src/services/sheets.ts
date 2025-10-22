@@ -3,6 +3,7 @@ import { supabase } from "./supabaseClient"
 export type Sheet = { id: string; owner: string; content: any; updated_at: string }
 
 export async function listMySheets(): Promise<Sheet[]> {
+  debugger
   const { data, error } = await supabase
     .from("sheets")
     .select("id, owner, content, updated_at")
@@ -52,8 +53,6 @@ export async function deleteSheet(id: string): Promise<void> {
   if (!user) throw new Error("No session");
   const { error } = await supabase
     .from("sheets")
-    .update({ deleted: true })
-    .eq("id", id)
-    .eq("owner", user.id);
+    .upsert({ id, owner: user.id, deleted: true, updated_at: new Date().toISOString() }, { onConflict: "id, owner" });
   if (error) throw error;
 }

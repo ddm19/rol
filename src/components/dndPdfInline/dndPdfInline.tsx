@@ -7,6 +7,7 @@ import {
     faArrowLeft,
     faArrowsAltH,
     faArrowsAltV,
+    faDownload,
     faMagnifyingGlassMinus,
     faMagnifyingGlassPlus,
     faTimes,
@@ -30,7 +31,7 @@ export default function DnDPdfInline() {
     const [lastSaved, setLastSaved] = useState<string>("");
 
 
-    const { data } = supabase.storage.from("sheets").getPublicUrl("templates/rellenable_castellano.pdf");
+    const { data } = supabase.storage.from("sheets").getPublicUrl("templates/rellenable_castellano_unlocked.pdf");
     const pdfUrl = data.publicUrl;
     const src = `/pdfjs/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
 
@@ -44,6 +45,7 @@ export default function DnDPdfInline() {
     const zoomOut = () => sendMessage({ type: "ZOOM_OUT" });
     const fitWidth = () => sendMessage({ type: "FIT_WIDTH" });
     const fitPage = () => sendMessage({ type: "FIT_PAGE" });
+    const handlePrint = () => sendMessage({ type: "PRINT_PDF" });
 
     useEffect(() => {
         if (!isNew && routeId) {
@@ -182,6 +184,7 @@ export default function DnDPdfInline() {
         setShowControls(prev => !prev);
     };
 
+
     return (
         <div className="dndPdfInline">
             <div className="dndPdfInline__labelsContainer">
@@ -194,6 +197,7 @@ export default function DnDPdfInline() {
                         value={sheetName}
                         onChange={e => setSheetName(e.target.value)}
                         disabled={!isNew}
+                        id="sheetName"
                     />
                 </div>
                 <div className="dndPdfInline__info">
@@ -237,10 +241,13 @@ export default function DnDPdfInline() {
                 <button onClick={fitPage}>
                     <FontAwesomeIcon icon={faArrowsAltV} />
                 </button>
+                <button onClick={handlePrint}>
+                    <FontAwesomeIcon icon={faDownload} />
+                </button>
             </div>
 
             <div className="dndPdfInline__iframeContainer">
-                <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} />
+                <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
                 <InventoryDisplay
                     inventory={inventory}
                     magicItems={magicItems}
