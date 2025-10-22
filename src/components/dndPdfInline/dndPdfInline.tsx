@@ -30,15 +30,16 @@ export default function DnDPdfInline() {
     const [magicItems, setMagicItems] = useState<MagicItem[]>([]);
     const [lastSaved, setLastSaved] = useState<string>("");
 
+    const [viewerReady, setViewerReady] = useState(false);
+    const TARGET_ORIGIN = window.location.origin;
 
     const { data } = supabase.storage.from("sheets").getPublicUrl("templates/rellenable_castellano_unlocked.pdf");
     const pdfUrl = data.publicUrl;
     const src = `/pdfjs/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
 
     const sendMessage = (message: Record<string, any>) => {
-        if (iframeRef.current && iframeRef.current.contentWindow) {
-            iframeRef.current.contentWindow.postMessage(message, window.location.origin);
-        }
+        const win = iframeRef.current?.contentWindow;
+        if (win) win.postMessage(message, TARGET_ORIGIN);
     };
 
     const zoomIn = () => sendMessage({ type: "ZOOM_IN" });
@@ -50,7 +51,7 @@ export default function DnDPdfInline() {
     useEffect(() => {
         if (!isNew && routeId) {
             getSheet(routeId)
-                .then(s => {
+                .then((s) => {
                     setLoadedValues(s?.content || {});
                     setInventory(s?.content?.inventory || "");
                     setMagicItems(s?.content?.magicItems || []);
@@ -66,62 +67,58 @@ export default function DnDPdfInline() {
 
     useEffect(() => {
         if (isNew || !routeId) return;
-
         const autoSave = async () => {
             try {
                 const values = await requestPdfValues();
-                const completeValues = {
-                    ...values,
-                    inventory,
-                    magicItems
-                };
+                const completeValues = { ...values, inventory, magicItems };
                 const saved = await upsertSheet(routeId, completeValues);
                 setLastSaved(saved.updated_at);
             } catch (err) {
                 console.error("Error en autoguardado:", err);
             }
         };
-
-        const interval = setInterval(autoSave, 20 * 60 * 1000); // 20 min
+        const interval = setInterval(autoSave, 20 * 60 * 1000);
         return () => clearInterval(interval);
     }, [isNew, routeId, inventory, magicItems]);
 
     useEffect(() => {
-        if (!isNew && routeId) {
-            getSheet(routeId)
-                .then(s => {
-                    setLoadedValues(s?.content || {});
-                    setInventory(s?.content?.inventory || "");
-                    setMagicItems(s?.content?.magicItems || []);
-                })
-                .catch(() => {
-                    setLoadedValues({});
-                    setInventory("");
-                    setMagicItems([]);
-                });
-        }
-    }, [isNew, routeId]);
+        const onMsg = (e: MessageEvent) => {
+            const data = e.data;
+            if (!data || typeof data.type !== "string") return;
 
-    useEffect(() => {
-        if (!iframeRef.current) return;
-        const send = () => {
-            iframeRef.current?.contentWindow?.postMessage(
-                { type: "SET_PDF_FIELDS", values: loadedValues || {} },
-                window.location.origin
-            );
+            if (data.type === "VIEWER_READY") {
+                setViewerReady(true);
+                blastSetFields(loadedValues);
+            } else if (data.type === "PDF_FIELDS") {
+            }
         };
-        const onLoad = () => {
-            send();
-            setTimeout(send, 500);
-            setTimeout(send, 1200);
-        };
-        iframeRef.current.addEventListener("load", onLoad, { once: true });
-        setTimeout(send, 400);
-        return () => iframeRef.current?.removeEventListener("load", onLoad);
+        window.addEventListener("message", onMsg);
+        return () => window.removeEventListener("message", onMsg);
     }, [loadedValues]);
 
+    useEffect(() => {
+        const onLoad = () => {
+            setViewerReady(false);
+            blastSetFields(loadedValues);
+        };
+        const el = iframeRef.current;
+        if (el) el.addEventListener("load", onLoad, { once: true });
+        return () => el?.removeEventListener("load", onLoad);
+    }, [loadedValues]);
+
+    useEffect(() => {
+        if (viewerReady) blastSetFields(loadedValues);
+    }, [viewerReady, loadedValues]);
+
+    function blastSetFields(values: Record<string, any>) {
+        sendMessage({ type: "SET_PDF_FIELDS", values });
+        setTimeout(() => sendMessage({ type: "SET_PDF_FIELDS", values }), 300);
+        setTimeout(() => sendMessage({ type: "SET_PDF_FIELDS", values }), 900);
+        setTimeout(() => sendMessage({ type: "SET_PDF_FIELDS", values }), 1800);
+    }
+
     function requestPdfValues(): Promise<Record<string, any>> {
-        return new Promise(resolve => {
+        return new Promise((resolve) => {
             const onMsg = (e: MessageEvent) => {
                 if (e.data?.type === "PDF_FIELDS") {
                     window.removeEventListener("message", onMsg);
@@ -130,6 +127,7 @@ export default function DnDPdfInline() {
             };
             window.addEventListener("message", onMsg);
             sendMessage({ type: "GET_PDF_FIELDS" });
+            setTimeout(() => sendMessage({ type: "GET_PDF_FIELDS" }), 400);
         });
     }
 
@@ -141,12 +139,9 @@ export default function DnDPdfInline() {
         setSaving(true);
         try {
             const values = await requestPdfValues();
-            const completeValues = {
-                ...values,
-                inventory,
-                magicItems
-            };
+            const completeValues = { ...values, inventory, magicItems };
             localStorage.setItem(`sheet:${sheetName}`, JSON.stringify(completeValues));
+
             if (isNew) {
                 try {
                     const saved = await createSheetWithId(sheetName.trim(), completeValues);
@@ -172,18 +167,9 @@ export default function DnDPdfInline() {
         }
     };
 
-    const handleInventoryChange = (value: string) => {
-        setInventory(value);
-    };
-
-    const handleMagicItemsChange = (items: MagicItem[]) => {
-        setMagicItems(items);
-    };
-
-    const toggleControls = () => {
-        setShowControls(prev => !prev);
-    };
-
+    const handleInventoryChange = (value: string) => setInventory(value);
+    const handleMagicItemsChange = (items: MagicItem[]) => setMagicItems(items);
+    const toggleControls = () => setShowControls((prev) => !prev);
 
     return (
         <div className="dndPdfInline">
@@ -191,41 +177,37 @@ export default function DnDPdfInline() {
                 <button onClick={() => navigate(-1)}>
                     <FontAwesomeIcon icon={faArrowLeft} /> Volver
                 </button>
+
                 <div className="dndPdfInline__info">
                     <label>Nombre de la ficha:</label>
-                    <input
-                        value={sheetName}
-                        onChange={e => setSheetName(e.target.value)}
-                        disabled={!isNew}
-                        id="sheetName"
-                    />
+                    <input value={sheetName} onChange={(e) => setSheetName(e.target.value)} disabled={!isNew} id="sheetName" />
                 </div>
+
                 <div className="dndPdfInline__info">
                     <button onClick={handleSave} disabled={saving}>
                         {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
                     </button>
                     {lastSaved && (
                         <span className="dndPdfInline__lastSaved">
-                            Última vez: {new Date(lastSaved).toLocaleString('es-ES')}
+                            Última vez: {new Date(lastSaved).toLocaleString("es-ES")}
                         </span>
                     )}
                 </div>
-                <button onClick={async () => {
-                    if (window.confirm("¿Estás seguro de que quieres borrar esta ficha? Esta acción es irreversible.")) {
-                        await deleteSheet(routeId);
-                        navigate("/profile");
-                    }
-                }}>
+
+                <button
+                    onClick={async () => {
+                        if (window.confirm("¿Estás seguro de que quieres borrar esta ficha? Esta acción es irreversible.")) {
+                            await deleteSheet(routeId);
+                            navigate("/profile");
+                        }
+                    }}
+                >
                     <FontAwesomeIcon icon={faTrash} /> Borrar ficha
                 </button>
-
             </div>
+
             <button className="dndPdfInline__toggleControls" onClick={toggleControls}>
-                {!showControls ? (
-                    <FontAwesomeIcon icon={faEllipsisV} />
-                ) : (
-                    <FontAwesomeIcon icon={faTimes} />
-                )}
+                {!showControls ? <FontAwesomeIcon icon={faEllipsisV} /> : <FontAwesomeIcon icon={faTimes} />}
             </button>
 
             <div className={showControls ? "dndPdfInline__controls--show dndPdfInline__controls" : "dndPdfInline__controls"}>

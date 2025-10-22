@@ -4,7 +4,6 @@ import axios from "axios";
 export type Sheet = { id: string; owner: string; content: any; updated_at: string }
 
 export async function listMySheets(): Promise<Sheet[]> {
-  debugger
   const { data, error } = await supabase
     .from("sheets")
     .select("id, owner, content, updated_at")
