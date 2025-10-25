@@ -7,7 +7,7 @@ export enum ChoiceTypes {
 export interface ChoiceItem {
   id: string;
   title: string;
-  description: string;
+  description: string | JSX.Element;
   tier: number;
   special?: boolean;
   disabled?: boolean;
@@ -64,8 +64,12 @@ export const disadvantages: ChoiceItem[] = [
   {
     id: "d1-7",
     title: "Elemento adverso",
-    description:
-      "Elige un tipo de daño entre: Fuego, Perforante, Cortante, Contundente, Radiante, Necrótico. Eres vulnerable a ese tipo de daño.",
+    description: (
+      <>
+        Elige un tipo de daño entre: <span style={{ color: "darkred" }}>Fuego </span>,<span style={{ color: "DarkSlateGray" }}> Perforante , Cortante, Contundente </span>, <span style={{ color: "darkorange" }}>Radiante</span>, <span style={{ color: "darkgreen" }}>Necrótico</span>.
+        Eres vulnerable a ese tipo de daño.
+      </>
+    ),
     tier: 1,
     type: ChoiceTypes.Disadvantage,
   },
@@ -118,6 +122,24 @@ export const disadvantages: ChoiceItem[] = [
   },
   {
     id: "d2-6",
+    title: "Miopía",
+    description: (
+      <>
+
+        Naciste o tuviste un accidente que te dejó con mala vista. Desventaja en
+        ataques y cualquier tirada que requiera de la vista a más de 15 pies.
+
+        <span style={{ color: "darkred", fontWeight: "bold" }}>
+          Esta desventaja puede eliminarse con el uso de algún artilugio como
+          gafas, monóculos u otro que mejore la vista.
+        </span>
+      </>
+    ),
+    tier: 2,
+    type: ChoiceTypes.Disadvantage,
+  },
+  {
+    id: "d2-7",
     title: "Otro (DTier 2)",
     description:
       "Crea una nueva desventaja de Tier 2 y espera a que el DM la califique como apta para este tier.",
@@ -235,7 +257,11 @@ export const advantages: ChoiceItem[] = [
     id: "v1-6",
     title: "Resistencia Elemental",
     description:
-      "Elige un tipo de daño: Fuego, Frío, Ácido/Veneno, Perforante, Cortante, Contundente, Radiante o Necrótico. Eres resistente a ese tipo.",
+      (
+        <>
+          Elige un tipo de daño: <span style={{ color: "darkred" }}>Fuego</span>, <span style={{ color: "DeepSkyBlue" }}>Frío</span>, <span style={{ color: "darkgreen" }}>Ácido/Veneno</span>, <span style={{ color: "DarkSlateGray" }}>Perforante</span>, <span style={{ color: "DarkSlateGray" }}>Cortante</span>, <span style={{ color: "DarkSlateGray" }}>Contundente</span>, <span style={{ color: "yellow" }}>Radiante</span> o <span style={{ color: "DarkOrchid" }}>Necrótico</span>. Eres resistente a ese tipo.
+        </>
+      ),
     tier: 1,
     type: ChoiceTypes.Advantage,
   },
@@ -265,6 +291,13 @@ export const advantages: ChoiceItem[] = [
   },
   {
     id: "v1-10",
+    title: "Erudito",
+    description: "Obtén acceso a una lista de conjuros que no es la de tu clase.",
+    tier: 1,
+    type: ChoiceTypes.Advantage,
+  },
+  {
+    id: "v1-11",
     title: "Otro (VTier 1)",
     description:
       "Crea una nueva ventaja de Tier 1 y espera a que el DM la califique como apta para este tier.",

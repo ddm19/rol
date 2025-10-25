@@ -16,6 +16,7 @@ import ProfilePage from "pages/ProfilePage/profilePage";
 import DnDPdfInline from "components/dndPdfInline/dndPdfInline";
 import PrivateRoute from "components/NavBar/PrivateRoute/privateRoute";
 import VillazarcilloPage from "pages/VillazarcilloPage/villazarciloPage";
+import PJMaker from "pages/PjMaker/PjMaker";
 
 
 function App() {
@@ -39,6 +40,7 @@ function App() {
           <Route path="/Article/:articleId" element={<Article />} />
           <Route path="/Article" element={<ArticleEditor />} />
           <Route path="/Utilities/Advantages" element={<AdvantagesPage />} />
+          <Route path="Utilities/PJMaker" element={<PJMaker />} />
           <Route path="/Cards" element={<CardsPage />} />
           <Route path="/Utilities" element={<UtilitiesPage />} />
           <Route path="/Campaigns" element={<ArticleSearch category={{ "id": "campaign", "name": "Campaña" }} />} />
