@@ -17,6 +17,8 @@ import DnDPdfInline from "components/dndPdfInline/dndPdfInline";
 import PrivateRoute from "components/NavBar/PrivateRoute/privateRoute";
 import VillazarcilloPage from "pages/VillazarcilloPage/villazarciloPage";
 import PJMaker from "pages/PjMaker/PjMaker";
+import AdminPage from "pages/AdminPage/adminPage";
+import AdminRoute from "components/NavBar/PrivateRoute/adminRoute";
 
 
 function App() {
@@ -50,6 +52,11 @@ function App() {
           <Route path="*" element={<NoPage />} />
 
           {/* Rutas Privadas */}
+          <Route path="/admin" element={
+            <AdminRoute>
+              <AdminPage />
+            </AdminRoute>
+          } />
           <Route path="/profile" element={
             <PrivateRoute>
               <ProfilePage />
