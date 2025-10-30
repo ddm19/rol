@@ -1,5 +1,8 @@
+import SheetsList from "components/SheetList/sheetsList";
+
 const AdminPage = () => {
-    return <h1>Admin</h1>
+
+    return <SheetsList />
 }
 
 export default AdminPage;

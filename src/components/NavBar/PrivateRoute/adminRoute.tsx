@@ -13,12 +13,19 @@ const AdminRoute = ({ children }: AdminRouteProps) => {
   if (loading) return <Loading />;
   if (!user) return <Navigate to="/" replace />;
 
+
+  if (!isAdmin(user)) return <Navigate to="/" replace />;
+  return <>{children}</>;
+};
+
+export function isAdmin(user: any) {
   const roles = (user.app_metadata as any)?.roles as string[] | undefined;
   const role = (user.app_metadata as any)?.role as string | undefined;
   const isAdmin = role === 'admin' || (Array.isArray(roles) && roles.includes('admin'));
-  if (!isAdmin) return <Navigate to="/" replace />;
-  return <>{children}</>;
-};
+
+  return isAdmin;
+
+}
 
 export default AdminRoute;
 
