@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { saveScreenshot } from "./diceRoller";
+import { copyScreenshot, saveScreenshot } from "./diceRoller";
 
 const calculateBonus = (roll: number): string => {
   if (roll >= 18) return "+4";
@@ -43,12 +43,21 @@ const DiceRoller4d6: React.FC = () => {
 
       <div className="stats">Total: {totalSum}</div>
       <div className="stats">Media: {average}</div>
-      <button
-        className="diceRollerContainer__downloadButton"
-        onClick={() => saveScreenshot(".d20")}
-      >
-        Descargar
-      </button>
+      <div>
+        <button
+          className="diceRollerContainer__downloadButton"
+          onClick={() => saveScreenshot(".d46")}
+        >
+          Descargar
+        </button>
+        <button
+          className="diceRollerContainer__downloadButton"
+          id="copyButtond46"
+          onClick={() => copyScreenshot(".d46", document.getElementById("copyButtond46")!)}
+        >
+          Copiar
+        </button>
+      </div>
       <div className="roll-container">
         {rolls.map((roll, index) => (
           <div key={index} className="roll-display">

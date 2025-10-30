@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUndo } from "@fortawesome/free-solid-svg-icons";
-import { saveScreenshot } from "./diceRoller";
+import { copyScreenshot, saveScreenshot } from "./diceRoller";
 const calculateBonus = (roll: number): string => {
   if (roll >= 20) return "+5";
   if (roll >= 18) return "+4";
@@ -126,12 +126,21 @@ const DiceRoller: React.FC = () => {
       <div className="stats">Media: {average}</div>
       <div className="stats">Sumas restantes: {remainingAdds}</div>
       <div className="stats">Restas restantes: {remainingSubtracts}</div>
-      <button
-        className="diceRollerContainer__downloadButton"
-        onClick={() => saveScreenshot(".d20")}
-      >
-        Descargar
-      </button>
+      <div>
+        <button
+          className="diceRollerContainer__downloadButton"
+          onClick={() => saveScreenshot(".d20")}
+        >
+          Descargar
+        </button>
+        <button
+          className="diceRollerContainer__downloadButton"
+          id="copyButtond20"
+          onClick={() => copyScreenshot(".d20", document.getElementById("copyButtond20")!)}
+        >
+          Copiar
+        </button>
+      </div>
       <div className="roll-container">
         {rolls.map((roll, index) => (
           <div key={index} className="roll-display">
@@ -147,9 +156,8 @@ const DiceRoller: React.FC = () => {
                   remainingAdds <= 0 ||
                   actionsDone[index] !== ""
                 }
-                className={`action-button ${
-                  actionsDone[index] === "add" ? "green" : ""
-                }`}
+                className={`action-button ${actionsDone[index] === "add" ? "green" : ""
+                  }`}
               >
                 +2
               </button>
@@ -161,9 +169,8 @@ const DiceRoller: React.FC = () => {
                   remainingSubtracts <= 0 ||
                   actionsDone[index] !== ""
                 }
-                className={`action-button ${
-                  actionsDone[index] === "subtract" ? "red" : ""
-                }`}
+                className={`action-button ${actionsDone[index] === "subtract" ? "red" : ""
+                  }`}
               >
                 -2
               </button>

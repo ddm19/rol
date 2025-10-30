@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { saveScreenshot } from "./diceRoller";
+import { copyScreenshot, saveScreenshot } from "./diceRoller";
 
 const calculateBonus = (roll: number): string => {
   if (roll >= 18) return "+4";
@@ -37,6 +37,7 @@ const DiceRoller3d6: React.FC = () => {
 
   const clearRolls = () => {
     setRolls([]);
+    setRolls2([]);
   };
 
   const totalSum = rolls.reduce((acc, roll) => acc + roll, 0);
@@ -48,7 +49,7 @@ const DiceRoller3d6: React.FC = () => {
     rolls2.length > 0 ? (totalSum2 / rolls2.length).toFixed(2) : "0.00";
 
   return (
-    <> 
+    <>
       <div className="diceContainer d36">
         <button onClick={rollDice1}>Tirar 3d6 (1ª Tirada)</button>
         {rolls && rolls.length > 0 && (
@@ -57,12 +58,21 @@ const DiceRoller3d6: React.FC = () => {
 
         <div className="stats">Total: {totalSum}</div>
         <div className="stats">Media: {average}</div>
-        <button
-          className="diceRollerContainer__downloadButton"
-          onClick={() => saveScreenshot(".d36")}
-        >
-          Descargar
-        </button>
+        <div>
+          <button
+            className="diceRollerContainer__downloadButton"
+            onClick={() => saveScreenshot(".d36")}
+          >
+            Descargar
+          </button>
+          <button
+            className="diceRollerContainer__downloadButton"
+            id="copyButtond36"
+            onClick={() => copyScreenshot(".d36", document.getElementById("copyButtond36")!)}
+          >
+            Copiar
+          </button>
+        </div>
         {rolls && rolls.length > 0 && (
           <div className="diceContainer d36">
             <button onClick={rollDice2}>Tirar 3d6 (2ª Tirada)</button>
