@@ -177,6 +177,101 @@
       let pendingValues = null;
       let readyForData = false;
 
+      const AVATAR_ANNOTATION_ID = "108R";
+      const AVATAR_DEFAULT_PLACEHOLDER = "";
+      const avatarState = {
+        enabled: false,
+        src: "",
+        fit: "cover",
+        geom: null,
+      };
+
+      function findAnchorInLayer(layerDiv) {
+        if (!layerDiv) return null;
+        const sel = `[data-annotation-id="${CSS.escape(AVATAR_ANNOTATION_ID)}"]`;
+        return layerDiv.querySelector(sel);
+      }
+
+      function measureBoxRelativeToLayer(anchorEl, layerDiv) {
+        const ar = anchorEl.getBoundingClientRect();
+        const lr = layerDiv.getBoundingClientRect();
+        return {
+          x: ar.left - lr.left,
+          y: ar.top - lr.top,
+          w: ar.width,
+          h: ar.height,
+        };
+      }
+
+      function ensureAvatarInsideAnchor(layerDiv) {
+        try {
+          if (!avatarState.enabled) return;
+          if (!layerDiv) return;
+          const anchor = findAnchorInLayer(layerDiv);
+          if (!anchor) return;
+          const pageDiv = layerDiv.closest?.(".page");
+          if (!pageDiv) return;
+          const pageIndex =
+            parseInt(pageDiv.getAttribute("data-page-number"), 10) || 0;
+          const box = measureBoxRelativeToLayer(anchor, layerDiv);
+          const pw = pageDiv.clientWidth || pageDiv.offsetWidth || 1;
+          const ph = pageDiv.clientHeight || pageDiv.offsetHeight || 1;
+          avatarState.geom = {
+            pageIndex,
+            xNorm: box.x / pw,
+            yNorm: box.y / ph,
+            wNorm: box.w / pw,
+            hNorm: box.h / ph,
+          };
+
+          const textarea = anchor.querySelector("textarea");
+          if (textarea) textarea.remove();
+
+          let img = anchor.querySelector("img.avatar-image-108R");
+          if (!img) {
+            img = document.createElement("img");
+            img.className = "avatar-image-108R";
+            img.alt = "Avatar";
+            img.style.width = "100%";
+            img.style.height = "100%";
+            img.style.display = "block";
+            img.style.objectFit = avatarState.fit || "cover";
+            img.decoding = "async";
+            img.style.background = "transparent";
+            img.draggable = false;
+            anchor.appendChild(img);
+          }
+          if (img.style.objectFit !== (avatarState.fit || "cover")) {
+            img.style.objectFit = avatarState.fit || "cover";
+          }
+          const nextSrc = avatarState.enabled ? avatarState.src : "";
+          if (img.getAttribute("src") !== nextSrc) {
+            if (nextSrc) img.setAttribute("src", nextSrc);
+            else img.removeAttribute("src");
+          }
+          // Make sure anchor is visible and interactive state is normal
+          anchor.style.visibility = "visible";
+          anchor.style.pointerEvents = "auto";
+        } catch (e) {
+          // noop
+        }
+      }
+
+      function refreshAvatarEverywhere() {
+        document.querySelectorAll(".annotationLayer").forEach((layer) => {
+          ensureAvatarInsideAnchor(layer);
+        });
+      }
+
+      function clearAvatarEverywhere() {
+        const sel = `[data-annotation-id="${CSS.escape(AVATAR_ANNOTATION_ID)}"]`;
+        document.querySelectorAll(sel).forEach((anchor) => {
+          anchor
+            .querySelectorAll("img.avatar-image-108R")
+            .forEach((img) => img.remove());
+        });
+      }
+
       function inputsReady() {
         return (
           !!document.querySelector('input[name="CharacterName"]') ||
@@ -271,6 +366,18 @@
             evt?.source?.div || evt?.source?.annotationLayer?.div || undefined;
           applyPdfFormValues(pendingValues, root);
         }
+        // Place/update avatar overlay when the annotation layer of a page is ready
+        try {
+          const layerDiv =
+            evt?.source?.div || evt?.source?.annotationLayer?.div || null;
+          if (layerDiv) ensureAvatarInsideAnchor(layerDiv);
+        } catch {}
+        // Place/update header image on first page
+        try {
+          const layerDiv =
+            evt?.source?.div || evt?.source?.annotationLayer?.div || null;
+          if (layerDiv) ensureHeaderOnLayer(layerDiv);
+        } catch {}
         postReady();
       });
 
@@ -289,6 +396,24 @@
           attachRecomputeListeners();
           recompute();
         }, 250);
+        // Try to ensure avatar appears even if the event timing differs (solo si está habilitado)
+        try {
+          let tries = 60;
+          const tick = () => {
+            if (avatarState.enabled) ensureAvatarAnywhere();
+            if (avatarState.enabled) ensureHeaderAnywhere();
+            if (
+              avatarState.enabled &&
+              --tries > 0 &&
+              !document.querySelector(
+                'section[data-annotation-id="108R"] img.avatar-image-108R',
+              )
+            ) {
+              setTimeout(tick, 200);
+            }
+          };
+          tick();
+        } catch {}
         postReady();
       });
 
@@ -420,7 +545,122 @@
               warmupPages();
             });
             break;
+          case "SET_AVATAR": {
+            const src = data?.src;
+            const fit = data?.fit;
+            if (typeof src === "string" && src) avatarState.src = src;
+            if (fit === "cover" || fit === "contain") avatarState.fit = fit;
+            avatarState.enabled = true;
+            refreshAvatarEverywhere();
+            // Also run a quick retry loop in case the layer isn't ready yet
+            setTimeout(() => ensureAvatarAnywhere(), 50);
+            setTimeout(() => ensureAvatarAnywhere(), 250);
+            setTimeout(() => ensureAvatarAnywhere(), 750);
+            break;
+          }
+          case "CLEAR_AVATAR": {
+            avatarState.enabled = false;
+            clearAvatarEverywhere();
+            break;
+          }
+          case "SET_HEADER_IMAGE": {
+            const src = data?.src;
+            const fit = data?.fit;
+            const heightRatio = Number(data?.heightRatio);
+            if (typeof src === "string" && src) headerState.src = src;
+            if (fit === "cover" || fit === "contain") headerState.fit = fit;
+            if (!Number.isNaN(heightRatio) && heightRatio > 0 && heightRatio < 1) {
+              headerState.heightRatio = heightRatio;
+            }
+            headerState.enabled = true;
+            setTimeout(() => ensureHeaderAnywhere(), 50);
+            setTimeout(() => ensureHeaderAnywhere(), 250);
+            setTimeout(() => ensureHeaderAnywhere(), 750);
+            break;
+          }
+          case "CLEAR_HEADER_IMAGE": {
+            headerState.enabled = false;
+            clearHeaderEverywhere();
+            break;
+          }
         }
+      }
+
+      // Ensure avatar injection without relying solely on event timing
+      function ensureAvatarAnywhere() {
+        const anchors = document.querySelectorAll(
+          `section[data-annotation-id="${CSS.escape(AVATAR_ANNOTATION_ID)}"]`,
+        );
+        anchors.forEach((anchor) => {
+          const layerDiv = anchor.closest(".annotationLayer");
+          ensureAvatarInsideAnchor(layerDiv);
+        });
+      }
+
+      // Header placement helpers (first page, top)
+function ensureHeaderOnLayer(layerDiv) {
+        try {
+          if (!layerDiv) return;
+          const pageDiv = layerDiv.closest?.(".page");
+          if (!pageDiv) return;
+          const pageIndex =
+            parseInt(pageDiv.getAttribute("data-page-number"), 10) || 0;
+          if (pageIndex !== 1) return;
+          if (!avatarState.enabled || !avatarState.src) return;
+
+          let overlay = layerDiv.querySelector("div.headerOverlayTop");
+          if (!overlay) {
+            overlay = document.createElement("div");
+            overlay.className = "headerOverlayTop";
+            overlay.style.position = "absolute";
+            overlay.style.left = "0px";
+            overlay.style.top = "0px";
+            overlay.style.pointerEvents = "none";
+            overlay.style.zIndex = "1000";
+            const img = document.createElement("img");
+            img.alt = "Header Image";
+            img.className = "header-image-top";
+            img.style.width = "100%";
+            img.style.height = "100%";
+            img.style.objectFit = avatarState.fit || "cover";
+            img.decoding = "async";
+            img.setAttribute("draggable", "false");
+            img.style.userSelect = "none";
+            img.style.webkitUserDrag = "none";
+            overlay.appendChild(img);
+            layerDiv.appendChild(overlay);
+          }
+
+          const pw = pageDiv.clientWidth || pageDiv.offsetWidth || 1;
+          const ph = pageDiv.clientHeight || pageDiv.offsetHeight || 1;
+          const h = Math.max(1, Math.round(ph * 0.12));
+          overlay.style.width = `${pw}px`;
+          overlay.style.height = `${h}px`;
+
+          const img = overlay.querySelector("img.header-image-top");
+          if (img) {
+            if (img.style.objectFit !== (avatarState.fit || "cover")) {
+              img.style.objectFit = avatarState.fit || "cover";
+            }
+            const nextSrc = avatarState.enabled ? avatarState.src : "";
+            if (img.getAttribute("src") !== nextSrc) {
+              if (nextSrc) img.setAttribute("src", nextSrc);
+              else img.removeAttribute("src");
+            }
+          }
+        } catch {}
+      }
+
+      function ensureHeaderAnywhere() {
+        document.querySelectorAll(".annotationLayer").forEach((layer) => {
+          ensureHeaderOnLayer(layer);
+        });
+      }
+
+      function clearHeaderEverywhere() {
+        document
+          .querySelectorAll(".annotationLayer div.headerOverlayTop")
+          .forEach((el) => el.remove());
       }
 
       window.addEventListener("message", (e) => handleIncoming(e.data));

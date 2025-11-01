@@ -29,6 +29,7 @@ export default function DnDPdfInline() {
     const [inventory, setInventory] = useState("");
     const [magicItems, setMagicItems] = useState<MagicItem[]>([]);
     const [lastSaved, setLastSaved] = useState<string>("");
+    const [avatarUrl, setAvatarUrl] = useState<string>("");
 
     const [viewerReady, setViewerReady] = useState(false);
     const TARGET_ORIGIN = window.location.origin;
@@ -56,6 +57,7 @@ export default function DnDPdfInline() {
                     setInventory(s?.content?.inventory || "");
                     setMagicItems(s?.content?.magicItems || []);
                     setLastSaved(s?.updated_at || "");
+                    setAvatarUrl(s?.content?.avatarUrl || "");
                 })
                 .catch(() => {
                     setLoadedValues({});
@@ -70,7 +72,7 @@ export default function DnDPdfInline() {
         const autoSave = async () => {
             try {
                 const values = await requestPdfValues();
-                const completeValues = { ...values, inventory, magicItems };
+                const completeValues = { ...values, inventory, magicItems, avatarUrl };
                 const saved = await upsertSheet(routeId, completeValues);
                 setLastSaved(saved.updated_at);
             } catch (err) {
@@ -85,10 +87,15 @@ export default function DnDPdfInline() {
         const onMsg = (e: MessageEvent) => {
             const data = e.data;
             if (!data || typeof data.type !== "string") return;
-
             if (data.type === "VIEWER_READY") {
+
                 setViewerReady(true);
                 blastSetFields(loadedValues);
+                if (avatarUrl) {
+                    sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" });
+                    setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 300);
+                    setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 900);
+                }
             } else if (data.type === "PDF_FIELDS") {
             }
         };
@@ -107,8 +114,48 @@ export default function DnDPdfInline() {
     }, [loadedValues]);
 
     useEffect(() => {
-        if (viewerReady) blastSetFields(loadedValues);
-    }, [viewerReady, loadedValues]);
+        if (viewerReady) {
+            blastSetFields(loadedValues);
+            if (avatarUrl) {
+                sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" });
+                setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 300);
+                setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 900);
+            }
+        }
+    }, [viewerReady, loadedValues, avatarUrl]);
+
+    // Cargar avatar desde el bucket (avatars/<sheetName>.*)
+    useEffect(() => {
+        const loadFromBucket = async () => {
+            const name = (sheetName || routeId || "").trim();
+            if (!name || name === "new") return;
+            const safe = name.replace(/[^a-zA-Z0-9._-]/g, "_");
+            try {
+                const { data: items, error } = await supabase.storage
+                    .from("CharacterImages")
+                    .list("avatars", { limit: 1000 });
+                if (error) return;
+                const found = (items || []).find((it: any) =>
+                    typeof it?.name === "string" && it.name.toLowerCase().startsWith((safe + ".").toLowerCase()),
+                );
+                if (found) {
+                    const { data: pub } = supabase.storage
+                        .from("CharacterImages")
+                        .getPublicUrl(`avatars/${found.name}`);
+                    if (pub?.publicUrl) {
+                        setAvatarUrl(pub.publicUrl);
+                        if (viewerReady) {
+                            sendMessage({ type: "SET_AVATAR", src: pub.publicUrl, fit: "cover" });
+                        }
+                    }
+                }
+            } catch (err) {
+                // ignore
+            }
+        };
+        loadFromBucket();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sheetName, routeId]);
 
     function blastSetFields(values: Record<string, any>) {
         sendMessage({ type: "SET_PDF_FIELDS", values });
@@ -139,7 +186,7 @@ export default function DnDPdfInline() {
         setSaving(true);
         try {
             const values = await requestPdfValues();
-            const completeValues = { ...values, inventory, magicItems };
+            const completeValues = { ...values, inventory, magicItems, avatarUrl };
             localStorage.setItem(`sheet:${sheetName}`, JSON.stringify(completeValues));
 
             if (isNew) {
@@ -171,6 +218,35 @@ export default function DnDPdfInline() {
     const handleMagicItemsChange = (items: MagicItem[]) => setMagicItems(items);
     const toggleControls = () => setShowControls((prev) => !prev);
 
+    // Avatar upload helpers
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const triggerAvatarPicker = () => fileInputRef.current?.click();
+    const handleAvatarPicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            const safeName = (sheetName || routeId || "avatar").replace(/[^a-zA-Z0-9._-]/g, "_");
+            const ext = file.name.split('.').pop() || (file.type.includes('png') ? 'png' : file.type.includes('jpeg') ? 'jpg' : 'bin');
+            const path = `avatars/${encodeURIComponent(safeName)}.${ext}`;
+            const { error: upErr } = await supabase.storage.from("CharacterImages").upload(path, file, {
+                cacheControl: "3600",
+                upsert: true,
+                contentType: file.type || undefined,
+            });
+            if (upErr) throw upErr;
+            const { data: pub } = supabase.storage.from("CharacterImages").getPublicUrl(path);
+            const publicUrl = pub.publicUrl;
+            setAvatarUrl(publicUrl);
+            sendMessage({ type: "SET_AVATAR", src: publicUrl, fit: "cover" });
+        } catch (err) {
+            console.error("Error subiendo avatar:", err);
+            alert("No se pudo subir el avatar. Inténtalo de nuevo.");
+        } finally {
+            if (e.target) e.target.value = "";
+        }
+    };
+    const clearAvatar = () => { setAvatarUrl(""); sendMessage({ type: "CLEAR_AVATAR" }); };
+
     return (
         <div className="dndPdfInline">
             <div className="dndPdfInline__labelsContainer">
@@ -192,6 +268,18 @@ export default function DnDPdfInline() {
                             Última vez: {new Date(lastSaved).toLocaleString("es-ES")}
                         </span>
                     )}
+                </div>
+
+                <div className="dndPdfInline__info">
+                    <button onClick={triggerAvatarPicker}>Subir avatar</button>
+                    <button onClick={clearAvatar} title="Quitar avatar">Quitar</button>
+                    <input
+                        type="file"
+                        accept="image/*"
+                        ref={fileInputRef}
+                        style={{ display: "none" }}
+                        onChange={handleAvatarPicked}
+                    />
                 </div>
 
                 <button
