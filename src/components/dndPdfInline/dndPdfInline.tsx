@@ -10,12 +10,14 @@ import {
     faDownload,
     faMagnifyingGlassMinus,
     faMagnifyingGlassPlus,
+    faSave,
     faTimes,
     faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import "./dndPdfInline.scss";
 import InventoryDisplay, { MagicItem } from "./components/inventoryDisplay";
+import Loading from "components/Loading/Loading";
 
 export default function DnDPdfInline() {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -30,6 +32,7 @@ export default function DnDPdfInline() {
     const [magicItems, setMagicItems] = useState<MagicItem[]>([]);
     const [lastSaved, setLastSaved] = useState<string>("");
     const [avatarUrl, setAvatarUrl] = useState<string>("");
+    const [isLoading, setIsLoading] = useState(false);
 
     const [viewerReady, setViewerReady] = useState(false);
     const TARGET_ORIGIN = window.location.origin;
@@ -92,9 +95,10 @@ export default function DnDPdfInline() {
                 setViewerReady(true);
                 blastSetFields(loadedValues);
                 if (avatarUrl) {
-                    sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" });
-                    setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 300);
-                    setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 900);
+                    const srcBusted = `${avatarUrl}?v=${Date.now()}`;
+                    sendMessage({ type: "SET_AVATAR", src: srcBusted, fit: "cover" });
+                    setTimeout(() => sendMessage({ type: "SET_AVATAR", src: srcBusted, fit: "cover" }), 300);
+                    setTimeout(() => sendMessage({ type: "SET_AVATAR", src: srcBusted, fit: "cover" }), 900);
                 }
             } else if (data.type === "PDF_FIELDS") {
             }
@@ -117,9 +121,10 @@ export default function DnDPdfInline() {
         if (viewerReady) {
             blastSetFields(loadedValues);
             if (avatarUrl) {
-                sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" });
-                setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 300);
-                setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 900);
+                const srcBusted = `${avatarUrl}?v=${Date.now()}`;
+                sendMessage({ type: "SET_AVATAR", src: srcBusted, fit: "cover" });
+                setTimeout(() => sendMessage({ type: "SET_AVATAR", src: srcBusted, fit: "cover" }), 300);
+                setTimeout(() => sendMessage({ type: "SET_AVATAR", src: srcBusted, fit: "cover" }), 900);
             }
         }
     }, [viewerReady, loadedValues, avatarUrl]);
@@ -145,7 +150,8 @@ export default function DnDPdfInline() {
                     if (pub?.publicUrl) {
                         setAvatarUrl(pub.publicUrl);
                         if (viewerReady) {
-                            sendMessage({ type: "SET_AVATAR", src: pub.publicUrl, fit: "cover" });
+                            const srcBusted = `${pub.publicUrl}?v=${Date.now()}`;
+                            sendMessage({ type: "SET_AVATAR", src: srcBusted, fit: "cover" });
                         }
                     }
                 }
@@ -222,6 +228,7 @@ export default function DnDPdfInline() {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const triggerAvatarPicker = () => fileInputRef.current?.click();
     const handleAvatarPicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        setIsLoading(true);
         const file = e.target.files?.[0];
         if (!file) return;
         try {
@@ -229,7 +236,7 @@ export default function DnDPdfInline() {
             const ext = file.name.split('.').pop() || (file.type.includes('png') ? 'png' : file.type.includes('jpeg') ? 'jpg' : 'bin');
             const path = `avatars/${encodeURIComponent(safeName)}.${ext}`;
             const { error: upErr } = await supabase.storage.from("CharacterImages").upload(path, file, {
-                cacheControl: "3600",
+                cacheControl: "0",
                 upsert: true,
                 contentType: file.type || undefined,
             });
@@ -237,15 +244,32 @@ export default function DnDPdfInline() {
             const { data: pub } = supabase.storage.from("CharacterImages").getPublicUrl(path);
             const publicUrl = pub.publicUrl;
             setAvatarUrl(publicUrl);
-            sendMessage({ type: "SET_AVATAR", src: publicUrl, fit: "cover" });
+            const srcBusted = `${publicUrl}?v=${Date.now()}`;
+            sendMessage({ type: "SET_AVATAR", src: srcBusted, fit: "cover" });
         } catch (err) {
             console.error("Error subiendo avatar:", err);
             alert("No se pudo subir el avatar. Inténtalo de nuevo.");
         } finally {
             if (e.target) e.target.value = "";
+            setIsLoading(false);
         }
     };
-    const clearAvatar = () => { setAvatarUrl(""); sendMessage({ type: "CLEAR_AVATAR" }); };
+    const clearAvatar = async () => {
+        try {
+            const name = (sheetName || routeId || "").trim();
+            if (name && name !== "new") {
+                const safe = name.replace(/[^a-zA-Z0-9._-]/g, "_");
+                const { data: items } = await supabase.storage.from("CharacterImages").list("avatars", { limit: 1000 });
+                const found = (items || []).find((it: any) => typeof it?.name === "string" && it.name.toLowerCase().startsWith((safe + ".").toLowerCase()));
+                if (found) await supabase.storage.from("CharacterImages").remove([`avatars/${found.name}`]);
+            }
+        } catch (err) {
+            console.warn("No se pudo eliminar el avatar del bucket:", err);
+        } finally {
+            setAvatarUrl("");
+            sendMessage({ type: "CLEAR_AVATAR" });
+        }
+    };
 
     return (
         <div className="dndPdfInline">
@@ -260,8 +284,9 @@ export default function DnDPdfInline() {
                 </div>
 
                 <div className="dndPdfInline__info">
-                    <button onClick={handleSave} disabled={saving}>
+                    <button onClick={handleSave} disabled={saving} className="dndPdfInline__button--green dndPdfInline__button">
                         {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
+                        <FontAwesomeIcon icon={faSave} />
                     </button>
                     {lastSaved && (
                         <span className="dndPdfInline__lastSaved">
@@ -272,7 +297,7 @@ export default function DnDPdfInline() {
 
                 <div className="dndPdfInline__info">
                     <button onClick={triggerAvatarPicker}>Subir avatar</button>
-                    <button onClick={clearAvatar} title="Quitar avatar">Quitar</button>
+                    <button onClick={clearAvatar} title="Quitar avatar">Eliminar avatar</button>
                     <input
                         type="file"
                         accept="image/*"
@@ -283,6 +308,7 @@ export default function DnDPdfInline() {
                 </div>
 
                 <button
+                    className="dndPdfInline__button dndPdfInline__button--red"
                     onClick={async () => {
                         if (window.confirm("¿Estás seguro de que quieres borrar esta ficha? Esta acción es irreversible.")) {
                             await deleteSheet(routeId);
@@ -317,7 +343,12 @@ export default function DnDPdfInline() {
             </div>
 
             <div className="dndPdfInline__iframeContainer">
-                <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
+                {!isLoading ?
+                    <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
+                    : <Loading />}
+            </div>
+
+            <div className="dndPdfInline__inventoryContainer">
                 <InventoryDisplay
                     inventory={inventory}
                     magicItems={magicItems}

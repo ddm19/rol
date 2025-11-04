@@ -1,0 +1,333 @@
+1:import { useEffect, useRef, useState } from "react";
+2:import { supabase } from "services/supabaseClient";
+3:import { useNavigate, useParams } from "react-router-dom";
+4:import { getSheet, createSheetWithId, upsertSheet, deleteSheet } from "services/sheets";
+5:import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+6:import {
+7:    faArrowLeft,
+8:    faArrowsAltH,
+9:    faArrowsAltV,
+10:    faDownload,
+11:    faMagnifyingGlassMinus,
+12:    faMagnifyingGlassPlus,
+13:    faSave,
+14:    faTimes,
+15:    faTrash,
+16:} from "@fortawesome/free-solid-svg-icons";
+17:import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
+18:import "./dndPdfInline.scss";
+19:import InventoryDisplay, { MagicItem } from "./components/inventoryDisplay";
+20:
+21:export default function DnDPdfInline() {
+22:    const iframeRef = useRef<HTMLIFrameElement | null>(null);
+23:    const { id: routeId = "" } = useParams();
+24:    const navigate = useNavigate();
+25:    const isNew = routeId === "new";
+26:    const [sheetName, setSheetName] = useState(isNew ? "" : routeId);
+27:    const [loadedValues, setLoadedValues] = useState<Record<string, any>>({});
+28:    const [saving, setSaving] = useState(false);
+29:    const [showControls, setShowControls] = useState(true);
+30:    const [inventory, setInventory] = useState("");
+31:    const [magicItems, setMagicItems] = useState<MagicItem[]>([]);
+32:    const [lastSaved, setLastSaved] = useState<string>("");
+33:    const [avatarUrl, setAvatarUrl] = useState<string>("");
+34:
+35:    const [viewerReady, setViewerReady] = useState(false);
+36:    const TARGET_ORIGIN = window.location.origin;
+37:
+38:    const { data } = supabase.storage.from("sheets").getPublicUrl("templates/rellenable_castellano_unlocked.pdf");
+39:    const pdfUrl = data.publicUrl;
+40:    const src = `/pdfjs/viewer.html?file=${encodeURIComponent(pdfUrl)}`;
+41:
+42:    const sendMessage = (message: Record<string, any>) => {
+43:        const win = iframeRef.current?.contentWindow;
+44:        if (win) win.postMessage(message, TARGET_ORIGIN);
+45:    };
+46:
+47:    const zoomIn = () => sendMessage({ type: "ZOOM_IN" });
+48:    const zoomOut = () => sendMessage({ type: "ZOOM_OUT" });
+49:    const fitWidth = () => sendMessage({ type: "FIT_WIDTH" });
+50:    const fitPage = () => sendMessage({ type: "FIT_PAGE" });
+51:    const handlePrint = () => sendMessage({ type: "PRINT_PDF" });
+52:
+53:    useEffect(() => {
+54:        if (!isNew && routeId) {
+55:            getSheet(routeId)
+56:                .then((s) => {
+57:                    setLoadedValues(s?.content || {});
+58:                    setInventory(s?.content?.inventory || "");
+59:                    setMagicItems(s?.content?.magicItems || []);
+60:                    setLastSaved(s?.updated_at || "");
+61:                    setAvatarUrl(s?.content?.avatarUrl || "");
+62:                })
+63:                .catch(() => {
+64:                    setLoadedValues({});
+65:                    setInventory("");
+66:                    setMagicItems([]);
+67:                });
+68:        }
+69:    }, [isNew, routeId]);
+70:
+71:    useEffect(() => {
+72:        if (isNew || !routeId) return;
+73:        const autoSave = async () => {
+74:            try {
+75:                const values = await requestPdfValues();
+76:                const completeValues = { ...values, inventory, magicItems, avatarUrl };
+77:                const saved = await upsertSheet(routeId, completeValues);
+78:                setLastSaved(saved.updated_at);
+79:            } catch (err) {
+80:                console.error("Error en autoguardado:", err);
+81:            }
+82:        };
+83:        const interval = setInterval(autoSave, 20 * 60 * 1000);
+84:        return () => clearInterval(interval);
+85:    }, [isNew, routeId, inventory, magicItems]);
+86:
+87:    useEffect(() => {
+88:        const onMsg = (e: MessageEvent) => {
+89:            const data = e.data;
+90:            if (!data || typeof data.type !== "string") return;
+91:            if (data.type === "VIEWER_READY") {
+92:
+93:                setViewerReady(true);
+94:                blastSetFields(loadedValues);
+95:                if (avatarUrl) {
+96:                    sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" });
+97:                    setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 300);
+98:                    setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 900);
+99:                }
+100:            } else if (data.type === "PDF_FIELDS") {
+101:            }
+102:        };
+103:        window.addEventListener("message", onMsg);
+104:        return () => window.removeEventListener("message", onMsg);
+105:    }, [loadedValues]);
+106:
+107:    useEffect(() => {
+108:        const onLoad = () => {
+109:            setViewerReady(false);
+110:            blastSetFields(loadedValues);
+111:        };
+112:        const el = iframeRef.current;
+113:        if (el) el.addEventListener("load", onLoad, { once: true });
+114:        return () => el?.removeEventListener("load", onLoad);
+115:    }, [loadedValues]);
+116:
+117:    useEffect(() => {
+118:        if (viewerReady) {
+119:            blastSetFields(loadedValues);
+120:            if (avatarUrl) {
+121:                sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" });
+122:                setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 300);
+123:                setTimeout(() => sendMessage({ type: "SET_AVATAR", src: avatarUrl, fit: "cover" }), 900);
+124:            }
+125:        }
+126:    }, [viewerReady, loadedValues, avatarUrl]);
+127:
+128:    // Cargar avatar desde el bucket (avatars/<sheetName>.*)
+129:    useEffect(() => {
+130:        const loadFromBucket = async () => {
+131:            const name = (sheetName || routeId || "").trim();
+132:            if (!name || name === "new") return;
+133:            const safe = name.replace(/[^a-zA-Z0-9._-]/g, "_");
+134:            try {
+135:                const { data: items, error } = await supabase.storage
+136:                    .from("CharacterImages")
+137:                    .list("avatars", { limit: 1000 });
+138:                if (error) return;
+139:                const found = (items || []).find((it: any) =>
+140:                    typeof it?.name === "string" && it.name.toLowerCase().startsWith((safe + ".").toLowerCase()),
+141:                );
+142:                if (found) {
+143:                    const { data: pub } = supabase.storage
+144:                        .from("CharacterImages")
+145:                        .getPublicUrl(`avatars/${found.name}`);
+146:                    if (pub?.publicUrl) {
+147:                        setAvatarUrl(pub.publicUrl);
+148:                        if (viewerReady) {
+149:                            sendMessage({ type: "SET_AVATAR", src: pub.publicUrl, fit: "cover" });
+150:                        }
+151:                    }
+152:                }
+153:            } catch (err) {
+154:                // ignore
+155:            }
+156:        };
+157:        loadFromBucket();
+158:        // eslint-disable-next-line react-hooks/exhaustive-deps
+159:    }, [sheetName, routeId]);
+160:
+161:    function blastSetFields(values: Record<string, any>) {
+162:        sendMessage({ type: "SET_PDF_FIELDS", values });
+163:        setTimeout(() => sendMessage({ type: "SET_PDF_FIELDS", values }), 300);
+164:        setTimeout(() => sendMessage({ type: "SET_PDF_FIELDS", values }), 900);
+165:        setTimeout(() => sendMessage({ type: "SET_PDF_FIELDS", values }), 1800);
+166:    }
+167:
+168:    function requestPdfValues(): Promise<Record<string, any>> {
+169:        return new Promise((resolve) => {
+170:            const onMsg = (e: MessageEvent) => {
+171:                if (e.data?.type === "PDF_FIELDS") {
+172:                    window.removeEventListener("message", onMsg);
+173:                    resolve(e.data.values || {});
+174:                }
+175:            };
+176:            window.addEventListener("message", onMsg);
+177:            sendMessage({ type: "GET_PDF_FIELDS" });
+178:            setTimeout(() => sendMessage({ type: "GET_PDF_FIELDS" }), 400);
+179:        });
+180:    }
+181:
+182:    const handleSave = async () => {
+183:        if (!sheetName.trim()) {
+184:            alert("Por favor, introduce un nombre para la ficha.");
+185:            return;
+186:        }
+187:        setSaving(true);
+188:        try {
+189:            const values = await requestPdfValues();
+190:            const completeValues = { ...values, inventory, magicItems, avatarUrl };
+191:            localStorage.setItem(`sheet:${sheetName}`, JSON.stringify(completeValues));
+192:
+193:            if (isNew) {
+194:                try {
+195:                    const saved = await createSheetWithId(sheetName.trim(), completeValues);
+196:                    setLastSaved(saved.updated_at);
+197:                } catch (e: any) {
+198:                    if (e?.code === "23505") {
+199:                        alert("Ese nombre de ficha ya existe. Elige otro.");
+200:                        return;
+201:                    }
+202:                    throw e;
+203:                }
+204:                navigate(`/sheets/${encodeURIComponent(sheetName.trim())}`, { replace: true });
+205:            } else {
+206:                const saved = await upsertSheet(routeId, completeValues);
+207:                setLastSaved(saved.updated_at);
+208:                alert("Ficha guardada con éxito.");
+209:            }
+210:        } catch (err) {
+211:            console.error(err);
+212:            alert("Ha ocurrido un error al guardar la ficha: " + ((err as Error).message || String(err)));
+213:        } finally {
+214:            setSaving(false);
+215:        }
+216:    };
+217:
+218:    const handleInventoryChange = (value: string) => setInventory(value);
+219:    const handleMagicItemsChange = (items: MagicItem[]) => setMagicItems(items);
+220:    const toggleControls = () => setShowControls((prev) => !prev);
+221:
+222:    // Avatar upload helpers
+223:    const fileInputRef = useRef<HTMLInputElement | null>(null);
+224:    const triggerAvatarPicker = () => fileInputRef.current?.click();
+225:    const handleAvatarPicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+226:        const file = e.target.files?.[0];
+227:        if (!file) return;
+228:        try {
+229:            const safeName = (sheetName || routeId || "avatar").replace(/[^a-zA-Z0-9._-]/g, "_");
+230:            const ext = file.name.split('.').pop() || (file.type.includes('png') ? 'png' : file.type.includes('jpeg') ? 'jpg' : 'bin');
+231:            const path = `avatars/${encodeURIComponent(safeName)}.${ext}`;
+232:            const { error: upErr } = await supabase.storage.from("CharacterImages").upload(path, file, {
+233:                cacheControl: "3600",
+234:                upsert: true,
+235:                contentType: file.type || undefined,
+236:            });
+237:            if (upErr) throw upErr;
+238:            const { data: pub } = supabase.storage.from("CharacterImages").getPublicUrl(path);
+239:            const publicUrl = pub.publicUrl;
+240:            setAvatarUrl(publicUrl);
+241:            sendMessage({ type: "SET_AVATAR", src: publicUrl, fit: "cover" });
+242:        } catch (err) {
+243:            console.error("Error subiendo avatar:", err);
+244:            alert("No se pudo subir el avatar. Inténtalo de nuevo.");
+245:        } finally {
+246:            if (e.target) e.target.value = "";
+247:        }
+248:    };
+249:    const clearAvatar = () => { setAvatarUrl(""); sendMessage({ type: "CLEAR_AVATAR" }); };
+250:
+251:    return (
+252:        <div className="dndPdfInline">
+253:            <div className="dndPdfInline__labelsContainer">
+254:                <button onClick={() => navigate(-1)}>
+255:                    <FontAwesomeIcon icon={faArrowLeft} /> Volver
+256:                </button>
+257:
+258:                <div className="dndPdfInline__info">
+259:                    <label>Nombre de la ficha:</label>
+260:                    <input value={sheetName} onChange={(e) => setSheetName(e.target.value)} disabled={!isNew} id="sheetName" />
+261:                </div>
+262:
+263:                <div className="dndPdfInline__info">
+264:                    <button onClick={handleSave} disabled={saving} className="dndPdfInline__button--green dndPdfInline__button">
+265:                        {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
+266:                        <FontAwesomeIcon icon={faSave} />
+267:                    </button>
+268:                    {lastSaved && (
+269:                        <span className="dndPdfInline__lastSaved">
+270:                            Última vez: {new Date(lastSaved).toLocaleString("es-ES")}
+271:                        </span>
+272:                    )}
+273:                </div>
+274:
+275:                <div className="dndPdfInline__info">
+276:                    <button onClick={triggerAvatarPicker}>Subir avatar</button>
+277:                    <button onClick={clearAvatar} title="Quitar avatar">Eliminar avatar</button>
+278:                    <input
+279:                        type="file"
+280:                        accept="image/*"
+281:                        ref={fileInputRef}
+282:                        style={{ display: "none" }}
+283:                        onChange={handleAvatarPicked}
+284:                    />
+285:                </div>
+286:
+287:                <button
+288:                    className="dndPdfInline__button dndPdfInline__button--red"
+289:                    onClick={async () => {
+290:                        if (window.confirm("¿Estás seguro de que quieres borrar esta ficha? Esta acción es irreversible.")) {
+291:                            await deleteSheet(routeId);
+292:                            navigate("/profile");
+293:                        }
+294:                    }}
+295:                >
+296:                    <FontAwesomeIcon icon={faTrash} /> Borrar ficha
+297:                </button>
+298:            </div>
+299:
+300:            <button className="dndPdfInline__toggleControls" onClick={toggleControls}>
+301:                {!showControls ? <FontAwesomeIcon icon={faEllipsisV} /> : <FontAwesomeIcon icon={faTimes} />}
+302:            </button>
+303:
+304:            <div className={showControls ? "dndPdfInline__controls--show dndPdfInline__controls" : "dndPdfInline__controls"}>
+305:                <button onClick={zoomIn}>
+306:                    <FontAwesomeIcon icon={faMagnifyingGlassPlus} />
+307:                </button>
+308:                <button onClick={zoomOut}>
+309:                    <FontAwesomeIcon icon={faMagnifyingGlassMinus} />
+310:                </button>
+311:                <button onClick={fitWidth}>
+312:                    <FontAwesomeIcon icon={faArrowsAltH} />
+313:                </button>
+314:                <button onClick={fitPage}>
+315:                    <FontAwesomeIcon icon={faArrowsAltV} />
+316:                </button>
+317:                <button onClick={handlePrint}>
+318:                    <FontAwesomeIcon icon={faDownload} />
+319:                </button>
+320:            </div>
+321:
+322:            <div className="dndPdfInline__iframeContainer">
+323:                <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
+324:                <InventoryDisplay
+325:                    inventory={inventory}
+326:                    magicItems={magicItems}
+327:                    onInventoryChange={handleInventoryChange}
+328:                    handleMagicItemsChange={handleMagicItemsChange}
+329:                />
+330:            </div>
+331:        </div>
+332:    );
+333:}

@@ -154,6 +154,7 @@
         if (maskRemoved) return;
         maskRemoved = true;
         loadingMask?.remove();
+        viewer.currentScaleValue = "page-width";
       };
 
       function delayedRemoveMask() {
@@ -175,6 +176,10 @@
       });
 
       let pendingValues = null;
+      let liveValues = {};
+      // Track which pages have had initial values applied to avoid overwriting
+      // user edits on re-render (e.g., zoom changes re-render annotation layers).
+      let appliedValuePages = new Set(); // of page numbers (1-based)
       let readyForData = false;
 
       const AVATAR_ANNOTATION_ID = "108R";
@@ -312,6 +317,27 @@
         }
       }
 
+      function attachValueTrackers(root) {
+        const scope = root || document.getElementById("container");
+        const fields = scope.querySelectorAll("input, textarea, select");
+        fields.forEach((el) => {
+          if (el.__valueTracked) return;
+          const update = () => {
+            const key =
+              el.name ||
+              el.getAttribute("data-annotation-id") ||
+              el.getAttribute("aria-label") ||
+              el.getAttribute("title");
+            if (!key) return;
+            if (el.type === "checkbox") liveValues[key] = !!el.checked;
+            else liveValues[key] = el.value || "";
+          };
+          el.addEventListener("input", update, { passive: true });
+          el.addEventListener("change", update, { passive: true });
+          el.__valueTracked = true;
+        });
+      }
+
       function collectPdfFormValues() {
         const root = document.getElementById("container");
         const fields = root.querySelectorAll("input, textarea, select");
@@ -361,11 +387,16 @@
           ensureCalculatedFieldsVisible();
           recompute();
         }, 0);
-        if (pendingValues) {
-          const root =
-            evt?.source?.div || evt?.source?.annotationLayer?.div || undefined;
-          applyPdfFormValues(pendingValues, root);
-        }
+        try {
+          const layerDiv = evt?.source?.div || evt?.source?.annotationLayer?.div || null;
+          if (layerDiv) {
+            attachValueTrackers(layerDiv);
+            const valuesToApply = Object.keys(liveValues || {}).length
+              ? liveValues
+              : pendingValues;
+            if (valuesToApply) applyPdfFormValues(valuesToApply, layerDiv);
+          }
+        } catch {}
         // Place/update avatar overlay when the annotation layer of a page is ready
         try {
           const layerDiv =
@@ -386,7 +417,7 @@
         cMapUrl: "./cmaps/",
         cMapPacked: true,
       });
-      const pdf = await loadingTask.promise;
+      let pdf = await loadingTask.promise;
       viewer.setDocument(pdf);
 
       container.addEventListener("pagesinit", () => {
@@ -536,6 +567,8 @@
           case "SET_PDF_FIELDS":
             deferUntilInputsReady(() => {
               pendingValues = data.values || {};
+              // New incoming baseline values; allow one-time apply per page
+              appliedValuePages = new Set();
               applyPdfFormValues(pendingValues);
               ensureCalculatedFieldsVisible();
               attachRecomputeListeners();
@@ -552,15 +585,46 @@
             if (fit === "cover" || fit === "contain") avatarState.fit = fit;
             avatarState.enabled = true;
             refreshAvatarEverywhere();
-            // Also run a quick retry loop in case the layer isn't ready yet
-            setTimeout(() => ensureAvatarAnywhere(), 50);
-            setTimeout(() => ensureAvatarAnywhere(), 250);
             setTimeout(() => ensureAvatarAnywhere(), 750);
+            try {
+              maybePrependCoverPageWithImage(avatarState.src);
+            } catch {}
             break;
           }
           case "CLEAR_AVATAR": {
             avatarState.enabled = false;
             clearAvatarEverywhere();
+            // Reload original PDF (without cover) and reapply values
+            (async () => {
+              try {
+                // Mantain scale
+                const lastScale = viewer.currentScale;
+                let currentValues = {};
+                try {
+                  currentValues = collectPdfFormValues();
+                } catch {}
+                const newTask = pdfjsLib.getDocument({
+                  url,
+                  cMapUrl: "./cmaps/",
+                  cMapPacked: true,
+                });
+                const newPdf = await newTask.promise;
+                pdf = newPdf;
+                viewer.setDocument(newPdf);
+                pendingValues = currentValues || {};
+                // allow layers to mount before applying
+                viewer.currentScale = lastScale;
+                setTimeout(() => {
+                  try {
+                    applyPdfFormValues(pendingValues);
+                  } catch {}
+                }, 600);
+                // allow future cover reinsertion for a new avatar
+                try {
+                  __coverInjectedFor = null;
+                } catch {}
+              } catch {}
+            })();
             break;
           }
           case "SET_HEADER_IMAGE": {
@@ -569,7 +633,11 @@
             const heightRatio = Number(data?.heightRatio);
             if (typeof src === "string" && src) headerState.src = src;
             if (fit === "cover" || fit === "contain") headerState.fit = fit;
-            if (!Number.isNaN(heightRatio) && heightRatio > 0 && heightRatio < 1) {
+            if (
+              !Number.isNaN(heightRatio) &&
+              heightRatio > 0 &&
+              heightRatio < 1
+            ) {
               headerState.heightRatio = heightRatio;
             }
             headerState.enabled = true;
@@ -597,8 +665,107 @@
         });
       }
 
+      // Build a new PDF in-memory by prepending a cover page with the given image,
+      // then reload the viewer to show it as the first page.
+      let __coverInjectedFor = null;
+      async function maybePrependCoverPageWithImage(imgSrc) {
+        try {
+          if (!imgSrc || __coverInjectedFor === imgSrc) return;
+          // Capture current form values to re-apply after reload
+          let currentValues = {};
+          try {
+            currentValues = collectPdfFormValues();
+          } catch {}
+
+          // Get original bytes
+          let originalBytes;
+          try {
+            const data = await pdf.getData();
+            originalBytes =
+              data instanceof Uint8Array ? data : new Uint8Array(data);
+          } catch {
+            const res = await fetch(url, { credentials: "include" });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            originalBytes = new Uint8Array(await res.arrayBuffer());
+          }
+
+          // Load pdf-lib
+          let PDFDocument;
+          try {
+            const mod = await import(
+              "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm"
+            );
+            PDFDocument = mod.PDFDocument;
+          } catch {
+            await new Promise((resolve, reject) => {
+              const s = document.createElement("script");
+              s.src =
+                "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js";
+              s.onload = resolve;
+              s.onerror = reject;
+              document.head.appendChild(s);
+            });
+            PDFDocument = window.PDFLib.PDFDocument;
+          }
+
+          const pdfDoc = await PDFDocument.load(originalBytes, {
+            updateMetadata: false,
+            ignoreEncryption: true,
+          });
+          const pages = pdfDoc.getPages();
+          const baseW = pages[0]?.getWidth?.() || 595;
+          const baseH = pages[0]?.getHeight?.() || 842;
+          const cover = pdfDoc.insertPage(0, [baseW, baseH]);
+
+          // Fetch image bytes
+          const imgRes = await fetch(imgSrc, { credentials: "omit" });
+          const imgBuf = await imgRes.arrayBuffer();
+          const bytesU8 = new Uint8Array(imgBuf);
+          let embedded;
+          try {
+            embedded = await pdfDoc.embedJpg(bytesU8);
+          } catch {
+            embedded = await pdfDoc.embedPng(bytesU8);
+          }
+          const imgW = embedded.width,
+            imgH = embedded.height;
+          const scale = Math.min(baseW / imgW, baseH / imgH);
+          const drawW = imgW * scale,
+            drawH = imgH * scale;
+          const x = (baseW - drawW) / 2;
+          const y = (baseH - drawH) / 2;
+          cover.drawImage(embedded, { x, y, width: drawW, height: drawH });
+
+          const out = await pdfDoc.save({
+            addDefaultPage: false,
+            useObjectStreams: true,
+          });
+
+          // Reload viewer with new bytes
+          const newTask = pdfjsLib.getDocument({
+            data: out,
+            cMapUrl: "./cmaps/",
+            cMapPacked: true,
+          });
+          const newPdf = await newTask.promise;
+          pdf = newPdf;
+          viewer.setDocument(newPdf);
+          __coverInjectedFor = imgSrc;
+
+          // Re-apply values after reload
+          pendingValues = currentValues || {};
+          setTimeout(() => {
+            try {
+              applyPdfFormValues(pendingValues);
+            } catch {}
+          }, 600);
+        } catch (e) {
+          // ignore
+        }
+      }
+
       // Header placement helpers (first page, top)
-function ensureHeaderOnLayer(layerDiv) {
+      function ensureHeaderOnLayer(layerDiv) {
         try {
           if (!layerDiv) return;
           const pageDiv = layerDiv.closest?.(".page");
@@ -608,28 +775,17 @@ function ensureHeaderOnLayer(layerDiv) {
           if (pageIndex !== 1) return;
           if (!avatarState.enabled || !avatarState.src) return;
 
-          let overlay = layerDiv.querySelector("div.headerOverlayTop");
-          if (!overlay) {
-            overlay = document.createElement("div");
-            overlay.className = "headerOverlayTop";
-            overlay.style.position = "absolute";
-            overlay.style.left = "0px";
-            overlay.style.top = "0px";
-            overlay.style.pointerEvents = "none";
-            overlay.style.zIndex = "1000";
-            const img = document.createElement("img");
-            img.alt = "Header Image";
-            img.className = "header-image-top";
-            img.style.width = "100%";
-            img.style.height = "100%";
-            img.style.objectFit = avatarState.fit || "cover";
-            img.decoding = "async";
-            img.setAttribute("draggable", "false");
-            img.style.userSelect = "none";
-            img.style.webkitUserDrag = "none";
-            overlay.appendChild(img);
-            layerDiv.appendChild(overlay);
-          }
+          const topImage = document.createElement("img");
+          img.alt = "Header Image";
+          img.className = "header-image-top";
+          img.style.width = "100%";
+          img.style.height = "100%";
+          img.style.objectFit = avatarState.fit || "cover";
+          img.decoding = "async";
+          img.setAttribute("draggable", "false");
+          img.style.userSelect = "none";
+          img.style.webkitUserDrag = "none";
+          layerDiv.appendChild(topImage);
 
           const pw = pageDiv.clientWidth || pageDiv.offsetWidth || 1;
           const ph = pageDiv.clientHeight || pageDiv.offsetHeight || 1;
