@@ -346,16 +346,17 @@ export default function DnDPdfInline() {
                 {!isLoading ?
                     <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
                     : <Loading />}
+                <div className="dndPdfInline__inventoryContainer">
+                    <InventoryDisplay
+                        inventory={inventory}
+                        magicItems={magicItems}
+                        onInventoryChange={handleInventoryChange}
+                        handleMagicItemsChange={handleMagicItemsChange}
+                    />
+                </div>
             </div>
 
-            <div className="dndPdfInline__inventoryContainer">
-                <InventoryDisplay
-                    inventory={inventory}
-                    magicItems={magicItems}
-                    onInventoryChange={handleInventoryChange}
-                    handleMagicItemsChange={handleMagicItemsChange}
-                />
-            </div>
+
         </div>
     );
 }
