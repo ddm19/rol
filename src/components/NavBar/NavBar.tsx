@@ -18,14 +18,14 @@ const NavBar: React.FC = () => {
 
   const navigationLinks: Array<NavigationLink> = [
     { name: "Inicio", url: "/" },
-    { name: "Campañas", url: "/Campaigns" },
     {
       name: "Conoce Hispania",
       url: "/Hispania",
       sublinks: [
+        { name: "Campañas", url: "/Campaigns" },
         { name: "Criaturas", url: "/Creatures" },
         { name: "Lugares", url: "/Places" },
-        { name: "Objetos", url: "/Objects" },
+        { name: "Objetos", url: "/Objects" }
       ],
     },
     {
