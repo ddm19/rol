@@ -89,10 +89,12 @@ const Home: React.FC = () => {
       <button className="newArticleButton" onClick={() => navigate("article")}>
         Crear artículo <FontAwesomeIcon icon={faPlus} />
       </button>
+      <h1 className="articlesTitle">Artículos Recientes</h1>
+      <p>Explora Hispania para ver más</p>
       <div className="articlesContainer">
         {articles != null ? (
           articles.length > 0 ? (
-            articles.map((articleItem: ArticleDisplayType, index: number) => {
+            articles.slice(0, 5).map((articleItem: ArticleDisplayType, index: number) => {
               return (
                 <ArticleDisplay
                   key={index}
