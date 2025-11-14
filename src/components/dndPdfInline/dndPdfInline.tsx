@@ -342,8 +342,8 @@ export default function DnDPdfInline() {
                 </div>
 
                 <div className="dndPdfInline__info">
-                    <button onClick={triggerAvatarPicker}>Subir avatar</button>
-                    {avatarUrl && <button onClick={clearAvatar} title="Quitar avatar">Eliminar avatar</button>}
+                    <button onClick={triggerAvatarPicker}>Subir Ilustración</button>
+                    {avatarUrl && <button onClick={clearAvatar} title="Quitar avatar">Eliminar Ilustración</button>}
                     <input
                         type="file"
                         accept="image/*"
