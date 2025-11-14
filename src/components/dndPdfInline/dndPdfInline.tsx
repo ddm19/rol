@@ -8,6 +8,7 @@ import {
     faArrowsAltH,
     faArrowsAltV,
     faDownload,
+    faExternalLinkAlt,
     faMagnifyingGlassMinus,
     faMagnifyingGlassPlus,
     faSave,
@@ -18,6 +19,25 @@ import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import "./dndPdfInline.scss";
 import InventoryDisplay, { MagicItem } from "./components/inventoryDisplay";
 import Loading from "components/Loading/Loading";
+
+const loadScript = (src: string) => {
+    return new Promise<void>((resolve, reject) => {
+        if (document.querySelector(`script[src="${src}"]`)) {
+            return resolve();
+        }
+        const script = document.createElement('script');
+        script.src = src;
+        script.onload = () => resolve();
+        script.onerror = () => reject(new Error(`Script load error for ${src}`));
+        document.head.appendChild(script);
+    });
+};
+
+declare global {
+    interface Window {
+        imageCompression: any;
+    }
+}
 
 export default function DnDPdfInline() {
     const iframeRef = useRef<HTMLIFrameElement | null>(null);
@@ -46,26 +66,60 @@ export default function DnDPdfInline() {
         if (win) win.postMessage(message, TARGET_ORIGIN);
     };
 
+    const isMobile = window.innerWidth <= 768;
+
     const zoomIn = () => sendMessage({ type: "ZOOM_IN" });
     const zoomOut = () => sendMessage({ type: "ZOOM_OUT" });
     const fitWidth = () => sendMessage({ type: "FIT_WIDTH" });
     const fitPage = () => sendMessage({ type: "FIT_PAGE" });
     const handlePrint = () => sendMessage({ type: "PRINT_PDF" });
+    const handleOpenPdf = () => sendMessage({ type: "OPEN_PDF" });
 
     useEffect(() => {
         if (!isNew && routeId) {
+            setIsLoading(true);
             getSheet(routeId)
-                .then((s) => {
+                .then(async (s) => {
                     setLoadedValues(s?.content || {});
                     setInventory(s?.content?.inventory || "");
                     setMagicItems(s?.content?.magicItems || []);
                     setLastSaved(s?.updated_at || "");
-                    setAvatarUrl(s?.content?.avatarUrl || "");
+
+                    // Consolidated avatar loading
+                    let url = s?.content?.avatarUrl || "";
+                    const name = (s?.id || routeId || "").trim();
+                    if (name && name !== "new") {
+                        const safe = name.replace(/[^a-zA-Z0-9._-]/g, "_");
+                        try {
+                            const { data: items, error } = await supabase.storage
+                                .from("CharacterImages")
+                                .list("avatars", { limit: 1000 });
+                            if (!error) {
+                                const found = (items || []).find((it: any) =>
+                                    typeof it?.name === "string" && it.name.toLowerCase().startsWith((safe + ".").toLowerCase()),
+                                );
+                                if (found) {
+                                    const { data: pub } = supabase.storage
+                                        .from("CharacterImages")
+                                        .getPublicUrl(`avatars/${found.name}`);
+                                    if (pub?.publicUrl) {
+                                        url = pub.publicUrl;
+                                    }
+                                }
+                            }
+                        } catch (err) { /* ignore */ }
+                    }
+                    setAvatarUrl(url);
                 })
                 .catch(() => {
                     setLoadedValues({});
                     setInventory("");
                     setMagicItems([]);
+                    setAvatarUrl("");
+                }).finally(() => {
+                    setTimeout(() => {
+                        setIsLoading(false);
+                    }, 8000);
                 });
         }
     }, [isNew, routeId]);
@@ -82,9 +136,9 @@ export default function DnDPdfInline() {
                 console.error("Error en autoguardado:", err);
             }
         };
-        const interval = setInterval(autoSave, 20 * 60 * 1000);
+        const interval = setInterval(autoSave, 5 * 60 * 1000);
         return () => clearInterval(interval);
-    }, [isNew, routeId, inventory, magicItems]);
+    }, [isNew, routeId, inventory, magicItems, avatarUrl]);
 
     useEffect(() => {
         const onMsg = (e: MessageEvent) => {
@@ -105,7 +159,7 @@ export default function DnDPdfInline() {
         };
         window.addEventListener("message", onMsg);
         return () => window.removeEventListener("message", onMsg);
-    }, [loadedValues]);
+    }, [loadedValues, avatarUrl]);
 
     useEffect(() => {
         const onLoad = () => {
@@ -128,40 +182,6 @@ export default function DnDPdfInline() {
             }
         }
     }, [viewerReady, loadedValues, avatarUrl]);
-
-    // Cargar avatar desde el bucket (avatars/<sheetName>.*)
-    useEffect(() => {
-        const loadFromBucket = async () => {
-            const name = (sheetName || routeId || "").trim();
-            if (!name || name === "new") return;
-            const safe = name.replace(/[^a-zA-Z0-9._-]/g, "_");
-            try {
-                const { data: items, error } = await supabase.storage
-                    .from("CharacterImages")
-                    .list("avatars", { limit: 1000 });
-                if (error) return;
-                const found = (items || []).find((it: any) =>
-                    typeof it?.name === "string" && it.name.toLowerCase().startsWith((safe + ".").toLowerCase()),
-                );
-                if (found) {
-                    const { data: pub } = supabase.storage
-                        .from("CharacterImages")
-                        .getPublicUrl(`avatars/${found.name}`);
-                    if (pub?.publicUrl) {
-                        setAvatarUrl(pub.publicUrl);
-                        if (viewerReady) {
-                            const srcBusted = `${pub.publicUrl}?v=${Date.now()}`;
-                            sendMessage({ type: "SET_AVATAR", src: srcBusted, fit: "cover" });
-                        }
-                    }
-                }
-            } catch (err) {
-                // ignore
-            }
-        };
-        loadFromBucket();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [sheetName, routeId]);
 
     function blastSetFields(values: Record<string, any>) {
         sendMessage({ type: "SET_PDF_FIELDS", values });
@@ -228,17 +248,34 @@ export default function DnDPdfInline() {
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const triggerAvatarPicker = () => fileInputRef.current?.click();
     const handleAvatarPicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        setIsLoading(true);
         const file = e.target.files?.[0];
-        if (!file) return;
+        if (!file) {
+            return;
+        }
         try {
+            await loadScript("https://cdn.jsdelivr.net/npm/browser-image-compression@2.0.2/dist/browser-image-compression.js");
+
+            if (!window.imageCompression) {
+                throw new Error("Image compression library not found.");
+            }
+
+            const options = {
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1920,
+                useWebWorker: true,
+            };
+
+            const processedFile = await window.imageCompression(file, options);
+            const fileToUpload = new File([processedFile], file.name, { type: file.type, lastModified: new Date().getTime() });
+
+
             const safeName = (sheetName || routeId || "avatar").replace(/[^a-zA-Z0-9._-]/g, "_");
-            const ext = file.name.split('.').pop() || (file.type.includes('png') ? 'png' : file.type.includes('jpeg') ? 'jpg' : 'bin');
+            const ext = fileToUpload.name.split('.').pop() || (fileToUpload.type.includes('png') ? 'png' : fileToUpload.type.includes('jpeg') ? 'jpg' : 'bin');
             const path = `avatars/${encodeURIComponent(safeName)}.${ext}`;
-            const { error: upErr } = await supabase.storage.from("CharacterImages").upload(path, file, {
+            const { error: upErr } = await supabase.storage.from("CharacterImages").upload(path, fileToUpload, {
                 cacheControl: "0",
                 upsert: true,
-                contentType: file.type || undefined,
+                contentType: fileToUpload.type || undefined,
             });
             if (upErr) throw upErr;
             const { data: pub } = supabase.storage.from("CharacterImages").getPublicUrl(path);
@@ -246,28 +283,37 @@ export default function DnDPdfInline() {
             setAvatarUrl(publicUrl);
             const srcBusted = `${publicUrl}?v=${Date.now()}`;
             sendMessage({ type: "SET_AVATAR", src: srcBusted, fit: "cover" });
+            alert("Avatar subido y guardado con éxito.");
         } catch (err) {
             console.error("Error subiendo avatar:", err);
-            alert("No se pudo subir el avatar. Inténtalo de nuevo.");
+            alert("No se pudo subir el avatar. Inténtalo de nuevo. Error: " + (err as Error).message);
         } finally {
             if (e.target) e.target.value = "";
-            setIsLoading(false);
         }
     };
     const clearAvatar = async () => {
+        if (!avatarUrl) {
+            alert("No hay un avatar que eliminar.");
+            return;
+        }
+        if (!window.confirm("¿Estás seguro de que quieres eliminar el avatar? Esta acción no se puede deshacer.")) return;
+
         try {
             const name = (sheetName || routeId || "").trim();
             if (name && name !== "new") {
                 const safe = name.replace(/[^a-zA-Z0-9._-]/g, "_");
                 const { data: items } = await supabase.storage.from("CharacterImages").list("avatars", { limit: 1000 });
                 const found = (items || []).find((it: any) => typeof it?.name === "string" && it.name.toLowerCase().startsWith((safe + ".").toLowerCase()));
-                if (found) await supabase.storage.from("CharacterImages").remove([`avatars/${found.name}`]);
+                if (found) {
+                    await supabase.storage.from("CharacterImages").remove([`avatars/${found.name}`]);
+                }
             }
-        } catch (err) {
-            console.warn("No se pudo eliminar el avatar del bucket:", err);
-        } finally {
             setAvatarUrl("");
             sendMessage({ type: "CLEAR_AVATAR" });
+            alert("Avatar eliminado con éxito.");
+        } catch (err) {
+            console.warn("No se pudo eliminar el avatar del bucket:", err);
+            alert("Hubo un error al eliminar el avatar. Puede que la imagen ya no exista o no tengas permisos.");
         }
     };
 
@@ -297,7 +343,7 @@ export default function DnDPdfInline() {
 
                 <div className="dndPdfInline__info">
                     <button onClick={triggerAvatarPicker}>Subir avatar</button>
-                    <button onClick={clearAvatar} title="Quitar avatar">Eliminar avatar</button>
+                    {avatarUrl && <button onClick={clearAvatar} title="Quitar avatar">Eliminar avatar</button>}
                     <input
                         type="file"
                         accept="image/*"
@@ -340,12 +386,37 @@ export default function DnDPdfInline() {
                 <button onClick={handlePrint}>
                     <FontAwesomeIcon icon={faDownload} />
                 </button>
+                <button onClick={handleOpenPdf} title="Abrir en nueva pestaña">
+                    <FontAwesomeIcon icon={faExternalLinkAlt} />
+                </button>
             </div>
 
             <div className="dndPdfInline__iframeContainer">
-                {!isLoading ?
-                    <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
+                {!isMobile || !isLoading ?
+                    <>
+                        {isMobile &&
+                            <div className="dndPdfInline__mobileWarning">
+                                Lo lamentamos, pero el visor de PDFs no funciona en dispositivos móviles.
+                                Puedes abrir tu ficha (en modo solo lectura) aquí.
+                                <button className="dndPdfInline__info" onClick={handlePrint} rel="noopener noreferrer">
+                                    Descargar
+                                    <FontAwesomeIcon icon={faDownload} />
+                                </button>
+                                <button className="dndPdfInline__info" onClick={handleOpenPdf} rel="noopener noreferrer">
+                                    Abrir
+                                    <FontAwesomeIcon icon={faExternalLinkAlt} />
+                                </button>
+
+                            </div>
+                        }
+
+                    </>
                     : <Loading />}
+                {!isMobile ?
+                    <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
+                    :
+                    <iframe style={{ height: 1 }} className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
+                }
                 <div className="dndPdfInline__inventoryContainer">
                     <InventoryDisplay
                         inventory={inventory}

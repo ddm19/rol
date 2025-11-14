@@ -113,9 +113,11 @@
 
     @media (max-width: 768px)
     {
-      left: 50%;
-      transform: translateX(-50%);
-      top: 10%;
+      position: relative;
+      left: 0;
+      top: 0;
+      width: 100%;
+      z-index: 0;
     }
 
     &:hover

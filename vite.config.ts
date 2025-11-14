@@ -16,5 +16,7 @@ export default defineConfig({
       devextreme: resolve(__dirname, "node_modules/devextreme"),
     },
   },
-  server: {},
+  server: {
+    allowedHosts: true,
+  },
 });

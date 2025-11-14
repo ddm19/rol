@@ -139,6 +139,7 @@
 
       const params = new URLSearchParams(location.search);
       const url = params.get("file");
+      const popupToken = params.get("popupToken");
       if (!url) {
         document.body.innerHTML =
           '<p style="color:white;padding:16px">Falta el parámetro ?file=</p>';
@@ -374,6 +375,14 @@
           window.parent?.postMessage({ type: "VIEWER_READY" }, "*");
         } catch {}
         try {
+          if (popupToken && window.opener) {
+            window.opener.postMessage(
+              { type: "POPUP_VIEWER_READY", popupToken },
+              window.location.origin,
+            );
+          }
+        } catch {}
+        try {
           const q = window.__earlyQueue || [];
           q.forEach((d) => handleIncoming(d));
           window.__earlyQueue = [];
@@ -466,94 +475,11 @@
           case "PRINT_PDF":
             (async () => {
               try {
-                const values = collectPdfFormValues();
-                let originalBytes;
-                try {
-                  const data = await pdf.getData();
-                  originalBytes =
-                    data instanceof Uint8Array ? data : new Uint8Array(data);
-                } catch {
-                  const res = await fetch(url, { credentials: "include" });
-                  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                  originalBytes = new Uint8Array(await res.arrayBuffer());
-                }
-                let PDFDocument, PDFName, PDFBool;
-                try {
-                  const mod = await import(
-                    "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm"
-                  );
-                  PDFDocument = mod.PDFDocument;
-                  PDFName = mod.PDFName;
-                  PDFBool = mod.PDFBool;
-                } catch {
-                  await new Promise((resolve, reject) => {
-                    const s = document.createElement("script");
-                    s.src =
-                      "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js";
-                    s.onload = resolve;
-                    s.onerror = reject;
-                    document.head.appendChild(s);
-                  });
-                  const mod = window.PDFLib;
-                  PDFDocument = mod.PDFDocument;
-                  PDFName = mod.PDFName;
-                  PDFBool = mod.PDFBool;
-                }
-                const pdfDoc = await PDFDocument.load(originalBytes, {
-                  updateMetadata: false,
-                  ignoreEncryption: true,
-                });
-                const form = pdfDoc.getForm();
-                for (const [k, v] of Object.entries(values)) {
-                  let field;
-                  try {
-                    field = form.getField(k);
-                  } catch {}
-                  if (!field) continue;
-                  const t = field.constructor.name;
-                  if (t === "PDFTextField") field.setText(String(v ?? ""));
-                  else if (t === "PDFCheckBox")
-                    v ? field.check() : field.uncheck();
-                  else if (t === "PDFDropdown") {
-                    try {
-                      field.select(String(v));
-                    } catch {
-                      field.setText(String(v ?? ""));
-                    }
-                  } else if (t === "PDFOptionList") {
-                    try {
-                      field.select(String(v));
-                    } catch {}
-                  } else if (t === "PDFRadioGroup") {
-                    try {
-                      field.select(String(v));
-                    } catch {}
-                  } else {
-                    try {
-                      field.setText(String(v ?? ""));
-                    } catch {}
-                  }
-                }
-                try {
-                  const acroFormRef = pdfDoc.catalog.get(
-                    PDFName.of("AcroForm"),
-                  );
-                  if (acroFormRef) {
-                    const acroForm = pdfDoc.context.lookup(acroFormRef);
-                    acroForm.set(PDFName.of("NeedAppearances"), PDFBool.True);
-                  }
-                } catch {}
-                const out = await pdfDoc.save({
-                  addDefaultPage: false,
-                  useObjectStreams: true,
-                });
-                const blob = new Blob([out], { type: "application/pdf" });
+                const { blob, suggestedName } = await buildFilledPdfBlob();
                 const urlFilled = URL.createObjectURL(blob);
                 const a = document.createElement("a");
                 a.href = urlFilled;
-                a.download = values.CharacterName
-                  ? `Ficha_${values.CharacterName.replace(/[\/\\?%*:|"<>]/g, "_")}.pdf`
-                  : "Ficha.pdf";
+                a.download = suggestedName;
                 document.body.appendChild(a);
                 a.click();
                 a.remove();
@@ -561,6 +487,17 @@
               } catch (ex) {
                 console.error(ex);
                 window.print();
+              }
+            })();
+            break;
+          case "OPEN_PDF":
+            (async () => {
+              try {
+                const { blob } = await buildFilledPdfBlob();
+                const urlFilled = URL.createObjectURL(blob);
+                window.open(urlFilled, '_blank');
+              } catch (ex) {
+                console.error(ex);
               }
             })();
             break;
@@ -652,6 +589,105 @@
             break;
           }
         }
+      }
+
+      async function buildFilledPdfBlob() {
+        recompute();
+        const values = collectPdfFormValues();
+        let originalBytes;
+        try {
+          const data = await pdf.getData();
+          originalBytes =
+            data instanceof Uint8Array ? data : new Uint8Array(data);
+        } catch {
+          const res = await fetch(url, { credentials: "include" });
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          originalBytes = new Uint8Array(await res.arrayBuffer());
+        }
+        let PDFDocument, PDFName, PDFBool;
+        try {
+          const mod = await import(
+            "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm"
+          );
+          PDFDocument = mod.PDFDocument;
+          PDFName = mod.PDFName;
+          PDFBool = mod.PDFBool;
+        } catch {
+          await new Promise((resolve, reject) => {
+            const s = document.createElement("script");
+            s.src =
+              "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js";
+            s.onload = resolve;
+            s.onerror = reject;
+            document.head.appendChild(s);
+          });
+          const mod = window.PDFLib;
+          PDFDocument = mod.PDFDocument;
+          PDFName = mod.PDFName;
+          PDFBool = mod.PDFBool;
+        }
+        const pdfDoc = await PDFDocument.load(originalBytes, {
+          updateMetadata: false,
+          ignoreEncryption: true,
+        });
+        const form = pdfDoc.getForm();
+
+        const smallNumericFields = [
+          "STRbonus", "DEXbonus", "CONbonus", "INTbonus", "WISbonus", "CHAbonus",
+          "STRsave", "DEXsave", "CONsave", "INTsave", "WISsave", "CHAsave",
+          "Acrobatics", "Athletics", "Deception", "History", "Performance",
+          "Intimidation", "Investigation", "SleightofHand", "Arcana", "Medicine",
+          "Nature", "Perception", "Insight", "Persuasion", "Religion",
+          "Stealth", "Survival", "AnHan",
+          "PWP",
+        ];
+
+        for (const [k, v] of Object.entries(values)) {
+          let field;
+          try {
+            field = form.getField(k);
+          } catch {}
+          if (!field) continue;
+          const t = field.constructor?.name;
+          if (t === "PDFTextField") {
+            field.setText(String(v ?? ""));
+            if (smallNumericFields.includes(k)) {
+              field.setFontSize(8);
+            }
+          }
+          else if (t === "PDFCheckBox") v ? field.check() : field.uncheck();
+          else if (t === "PDFDropdown") {
+            try {
+              field.select(String(v));
+            } catch {
+              field.setText(String(v ?? ""));
+            }
+          } else if (t === "PDFOptionList") {
+            try {
+              field.select(String(v));
+            } catch {}
+          } else if (t === "PDFRadioGroup") {
+            try {
+              field.select(String(v));
+            } catch {}
+          } else {
+            try {
+              field.setText(String(v ?? ""));
+            } catch {}
+          }
+        }
+        
+        form.flatten();
+
+        const out = await pdfDoc.save({
+          addDefaultPage: false,
+          useObjectStreams: true,
+        });
+        const blob = new Blob([out], { type: "application/pdf" });
+        const suggestedName = values.CharacterName
+          ? `Ficha_${values.CharacterName.replace(/[\/\\?%*:|"<>]/g, "_")}.pdf`
+          : "Ficha.pdf";
+        return { blob, suggestedName };
       }
 
       // Ensure avatar injection without relying solely on event timing

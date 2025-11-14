@@ -12,10 +12,10 @@
 .menu
 {
   width: 55%;
-  height: 50vh;
+  height: 55vh;
   position: absolute;
   left: 0;
-  top: 5vh;
+  top: 10vh;
   background-color: var(--background-color);
   justify-content: center;
   border: solid 1px var(--colors-darkRed);
@@ -30,6 +30,8 @@
   {
     flex-direction: column;
     padding-left: 0;
+    
+    
   }
 
   .navButton
@@ -39,7 +41,7 @@
 
   .mobileNav
   {
-    height: 90vh;
+    height: 90%;
     margin-left: 0;
     width: 35vw;
     display: flex;

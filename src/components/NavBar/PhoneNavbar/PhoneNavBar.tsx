@@ -5,6 +5,7 @@ import NavButton from "../NavButton/NavButton";
 import CloseButton from "components/CloseButton/closeButton";
 import PhoneMenuButton from "./components/PhoneMenuButton/PhoneMenuButton";
 import { DiscordButton } from "components/NavBar/DiscordButton/DiscordButton";
+import VillazarcilloButton from "components/VillazarcilloButton/villazarcilloButton";
 
 interface Props {
   navigationLinks: NavigationLink[];
@@ -54,9 +55,13 @@ const PhoneNavBar: React.FC<Props> = (props: Props) => {
                 <NavButton link={link} toggleMenu={toggleMenu}></NavButton>
               );
             })}
+              <VillazarcilloButton toggleMenu={toggleMenu}/>
+
             <CloseButton onCloseEvent={closeMenu}></CloseButton>
           </div>
+          
         </ul>
+
       </nav>
       <DiscordButton></DiscordButton>
     </div>

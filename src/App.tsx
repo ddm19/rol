@@ -22,7 +22,7 @@ import AdminRoute from "components/NavBar/PrivateRoute/adminRoute";
 
 
 function App() {
-  const notFooterRoutes = ["/sheets/*", "/Villazarcillo"];
+  const notFooterRoutes = ["/sheets/*", "/Villazarcillo/*"];
   return (
     <div className="App">
       <header className="App-header">

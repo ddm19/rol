@@ -76,8 +76,10 @@
         display: flex;
         flex-direction: column;
         min-width: max-content;
-        height: max-content;
+        height: auto;
         border-radius: 3%;
+        z-index: 6;
+        
       }
 
       .dropdown-content
