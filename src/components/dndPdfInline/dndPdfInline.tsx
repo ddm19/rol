@@ -326,7 +326,7 @@ export default function DnDPdfInline() {
 
                 <div className="dndPdfInline__info">
                     <label>Nombre de la ficha:</label>
-                    {isNew ? null : <span> (No podrás cambiarlo luego!)</span>}
+                    {isNew && <span> (No podrás cambiarlo luego!)</span>}
                     <input value={sheetName} onChange={(e) => setSheetName(e.target.value)} disabled={!isNew} id="sheetName" />
                 </div>
 
