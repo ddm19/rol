@@ -5,6 +5,7 @@ import { getSheet, createSheetWithId, upsertSheet, deleteSheet } from "services/
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faArrowLeft,
+    faArrowRight,
     faArrowsAltH,
     faArrowsAltV,
     faDownload,
@@ -54,6 +55,7 @@ export default function DnDPdfInline() {
     const [lastSaved, setLastSaved] = useState<string>("");
     const [avatarUrl, setAvatarUrl] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
+    const [inventoryVisible, setInventoryVisible] = useState(true);
 
     const [viewerReady, setViewerReady] = useState(false);
     const TARGET_ORIGIN = window.location.origin;
@@ -407,7 +409,7 @@ export default function DnDPdfInline() {
                 }
             </div>
 
-            <div className="dndPdfInline__iframeContainer">
+            <div className={`dndPdfInline__iframeContainer  ${inventoryVisible ? "" : "dndPdfInline__iframeContainer--withInventory"}`}>
                 {isMobile &&
                     <>
                         {isMobile && !isLoading ?
@@ -425,8 +427,16 @@ export default function DnDPdfInline() {
 
 
 
-
-                <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
+                <div className="dndPdfInline__iframeWrapper">
+                    <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
+                    {!isMobile &&
+                        <button className="dndPdfInline__inventoryToggle" onClick={() => {
+                            setInventoryVisible(!inventoryVisible);
+                        }}>
+                            {inventoryVisible ? <FontAwesomeIcon icon={faArrowLeft} /> : <FontAwesomeIcon icon={faArrowRight} />}
+                        </button>
+                    }
+                </div>
 
 
                 <div className="dndPdfInline__inventoryContainer">
