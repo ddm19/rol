@@ -8,6 +8,7 @@ import {
     faArrowsAltH,
     faArrowsAltV,
     faDownload,
+    faExclamationTriangle,
     faExternalLinkAlt,
     faMagnifyingGlassMinus,
     faMagnifyingGlassPlus,
@@ -246,7 +247,15 @@ export default function DnDPdfInline() {
 
     // Avatar upload helpers
     const fileInputRef = useRef<HTMLInputElement | null>(null);
-    const triggerAvatarPicker = () => fileInputRef.current?.click();
+    const triggerAvatarPicker = () => {
+        if (window.confirm("Quieres guardar la ficha antes de subir un avatar para evitar pérdida de datos?")) {
+            handleSave().then(() => {
+                fileInputRef.current?.click();
+            });
+        }
+        else
+            fileInputRef.current?.click();
+    };
     const handleAvatarPicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) {
@@ -384,40 +393,40 @@ export default function DnDPdfInline() {
                 <button onClick={fitPage}>
                     <FontAwesomeIcon icon={faArrowsAltV} />
                 </button>
-                <button onClick={handlePrint}>
-                    <FontAwesomeIcon icon={faDownload} />
-                </button>
-                <button onClick={handleOpenPdf} title="Abrir en nueva pestaña">
-                    <FontAwesomeIcon icon={faExternalLinkAlt} />
-                </button>
+                {!isMobile &&
+                    <>
+                        <button onClick={handlePrint}>
+                            <FontAwesomeIcon icon={faDownload} />
+                        </button>
+                        <button onClick={handleOpenPdf} title="Abrir en nueva pestaña">
+                            <FontAwesomeIcon icon={faExternalLinkAlt} />
+                        </button>
+                    </>
+                }
             </div>
 
             <div className="dndPdfInline__iframeContainer">
-                {!isMobile || !isLoading ?
+                {isMobile &&
                     <>
-                        {isMobile &&
+                        {isMobile && !isLoading ?
                             <div className="dndPdfInline__mobileWarning">
-                                Lo lamentamos, pero el visor de PDFs no funciona en dispositivos móviles.
-                                Puedes abrir tu ficha (en modo solo lectura) aquí.
+                                <FontAwesomeIcon icon={faExclamationTriangle} /> El visor de PDFs es una función experimental en móviles. Espera problemas de visualización.
+                                Puedes abrir tu ficha (en modo solo lectura) aquí si lo prefieres:
                                 <button className="dndPdfInline__info" onClick={handlePrint} rel="noopener noreferrer">
                                     Descargar
                                     <FontAwesomeIcon icon={faDownload} />
                                 </button>
-                                <button className="dndPdfInline__info" onClick={handleOpenPdf} rel="noopener noreferrer">
-                                    Abrir
-                                    <FontAwesomeIcon icon={faExternalLinkAlt} />
-                                </button>
-
                             </div>
-                        }
-
+                            : <Loading />}
                     </>
-                    : <Loading />}
-                {!isMobile ?
-                    <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
-                    :
-                    <iframe style={{ height: 1 }} className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
                 }
+
+
+
+
+                <iframe className="dndPdfInline__iframe" ref={iframeRef} src={src} name="sheet" />
+
+
                 <div className="dndPdfInline__inventoryContainer">
                     <InventoryDisplay
                         inventory={inventory}
@@ -429,6 +438,6 @@ export default function DnDPdfInline() {
             </div>
 
 
-        </div>
+        </div >
     );
 }

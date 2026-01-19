@@ -152,11 +152,7 @@
         }
 
 
-        @media (max-width: 768px)
-        {
-            display: none;
-
-        }
+        
     }
 
     &__iframeContainer
@@ -220,8 +216,6 @@
         width: 60%;
         display: flex;
         flex-direction: column
-
-        
         
     }
 }

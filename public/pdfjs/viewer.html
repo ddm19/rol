@@ -106,6 +106,25 @@
           margin: 0;
         }
       }
+      @media (pointer: coarse), (max-width: 768px) {
+  .annotationLayer input,
+  .annotationLayer textarea,
+  .annotationLayer select {
+    padding: 0 !important;
+    margin: 0 !important;
+    border: none !important;
+    background-color: rgba(255, 255, 255, 0.01) !important;
+    height: 100% !important;
+    width: 100% !important;
+    line-height: 1 !important;
+    outline: none !important;
+    box-shadow: none !important;
+    appearance: none !important;
+    -webkit-appearance: none !important;
+    border-radius: 0 !important;
+    box-sizing: border-box !important;
+  }
+}
     </style>
   </head>
   <body>
@@ -183,7 +202,7 @@
       let appliedValuePages = new Set(); // of page numbers (1-based)
       let readyForData = false;
 
-      const AVATAR_ANNOTATION_ID = "108R";
+      const AVATAR_ANNOTATION_ID = "592R";
       const AVATAR_DEFAULT_PLACEHOLDER = "";
       const avatarState = {
         enabled: false,
@@ -245,6 +264,10 @@
             img.decoding = "async";
             img.style.background = "transparent";
             img.draggable = false;
+            document.querySelectorAll(".annotationContent").forEach((el) => {
+              el.remove();
+            });
+            
             anchor.appendChild(img);
           }
           if (img.style.objectFit !== (avatarState.fit || "cover")) {
@@ -592,114 +615,109 @@
       }
 
       async function buildFilledPdfBlob() {
-        recompute();
-        const values = collectPdfFormValues();
-        let originalBytes;
-        try {
-          const data = await pdf.getData();
-          originalBytes =
-            data instanceof Uint8Array ? data : new Uint8Array(data);
-        } catch {
-          const res = await fetch(url, { credentials: "include" });
-          if (!res.ok) throw new Error(`HTTP ${res.status}`);
-          originalBytes = new Uint8Array(await res.arrayBuffer());
-        }
-        let PDFDocument, PDFName, PDFBool;
-        try {
-          const mod = await import(
-            "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm"
-          );
-          PDFDocument = mod.PDFDocument;
-          PDFName = mod.PDFName;
-          PDFBool = mod.PDFBool;
-        } catch {
-          await new Promise((resolve, reject) => {
-            const s = document.createElement("script");
-            s.src =
-              "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js";
-            s.onload = resolve;
-            s.onerror = reject;
-            document.head.appendChild(s);
-          });
-          const mod = window.PDFLib;
-          PDFDocument = mod.PDFDocument;
-          PDFName = mod.PDFName;
-          PDFBool = mod.PDFBool;
-        }
-        const pdfDoc = await PDFDocument.load(originalBytes, {
-          updateMetadata: false,
-          ignoreEncryption: true,
-        });
-        const form = pdfDoc.getForm();
+  recompute();
+  const currentVisibleValues = collectPdfFormValues();
+  Object.assign(liveValues, currentVisibleValues);
+  const values = { ...(pendingValues || {}), ...liveValues };
 
-        const smallNumericFields = [
-          "STRbonus", "DEXbonus", "CONbonus", "INTbonus", "WISbonus", "CHAbonus",
-          "STRsave", "DEXsave", "CONsave", "INTsave", "WISsave", "CHAsave",
-          "Acrobatics", "Athletics", "Deception", "History", "Performance",
-          "Intimidation", "Investigation", "SleightofHand", "Arcana", "Medicine",
-          "Nature", "Perception", "Insight", "Persuasion", "Religion",
-          "Stealth", "Survival", "AnHan",
-          "PWP",
-        ];
+  let originalBytes;
+  try {
+    const data = await pdf.getData();
+    originalBytes = data instanceof Uint8Array ? data : new Uint8Array(data);
+  } catch {
+    const res = await fetch(url, { credentials: "include" });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    originalBytes = new Uint8Array(await res.arrayBuffer());
+  }
 
-        for (const [k, v] of Object.entries(values)) {
-          let field;
-          try {
-            field = form.getField(k);
-          } catch {}
-          if (!field) continue;
-          const t = field.constructor?.name;
-          if (t === "PDFTextField") {
-            field.setText(String(v ?? ""));
-            if (smallNumericFields.includes(k)) {
-              field.setFontSize(8);
-            }
-          }
-          else if (t === "PDFCheckBox") v ? field.check() : field.uncheck();
-          else if (t === "PDFDropdown") {
-            try {
-              field.select(String(v));
-            } catch {
-              field.setText(String(v ?? ""));
-            }
-          } else if (t === "PDFOptionList") {
-            try {
-              field.select(String(v));
-            } catch {}
-          } else if (t === "PDFRadioGroup") {
-            try {
-              field.select(String(v));
-            } catch {}
-          } else {
-            try {
-              field.setText(String(v ?? ""));
-            } catch {}
-          }
-        }
-        
-        form.flatten();
+  let PDFDocument, PDFName, PDFBool;
+  try {
+    const mod = await import("https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm");
+    PDFDocument = mod.PDFDocument;
+    PDFName = mod.PDFName;
+    PDFBool = mod.PDFBool;
+  } catch {
+    await new Promise((resolve, reject) => {
+      const s = document.createElement("script");
+      s.src = "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js";
+      s.onload = resolve;
+      s.onerror = reject;
+      document.head.appendChild(s);
+    });
+    const mod = window.PDFLib;
+    PDFDocument = mod.PDFDocument;
+    PDFName = mod.PDFName;
+    PDFBool = mod.PDFBool;
+  }
 
-        const out = await pdfDoc.save({
-          addDefaultPage: false,
-          useObjectStreams: true,
-        });
-        const blob = new Blob([out], { type: "application/pdf" });
-        const suggestedName = values.CharacterName
-          ? `Ficha_${values.CharacterName.replace(/[\/\\?%*:|"<>]/g, "_")}.pdf`
-          : "Ficha.pdf";
-        return { blob, suggestedName };
+  const pdfDoc = await PDFDocument.load(originalBytes, {
+    updateMetadata: false,
+    ignoreEncryption: true,
+  });
+  const form = pdfDoc.getForm();
+
+  const smallNumericFields = [
+    "STRbonus", "DEXbonus", "CONbonus", "INTbonus", "WISbonus", "CHAbonus",
+    "STRsave", "DEXsave", "CONsave", "INTsave", "WISsave", "CHAsave",
+    "Acrobatics", "Athletics", "Deception", "History", "Performance",
+    "Intimidation", "Investigation", "SleightofHand", "Arcana", "Medicine",
+    "Nature", "Perception", "Insight", "Persuasion", "Religion",
+    "Stealth", "Survival", "AnHan",
+    "PWP",
+  ];
+
+  for (const [k, v] of Object.entries(values)) {
+    let field;
+    try {
+      field = form.getField(k);
+    } catch {}
+    if (!field) continue;
+
+    const t = field.constructor?.name;
+    const valStr = String(v ?? "");
+
+    if (t === "PDFTextField") {
+      field.setText(valStr);
+      if (smallNumericFields.includes(k)) {
+        field.setFontSize(8);
       }
-
-      // Ensure avatar injection without relying solely on event timing
-      function ensureAvatarAnywhere() {
-        const anchors = document.querySelectorAll(
-          `section[data-annotation-id="${CSS.escape(AVATAR_ANNOTATION_ID)}"]`,
-        );
-        anchors.forEach((anchor) => {
-          const layerDiv = anchor.closest(".annotationLayer");
-          ensureAvatarInsideAnchor(layerDiv);
-        });
+    } else if (t === "PDFCheckBox") {
+      v ? field.check() : field.uncheck();
+    } else if (t === "PDFDropdown") {
+      try {
+        field.select(valStr);
+      } catch {
+        field.setText(valStr);
       }
+    } else if (t === "PDFOptionList") {
+      try {
+        field.select(valStr);
+      } catch {}
+    } else if (t === "PDFRadioGroup") {
+      try {
+        field.select(valStr);
+      } catch {}
+    } else {
+      try {
+        field.setText(valStr);
+      } catch {}
+    }
+  }
+
+  form.flatten();
+
+  const out = await pdfDoc.save({
+    addDefaultPage: false,
+    useObjectStreams: true,
+  });
+
+  const blob = new Blob([out], { type: "application/pdf" });
+  const suggestedName = values.CharacterName
+    ? `Ficha_${values.CharacterName.replace(/[\/\\?%*:|"<>]/g, "_")}.pdf`
+    : "Ficha.pdf";
+
+  return { blob, suggestedName };
+}
 
       // Build a new PDF in-memory by prepending a cover page with the given image,
       // then reload the viewer to show it as the first page.
