@@ -3,6 +3,8 @@
 import React, { useEffect, useState } from "react";
 import "./Ventajas.scss";
 import { ChoiceItem, ChoiceTypes, disadvantages, advantages } from "./data";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faHeartCircleCheck, faSkullCrossbones } from "@fortawesome/free-solid-svg-icons";
 
 const AdvantagesPage: React.FC = () => {
   const [advantagesSelectedIds, setAdvantagesSelectedIds] = useState<string[]>(
@@ -60,18 +62,22 @@ const AdvantagesPage: React.FC = () => {
     specialAdv: advantages.filter((v) => v.special),
   };
 
-  const sumTotal = () => {
-    let total = 0;
-    advantagesSelectedIds.forEach((id) => {
-      const item = advantages.find((v) => v.id === id);
-      if (item) total += item.tier;
-    });
-    disadvantagesSelectedIds.forEach((id) => {
-      const item = disadvantages.find((d) => d.id === id);
-      if (item) total -= item.tier;
-    });
-    return total;
+  const sumSelected = (
+    items: ChoiceItem[],
+    selectedIds: string[],
+    positive: boolean,
+  ): number => {
+    return selectedIds.reduce((acc, id) => {
+      const item = items.find((i) => i.id === id);
+      return acc + (item ? item.tier * (positive ? 1 : -1) : 0);
+    }, 0);
   };
+
+  const sumTotal = () =>
+    sumSelected(advantages, advantagesSelectedIds, true) +
+    sumSelected(disadvantages, disadvantagesSelectedIds, false);
+
+
 
   const total = sumTotal();
 
@@ -82,7 +88,8 @@ const AdvantagesPage: React.FC = () => {
         className="advantagesPage__openModalButton"
         onClick={toggleContainer}
       >
-        Abrir Ventajas/Desventajas (+ {advantagesSelectedIds.length}  / - {disadvantagesSelectedIds.length} )
+        Abrir Ventajas/Desventajas ({advantagesSelectedIds.length}<FontAwesomeIcon icon={faHeartCircleCheck} />  [+{sumSelected(advantages, advantagesSelectedIds, true)}] / {" "}
+        {disadvantagesSelectedIds.length}<FontAwesomeIcon icon={faSkullCrossbones} />  [{sumSelected(disadvantages, disadvantagesSelectedIds, false)}] )  <b style={{ color: total <= 0 ? "lightgreen" : "lightcoral" }}>= {total}</b>
       </button>
 
 
@@ -153,7 +160,7 @@ const AdvantagesPage: React.FC = () => {
               >
                 Borrar selección
               </button>
-              <h4 className="advantagesPage__total">Total: {total}</h4>
+              <h4 className="advantagesPage__total"> <b style={{ color: total <= 0 ? "green" : "red" }}>= Total: {total}</b></h4>
               <p className="advantagesPage__note">
                 Recuerda: El total debe ser igual o menor a 0, además no puedes
                 escoger más de 3 Ventajas/Desventajas en total.
