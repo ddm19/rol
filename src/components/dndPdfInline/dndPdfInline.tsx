@@ -129,15 +129,17 @@ export default function DnDPdfInline() {
         if (isNew || !routeId) return;
         const autoSave = async () => {
             try {
-                const values = await requestPdfValues();
-                const completeValues = { ...values, inventory, magicItems, avatarUrl };
-                const saved = await upsertSheet(routeId, completeValues);
-                setLastSaved(saved.updated_at);
+                if (window.confirm("Hace 15 minutos que no guardas. ¿Quieres guardar automáticamente?")) {
+                    const values = await requestPdfValues();
+                    const completeValues = { ...values, inventory, magicItems, avatarUrl };
+                    const saved = await upsertSheet(routeId, completeValues);
+                    setLastSaved(saved.updated_at);
+                }
             } catch (err) {
                 console.error("Error en autoguardado:", err);
             }
         };
-        const interval = setInterval(autoSave, 5 * 60 * 1000);
+        const interval = setInterval(autoSave, 15 * 60 * 1000);
         return () => clearInterval(interval);
     }, [isNew, routeId, inventory, magicItems, avatarUrl]);
 
