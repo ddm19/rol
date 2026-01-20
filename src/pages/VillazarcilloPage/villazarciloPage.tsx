@@ -14,7 +14,7 @@ const VillazarcilloPage = () => {
                     iframe.contentWindow?.postMessage({
                         type: 'supabase-session',
                         session: session
-                    }, 'https://villazarcillo.vercel.app');
+                    }, import.meta.env.VITE_VILLAZARCILLO_URL);
                 }
             });
         };
@@ -25,7 +25,7 @@ const VillazarcilloPage = () => {
             iframe.contentWindow?.postMessage({
                 type: 'supabase-session',
                 session: session
-            }, 'https://villazarcillo.vercel.app');
+            }, import.meta.env.VITE_VILLAZARCILLO_URL);
         });
 
         return () => {
@@ -36,7 +36,7 @@ const VillazarcilloPage = () => {
 
     return (
         <>
-            <iframe ref={iframeRef} src="https://villazarcillo.vercel.app/" style={{ width: '100%', height: '85vh', border: 'none' }} title="Villazarcillo">
+            <iframe ref={iframeRef} src={import.meta.env.VITE_VILLAZARCILLO_URL} style={{ width: '100%', height: '100%', border: 'none' }} title="Villazarcillo">
             </iframe>
         </>
     )
