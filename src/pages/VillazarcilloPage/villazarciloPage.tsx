@@ -3,6 +3,7 @@ import { supabase } from "services/supabaseClient";
 
 const VillazarcilloPage = () => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
+    const villazarcilloUrl = import.meta.env.VITE_VILLAZARCILLO_URL;
 
     useEffect(() => {
         const iframe = iframeRef.current;
@@ -14,7 +15,7 @@ const VillazarcilloPage = () => {
                     iframe.contentWindow?.postMessage({
                         type: 'supabase-session',
                         session: session
-                    }, import.meta.env.VITE_VILLAZARCILLO_URL);
+                    }, villazarcilloUrl);
                 }
             });
         };
@@ -25,7 +26,7 @@ const VillazarcilloPage = () => {
             iframe.contentWindow?.postMessage({
                 type: 'supabase-session',
                 session: session
-            }, import.meta.env.VITE_VILLAZARCILLO_URL);
+            }, villazarcilloUrl);
         });
 
         return () => {
@@ -36,7 +37,7 @@ const VillazarcilloPage = () => {
 
     return (
         <>
-            <iframe ref={iframeRef} src={import.meta.env.VITE_VILLAZARCILLO_URL} style={{ width: '100%', height: '100%', border: 'none' }} title="Villazarcillo">
+            <iframe ref={iframeRef} src={villazarcilloUrl} style={{ width: '100%', height: '100%', border: 'none' }} title="Villazarcillo">
             </iframe>
         </>
     )
