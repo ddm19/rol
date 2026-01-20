@@ -34,6 +34,11 @@ const Home: React.FC = () => {
   useEffect(() => {
     fetchArticles()
       .then((res: ArticleDisplayType[]) => {
+        res.sort((a, b) => {
+          const dateA = new Date(a.content.date);
+          const dateB = new Date(b.content.date);
+          return dateB.getTime() - dateA.getTime();
+        });
         setArticles(res);
         const randomIndex = Math.floor(Math.random() * res.length);
         setMainArticle(res[randomIndex]);
