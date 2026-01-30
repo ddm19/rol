@@ -3,7 +3,7 @@ import NavBar from "./components/NavBar/NavBar";
 import Footer from "./components/Footer/Footer";
 import Home from "./pages/Home/Home";
 import NoPage from "./pages/NotFound/NotFound";
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, useLocation, matchPath } from "react-router-dom";
 import Article from "components/Article/article";
 import ArticleEditor from "pages/ArticleEditor/articleEditor";
 import DiceRollerPage from "pages/diceRoller/diceRoller";
@@ -23,8 +23,13 @@ import AdminRoute from "components/NavBar/PrivateRoute/adminRoute";
 
 function App() {
   const notFooterRoutes = ["/sheets/*", "/Villazarcillo/*", "/Villazarcillo"];
-  console.log(window.location.pathname);
-  console.log(notFooterRoutes.some(r => window.location.pathname.match(r)));
+
+  const location = useLocation();
+
+  const hideFooter = notFooterRoutes.some((route) =>
+    matchPath(route, location.pathname)
+  );
+
   return (
     <div className="App">
       <header className="App-header">
@@ -72,7 +77,7 @@ function App() {
         </Routes>
       </main>
 
-      <footer className={`App-footer ${notFooterRoutes.some(r => window.location.pathname.match(r)) ? "App-footer--hidden" : ""}`}>
+      <footer className={`App-footer ${hideFooter ? "App-footer--hidden" : ""}`}>
         <Footer></Footer>
       </footer>
     </div>
