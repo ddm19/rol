@@ -22,7 +22,9 @@ import AdminRoute from "components/NavBar/PrivateRoute/adminRoute";
 
 
 function App() {
-  const notFooterRoutes = ["/sheets/*", "/Villazarcillo/*"];
+  const notFooterRoutes = ["/sheets/*", "/Villazarcillo/*", "/Villazarcillo"];
+  console.log(window.location.pathname);
+  console.log(notFooterRoutes.some(r => window.location.pathname.match(r)));
   return (
     <div className="App">
       <header className="App-header">

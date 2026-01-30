@@ -33,7 +33,7 @@ const VillazarcilloPage = () => {
             iframe.removeEventListener('load', handleLoad);
             subscription.unsubscribe();
         };
-    }, []);
+    }, [iframeRef, villazarcilloUrl]);
 
     return (
         <>
