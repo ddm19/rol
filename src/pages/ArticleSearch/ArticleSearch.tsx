@@ -9,14 +9,16 @@ import Loading from "components/Loading/Loading";
 
 export interface ArticleSearchProps {
   category?: Category | null;
+  defaultCategories?: Category[];
 }
 
 const ArticleSearch = (props: ArticleSearchProps) => {
+  const { category, defaultCategories } = props;
   const noImage = `${import.meta.env.VITE_PUBLIC_URL}/background.png`;
   const [articles, setArticles] = useState<ArticleDisplayType[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [selectedCategory, setSelectedCategory] = useState(
-    props.category?.id ?? ""
+    category?.id ?? ""
   );
   const [search, setSearch] = useState("");
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
@@ -27,10 +29,15 @@ const ArticleSearch = (props: ArticleSearchProps) => {
       setArticles(res);
       setArticlesLoaded(true);
     });
-    getCategories().then((res: Category[]) => {
-      setCategories(res);
+    if (defaultCategories == null || defaultCategories.length === 0) {
+      getCategories().then((res: Category[]) => {
+        setCategories(res);
+        setCategoriesLoaded(true);
+      });
+    } else {
+      setCategories(defaultCategories || []);
       setCategoriesLoaded(true);
-    });
+    }
   }, []);
 
   useEffect(() => {

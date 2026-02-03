@@ -19,6 +19,7 @@ import VillazarcilloPage from "pages/VillazarcilloPage/villazarciloPage";
 import PJMaker from "pages/PjMaker/PjMaker";
 import AdminPage from "pages/AdminPage/adminPage";
 import AdminRoute from "components/NavBar/PrivateRoute/adminRoute";
+import RuleSearch from "pages/RulesSearcher/RuleSearch";
 
 
 function App() {
@@ -57,6 +58,7 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/sheets/:id" element={<DnDPdfInline />} />
           <Route path="*" element={<NoPage />} />
+          <Route path="/Rules" element={<RuleSearch />} />
 
           {/* Rutas Privadas */}
           <Route path="/admin" element={

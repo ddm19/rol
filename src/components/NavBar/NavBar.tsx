@@ -37,6 +37,7 @@ const NavBar: React.FC = () => {
         { name: "Lanzadados", url: "/DiceRoller" },
       ],
     },
+    { name: "Reglas", url: "/Rules" },
     { name: "ROH", url: "/Cards" }
   ];
 
