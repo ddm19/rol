@@ -19,6 +19,8 @@
   height: 100%;
   width: auto;
   border-radius: 10%;
+
+
 }
 
 
@@ -167,6 +169,11 @@
       transform: scale(1.1) translateY(-2px);
     }
 
+    @media (max-width: 768px)
+    {
+      margin: 0;
+    }
+
   }
 }
 
@@ -238,7 +245,6 @@
   {
     margin-left: 0;
     flex: 1;
-    padding-left: 5%;
     height: 90%;
   }
 
