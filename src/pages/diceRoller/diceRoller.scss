@@ -63,7 +63,7 @@
 
 button
 {
-  background-color: #f57f17;
+  background-color: var(--colors-orange);
   color: white;
   border: none;
   padding: 10px 20px;
@@ -139,7 +139,7 @@ button:hover:not(:disabled)
 .bonus
 {
   font-size: 14px;
-  color: #f57f17;
+  color: var(--colors-orange);
 }
 
 .roll

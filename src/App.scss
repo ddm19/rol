@@ -21,7 +21,7 @@ main
   flex-direction: column;
   align-items: center;
 
-  
+
 }
 
 .App-logo
@@ -70,7 +70,7 @@ main
 
 .App-footer
 {
-  background-color: #ffe3ae;
+  background-color: var(--colors-footerBg);
   width: 100%;
   left: 0;
   bottom: 0;

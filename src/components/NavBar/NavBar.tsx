@@ -6,6 +6,10 @@ import NavigationLinksRender from "./NavigationLinksRender/NavigationLinksRender
 import { DiscordButton } from "components/NavBar/DiscordButton/DiscordButton";
 import UserButton from "components/UserButton/userButton";
 import VillazarcilloButton from "components/VillazarcilloButton/villazarcilloButton";
+import { Button } from "@mui/material";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useTheme } from "hooks/useTheme";
+import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 
 export interface NavigationLink {
   name: string;
@@ -14,6 +18,8 @@ export interface NavigationLink {
   isMobile?: boolean;
 }
 const NavBar: React.FC = () => {
+
+  const { theme, toggleTheme } = useTheme();
 
 
   const navigationLinks: Array<NavigationLink> = [
@@ -43,6 +49,7 @@ const NavBar: React.FC = () => {
 
   return (
     <div className="navbar">
+      <FontAwesomeIcon icon={theme === 'dark' ? faSun : faMoon} onClick={toggleTheme} className="parentNav__themeButton" />
 
       <div className="logoContainer">
         <Link className="navLink" to="/">

@@ -6,26 +6,19 @@
   --colors-black: #000000;
   --colors-white: #ffffff;
   --colors-green: #4caf50;
-
   --colors-lightYellow: #fee09c;
   --colors-darkYellow: #fbc02d;
+  --colors-footerBg: #fee09c;
   --colors-purple: #9b27b0cb;
-
-
-  --colors-lightYellow: #fee09c;
-  --colors-darkYellow: #fbc02d;
   --colors-darkOrange: #f57c00;
-
+  --colors-orange: #f57f17;
   --colors-border: rgba(0, 0, 0, 0.75);
   --colors-font: #444444;
   --colors-subtitle: #7a7a7a;
   --background-color: #fff1d7;
-
   --portal-color-1: #b388eb8b;
   --portal-color-2: #765e9e90;
   --portal-color-3: #460aad90;
-
-  /* Tables */
   --dndBg: #f7f1e1;
   --dndBg2: #efe6d0;
   --dndInk: #2b2217;
@@ -39,24 +32,37 @@
   --dndShadow: rgba(0, 0, 0, 0.08);
 }
 
-@media (prefers-color-scheme: dark)
+
+[data-theme="dark"]
 {
-  // :root
-  // {
-  //   --dndBg: #181511;
-  //   --dndBg2: #1f1c17;
-
-  //   --dndInk: #e8dcc3;
-  //   --dndInkSoft: #c4b397;
-
-  //   --dndAccent: #b33636;
-  //   --dndAccent2: #d94a3e;
-
-  //   --dndGold: #d6a84b;
-
-  //   --dndLine: rgba(232, 220, 195, 0.2);
-  //   --dndRow: rgba(255, 255, 255, 0.03);
-  //   --dndRow2: rgba(217, 74, 62, 0.05);
-  //   --dndShadow: rgba(0, 0, 0, 0.35);
-  // }
+  --colors-mediumRed: #ff6b6b;
+  --colors-darkRed: #8a1c1c;
+  --colors-darkRedLowOpacy: #8a1c1ca9;
+  --colors-black: #ffffff;
+  --colors-white: #1a1a1a;
+  --colors-green: #66bb6a;
+  --colors-lightYellow: #ab8f34;
+  --colors-darkYellow: #a28b22;
+  --colors-footerBg: #a28b22;
+  --colors-darkOrange: #b85d02;
+  --colors-orange: #ad6217;
+  --colors-purple: #ba68c8cb;
+  --colors-border: rgba(232, 220, 195, 0.3);
+  --colors-font: #e8dcc3;
+  --colors-subtitle: #a39582;
+  --background-color: #181511;
+  --portal-color-1: #904ebd8b;
+  --portal-color-2: #5e468590;
+  --portal-color-3: #4e03ce90;
+  --dndBg: #181511;
+  --dndBg2: #1f1c17;
+  --dndInk: #e8dcc3;
+  --dndInkSoft: #c4b397;
+  --dndAccent: #b33636;
+  --dndAccent2: #d94a3e;
+  --dndGold: #d6a84b;
+  --dndLine: rgba(232, 220, 195, 0.2);
+  --dndRow: rgba(255, 255, 255, 0.03);
+  --dndRow2: rgba(217, 74, 62, 0.05);
+  --dndShadow: rgba(0, 0, 0, 0.35);
 }
