@@ -94,7 +94,12 @@ const ArticleSearch = (props: ArticleSearchProps) => {
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
         >
-          <option value="">Todas</option>
+          {defaultCategories == null || defaultCategories.length === 0 ?
+            <option value="">Todas</option>
+            : null
+          }
+
+
           {categories.map((c) => (
             <option key={c.id} value={c.id}>
               {c.name}

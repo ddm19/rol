@@ -140,6 +140,14 @@ export const disadvantages: ChoiceItem[] = [
   },
   {
     id: "d2-7",
+    title: "Curación deficiente",
+    description:
+      "Las curaciones externas te curan la mitad de lo que deberían. No cuentan las curaciones por descanso.",
+    tier: 2,
+    type: ChoiceTypes.Disadvantage,
+  },
+  {
+    id: "d2-8",
     title: "Otro (DTier 2)",
     description:
       "Crea una nueva desventaja de Tier 2 y espera a que el DM la califique como apta para este tier.",
