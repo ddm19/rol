@@ -9,18 +9,20 @@ const VillazarcilloPage = () => {
         const iframe = iframeRef.current;
         if (!iframe) return;
 
-        const handleLoad = () => {
-            supabase.auth.getSession().then(({ data: { session } }) => {
-                if (session) {
-                    iframe.contentWindow?.postMessage({
-                        type: 'supabase-session',
-                        session: session
-                    }, villazarcilloUrl);
-                }
-            });
+        const handleMessageFromIframe = (event: MessageEvent) => {
+            if (event.data?.type === 'villazarcillo-ready') {
+                supabase.auth.getSession().then(({ data: { session } }) => {
+                    if (session) {
+                        iframe.contentWindow?.postMessage({
+                            type: 'supabase-session',
+                            session: session
+                        }, villazarcilloUrl);
+                    }
+                });
+            }
         };
 
-        iframe.addEventListener('load', handleLoad);
+        window.addEventListener('message', handleMessageFromIframe);
 
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
             iframe.contentWindow?.postMessage({
@@ -30,17 +32,19 @@ const VillazarcilloPage = () => {
         });
 
         return () => {
-            iframe.removeEventListener('load', handleLoad);
+            window.removeEventListener('message', handleMessageFromIframe);
             subscription.unsubscribe();
         };
-    }, [iframeRef, villazarcilloUrl]);
+    }, [villazarcilloUrl]);
 
     return (
-        <>
-            <iframe ref={iframeRef} src={villazarcilloUrl} style={{ width: '100%', height: '100%', border: 'none' }} title="Villazarcillo">
-            </iframe>
-        </>
-    )
+        <iframe
+            ref={iframeRef}
+            src={villazarcilloUrl}
+            style={{ width: '100%', height: '100%', border: 'none' }}
+            title="Villazarcillo"
+        />
+    );
 }
 
 export default VillazarcilloPage;
