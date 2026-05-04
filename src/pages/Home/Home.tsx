@@ -126,7 +126,7 @@ const Home: React.FC = () => {
           <Loading />
         )}
         <ArticleDisplay
-          image="https://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Plus_symbol.svg/1200px-Plus_symbol.svg.png"
+          image="https://cdn-icons-png.flaticon.com/512/63/63747.png"
           title="Crear Artículo"
         />
       </div>
