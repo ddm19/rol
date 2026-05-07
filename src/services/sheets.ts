@@ -1,7 +1,7 @@
 import { supabase } from "./supabaseClient"
 import axios from "axios";
 
-export type Sheet = { id: string; owner: string; content: any; updated_at: string }
+export type Sheet = { id: string; owner: string; content: any; updated_at: string, story?: string }
 
 export async function listMySheets(): Promise<Sheet[]> {
   const { data, error } = await supabase
@@ -16,17 +16,17 @@ export async function listMySheets(): Promise<Sheet[]> {
 export async function getSheet(id: string): Promise<Sheet> {
   const { data, error } = await supabase
     .from("sheets")
-    .select("id, owner, content, updated_at")
+    .select("id, owner, content, updated_at, story")
     .eq("id", id).eq("deleted", false)
     .single()
   if (error) throw error
   return data
 }
 
-export async function upsertSheet(id: string, content: any): Promise<Sheet> {
+export async function upsertSheet(id: string, content: any, story?: string): Promise<Sheet> {
   const user = (await supabase.auth.getUser()).data.user
   if (!user) throw new Error("No session")
-  const payload = { id, owner: user.id, content, updated_at: new Date().toISOString() }
+  const payload = { id, owner: user.id, content, story, updated_at: new Date().toISOString() }
   const { data, error } = await supabase
     .from("sheets")
     .upsert(payload, { onConflict: "id, owner" })

@@ -20,6 +20,7 @@ import {
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import "./dndPdfInline.scss";
 import InventoryDisplay, { MagicItem } from "./components/inventoryDisplay";
+import SectionDisplay, { SectionItem } from "./components/SectionDisplay";
 import Loading from "components/Loading/Loading";
 
 const loadScript = (src: string) => {
@@ -51,11 +52,12 @@ export default function DnDPdfInline() {
     const [saving, setSaving] = useState(false);
     const [showControls, setShowControls] = useState(true);
     const [inventory, setInventory] = useState("");
+    const [story, setStory] = useState("");
     const [magicItems, setMagicItems] = useState<MagicItem[]>([]);
     const [lastSaved, setLastSaved] = useState<string>("");
     const [avatarUrl, setAvatarUrl] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
-    const [inventoryVisible, setInventoryVisible] = useState(true);
+    const [inventoryVisible, setInventoryVisible] = useState(false);
 
     const [viewerReady, setViewerReady] = useState(false);
     const TARGET_ORIGIN = window.location.origin;
@@ -87,6 +89,7 @@ export default function DnDPdfInline() {
                     setInventory(s?.content?.inventory || "");
                     setMagicItems(s?.content?.magicItems || []);
                     setLastSaved(s?.updated_at || "");
+                    setStory(s?.story || "");
 
                     // Consolidated avatar loading
                     let url = s?.content?.avatarUrl || "";
@@ -134,7 +137,7 @@ export default function DnDPdfInline() {
                 if (window.confirm("Hace 15 minutos que no guardas. ¿Quieres guardar automáticamente?")) {
                     const values = await requestPdfValues();
                     const completeValues = { ...values, inventory, magicItems, avatarUrl };
-                    const saved = await upsertSheet(routeId, completeValues);
+                    const saved = await upsertSheet(routeId, completeValues, story);
                     setLastSaved(saved.updated_at);
                 }
             } catch (err) {
@@ -233,7 +236,7 @@ export default function DnDPdfInline() {
                 }
                 navigate(`/sheets/${encodeURIComponent(sheetName.trim())}`, { replace: true });
             } else {
-                const saved = await upsertSheet(routeId, completeValues);
+                const saved = await upsertSheet(routeId, completeValues, story);
                 setLastSaved(saved.updated_at);
                 alert("Ficha guardada con éxito.");
             }
@@ -246,6 +249,7 @@ export default function DnDPdfInline() {
     };
 
     const handleInventoryChange = (value: string) => setInventory(value);
+    const handleStoryChange = (value: string) => setStory(value);
     const handleMagicItemsChange = (items: MagicItem[]) => setMagicItems(items);
     const toggleControls = () => setShowControls((prev) => !prev);
 
@@ -446,6 +450,15 @@ export default function DnDPdfInline() {
                         onInventoryChange={handleInventoryChange}
                         handleMagicItemsChange={handleMagicItemsChange}
                     />
+                    <SectionDisplay
+                        title="Historia del Personaje"
+                        content={story}
+                        onContentChange={handleStoryChange}
+                        createItemLink="/article"
+                    />
+                </div>
+                <div className="dndPdfInline__inventoryContainer">
+
                 </div>
             </div>
 

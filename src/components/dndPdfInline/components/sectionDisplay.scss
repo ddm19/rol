@@ -1,4 +1,4 @@
-.inventoryDisplay
+.sectionDisplay
 {
     width: 100%;
     padding: var(--spacing-4);
@@ -95,5 +95,26 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+    }
+
+    &__beautifyButton
+    {
+        padding: var(--spacing-2) var(--spacing-4);
+        background-color: var(--colors-darkRed);
+        color: white;
+        border: none;
+        border-radius: var(--spacing-2);
+        cursor: pointer;
+        font-size: var(--font-size-4);
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        margin: var(--spacing-2) auto;
+
+        &:hover
+        {
+            opacity: 0.8;
+        }
     }
 }
