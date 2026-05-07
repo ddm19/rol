@@ -1,7 +1,7 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { supabase } from "services/supabaseClient";
 import { useNavigate, useParams } from "react-router-dom";
-import { getSheet, createSheetWithId, upsertSheet, deleteSheet } from "services/sheets";
+import { getSheet, createSheetWithId, upsertSheet, deleteSheet, beautifyInventoryMarkdown } from "services/sheets";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faArrowLeft,
@@ -19,7 +19,6 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { faEllipsisV } from "@fortawesome/free-solid-svg-icons";
 import "./dndPdfInline.scss";
-import InventoryDisplay, { MagicItem } from "./components/inventoryDisplay";
 import SectionDisplay, { SectionItem } from "./components/SectionDisplay";
 import Loading from "components/Loading/Loading";
 
@@ -53,7 +52,7 @@ export default function DnDPdfInline() {
     const [showControls, setShowControls] = useState(true);
     const [inventory, setInventory] = useState("");
     const [story, setStory] = useState("");
-    const [magicItems, setMagicItems] = useState<MagicItem[]>([]);
+    const [magicItems, setMagicItems] = useState<SectionItem[]>([]);
     const [lastSaved, setLastSaved] = useState<string>("");
     const [avatarUrl, setAvatarUrl] = useState<string>("");
     const [isLoading, setIsLoading] = useState(false);
@@ -248,10 +247,10 @@ export default function DnDPdfInline() {
         }
     };
 
-    const handleInventoryChange = (value: string) => setInventory(value);
-    const handleStoryChange = (value: string) => setStory(value);
-    const handleMagicItemsChange = (items: MagicItem[]) => setMagicItems(items);
-    const toggleControls = () => setShowControls((prev) => !prev);
+    const handleInventoryChange = useCallback((value: string) => setInventory(value), []);
+    const handleStoryChange = useCallback((value: string) => setStory(value), []);
+    const handleMagicItemsChange = useCallback((items: SectionItem[]) => setMagicItems(items), []);
+    const toggleControls = useCallback(() => setShowControls((prev) => !prev), []);
 
     // Avatar upload helpers
     const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -444,11 +443,17 @@ export default function DnDPdfInline() {
 
 
                 <div className="dndPdfInline__inventoryContainer">
-                    <InventoryDisplay
-                        inventory={inventory}
-                        magicItems={magicItems}
-                        onInventoryChange={handleInventoryChange}
-                        handleMagicItemsChange={handleMagicItemsChange}
+                    <SectionDisplay
+                        title="Inventario"
+                        content={inventory}
+                        onContentChange={handleInventoryChange}
+                        items={magicItems}
+                        onItemsChange={handleMagicItemsChange}
+                        itemsCategory="objeto"
+                        itemsLabel="Objetos Mágicos"
+                        onBeautify={beautifyInventoryMarkdown}
+                        enableBeautify={true}
+                        createItemLink="/article"
                     />
                     <SectionDisplay
                         title="Historia del Personaje"
@@ -457,9 +462,8 @@ export default function DnDPdfInline() {
                         createItemLink="/article"
                     />
                 </div>
-                <div className="dndPdfInline__inventoryContainer">
 
-                </div>
+
             </div>
 
 

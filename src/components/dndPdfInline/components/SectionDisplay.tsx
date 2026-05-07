@@ -1,14 +1,13 @@
 import MarkdownEditor from "components/MarkdownEditor/markdownEditor";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import "./sectionDisplay.scss";
 import { fetchArticles } from "pages/Home/actions";
 import { ArticleType } from "components/Article/types";
 import ArticleDisplay from "components/ArticleDisplay/articleDisplay";
 import { getArticleInfo } from "pages/Home/Home";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faExternalLink, faMagicWandSparkles, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { faExternalLink, faMagicWandSparkles, faTrash, faChevronDown, faChevronUp } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
-import { beautifyInventoryMarkdown } from "services/sheets";
 import Loading from "components/Loading/Loading";
 
 export type SectionItem = {
@@ -49,6 +48,7 @@ const SectionDisplay = (props: SectionDisplayProps) => {
     const [selectedValue, setSelectedValue] = useState<SectionItem>();
     const [isContentBeautifying, setIsContentBeautifying] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     useEffect(() => {
         if (itemsCategory) {
@@ -127,65 +127,78 @@ const SectionDisplay = (props: SectionDisplayProps) => {
 
     return (
         <div className="sectionDisplay">
-            {isContentBeautifying ? <Loading text="Formateando contenido..." /> :
+            {isContentBeautifying ? <Loading text="Una cuadrilla de gnomos está organizando tu inventario, esto puede tardar hasta 30 segundos" /> :
                 <>
-                    <h2>{title}</h2>
-                    {enableBeautify && onBeautify && (
-                        <button onClick={handleBeautify} className="sectionDisplay__beautifyButton">
-                            Formatea con IA
-                            <FontAwesomeIcon icon={faMagicWandSparkles} />
+                    <div className="sectionDisplay__header">
+                        <button 
+                            className="sectionDisplay__collapseButton"
+                            onClick={() => setIsCollapsed(!isCollapsed)}
+                        >
+                            <FontAwesomeIcon icon={isCollapsed ? faChevronUp : faChevronDown} />
                         </button>
-                    )}
-
-                    <MarkdownEditor value={contentValue} onChange={onChange} isEditing={isEditing} setIsEditing={setIsEditing} />
-
-                    {itemsCategory && onItemsChange && (
+                        <h2>{title}</h2>
+                    </div>
+                    
+                    {!isCollapsed && (
                         <>
-                            <h2>{itemsLabel}</h2>
-                            <div className="sectionDisplay__selector">
-                                <img src={selectedValue?.content.image} className="sectionDisplay__image" alt={selectedValue?.content.title} />
-                                <select
-                                    value={selectedValue?.content.title}
-                                    onChange={(e) => {
-                                        const item = availableItems.find((item) => item.content.title === e.target.value) || null;
-                                        setSelectedValue(item || availableItems[0]);
-                                    }}
-                                >
-                                    {availableItems && availableItems.map((item) => (
-                                        <option key={item.content.title} value={item.content.title}>
-                                            {item.content.title}
-                                        </option>
-                                    ))}
-                                </select>
-                                <button onClick={handleAddToSection}>
-                                    Añadir a {title}
+                            {enableBeautify && onBeautify && (
+                                <button onClick={handleBeautify} className="sectionDisplay__beautifyButton">
+                                    Formatea con IA
+                                    <FontAwesomeIcon icon={faMagicWandSparkles} />
                                 </button>
-                                {createItemLink && (
-                                    <Link to={createItemLink} className="sectionDisplay__link" target="_blank" rel="noopener noreferrer">
-                                        No encuentras el que buscas? Créalo <FontAwesomeIcon icon={faExternalLink} />
-                                    </Link>
-                                )}
-                            </div>
-                            <div className="sectionDisplay__itemsDisplay">
-                                {itemsOnSection.map((item) =>
-                                    <div className="sectionDisplay__item" key={item.id}>
-                                        <ArticleDisplay
-                                            key={item.id}
-                                            image={item.content.image || ""}
-                                            title={item.content.title}
-                                            description={item.content.shortDescription}
-                                            articleId={item.content.title}
-                                            articleInfo={getArticleInfo(item.content)}
-                                            isBlank
-                                        />
-                                        <button
-                                            onClick={() => handleDeleteFromSection(item.id)}
+                            )}
+
+                            <MarkdownEditor value={contentValue} onChange={onChange} isEditing={isEditing} setIsEditing={setIsEditing} />
+
+                            {itemsCategory && onItemsChange && (
+                                <>
+                                    <h2>{itemsLabel}</h2>
+                                    <div className="sectionDisplay__selector">
+                                        <img src={selectedValue?.content.image} className="sectionDisplay__image" alt={selectedValue?.content.title} />
+                                        <select
+                                            value={selectedValue?.content.title}
+                                            onChange={(e) => {
+                                                const item = availableItems.find((item) => item.content.title === e.target.value) || null;
+                                                setSelectedValue(item || availableItems[0]);
+                                            }}
                                         >
-                                            <FontAwesomeIcon icon={faTrash} />
+                                            {availableItems && availableItems.map((item) => (
+                                                <option key={item.content.title} value={item.content.title}>
+                                                    {item.content.title}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <button onClick={handleAddToSection}>
+                                            Añadir a {title}
                                         </button>
+                                        {createItemLink && (
+                                            <Link to={createItemLink} className="sectionDisplay__link" target="_blank" rel="noopener noreferrer">
+                                                No encuentras el que buscas? Créalo <FontAwesomeIcon icon={faExternalLink} />
+                                            </Link>
+                                        )}
                                     </div>
-                                )}
-                            </div>
+                                    <div className="sectionDisplay__itemsDisplay">
+                                        {itemsOnSection.map((item) =>
+                                            <div className="sectionDisplay__item" key={item.id}>
+                                                <ArticleDisplay
+                                                    key={item.id}
+                                                    image={item.content.image || ""}
+                                                    title={item.content.title}
+                                                    description={item.content.shortDescription}
+                                                    articleId={item.content.title}
+                                                    articleInfo={getArticleInfo(item.content)}
+                                                    isBlank
+                                                />
+                                                <button
+                                                    onClick={() => handleDeleteFromSection(item.id)}
+                                                >
+                                                    <FontAwesomeIcon icon={faTrash} />
+                                                </button>
+                                            </div>
+                                        )}
+                                    </div>
+                                </>
+                            )}
                         </>
                     )}
                 </>}

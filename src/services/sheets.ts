@@ -88,9 +88,9 @@ export async function beautifyInventoryMarkdown(raw: string) {
     console.error("OpenRouter API key vacía en el cliente (revisa env + rebuild con cache limpia en Vercel).");
     throw new Error("OpenRouter API key vacía en el cliente (revisa env + rebuild con cache limpia en Vercel).");
   }
-  const model = "tngtech/deepseek-r1t-chimera:free";
+  const model = "poolside/laguna-m.1:free";
   const userPrompt = `Convierte este inventario de D&D a Markdown perfectamente estructurado:
-- Encabezados (pequeños) para secciones (Armas, Armaduras, Consumibles, Misceláneo)
+- Encabezados (pequeños) para secciones basadas en categorías o tipos de objetos
 - Listas con viñetas para ítems
 - Tablas Markdown si hay cantidades o propiedades
 - Sin explicación ni texto extra. Devuelve únicamente el Markdown final.
@@ -104,8 +104,12 @@ ${raw}`;
       { role: "system", content: "Eres un formateador que devuelve exclusivamente Markdown válido para fichas de D&D." },
       { role: "user", content: userPrompt }
     ],
+    reasoning: 
+    {
+      "effort": "none",
+    },
     temperature: 0.2,
-    max_tokens: 1200
+    max_tokens: 4000
   });
   const out = r.data?.choices?.[0]?.message?.content ?? "";
   return extractMarkdown(stripThinkSafe(out));
