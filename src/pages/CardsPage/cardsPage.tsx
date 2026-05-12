@@ -1,79 +1,98 @@
-import React, { useEffect, useState } from "react";
-import "./cardsPage.scss";
-import DeckPanel from "./components/deckPanel";
-import { DeckDTO, fetchDecks, CardDTO } from "./actions";
-import Loading from "components/Loading/Loading";
-
-interface ImgItem {
-  key: string;
-  url: string;
-  alt: string;
-  group: string;
-}
+import React, { useEffect, useState } from 'react';
+import './cardsPage.scss';
+import Loading from 'components/Loading/Loading';
+import FiltersPanel from './FiltersPanel/filtersPanel';
+import CardsGrid from './CardsGrid/cardsGrid';
+import useCardSearch from 'hooks/useCardSearch';
+import { fetchFacets } from 'services/cardsService';
 
 const CardsPage: React.FC = () => {
-  const [groups, setGroups] = useState<Record<string, ImgItem[]>>({});
-  const [active, setActive] = useState<string | null>(null);
-  const [loading, setLoading] = useState(true);
+    const [facets, setFacets] = useState({ 
+        tipos: [] as string[], 
+        colores: [] as string[], 
+        expansions: [] as string[], 
+        rarezas: [] as string[],
+        maxCost: 10 
+    });
+    const [active, setActive] = useState<string | null>(null);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const decks: DeckDTO[] = await fetchDecks();
+    const {
+        loading,
+        results,
+        query,
+        setQuery,
+        tipos,
+        setTipos,
+        colores,
+        setColores,
+        expansion,
+        setExpansion,
+        rareza,
+        setRareza,
+        costeMin,
+        setCosteMin,
+        costeMax,
+        setCosteMax,
+        sort,
+        setSort,
+    } = useCardSearch();
 
-        const collected: Record<string, ImgItem[]> = {};
-        decks.forEach((deck) => {
-          collected[deck.title] = deck.cards.map((card: CardDTO) => ({
-            key: `${deck.title}/${card.name}`,
-            url: card.url,
-            alt: card.name,
-            group: deck.title,
-          }));
-        });
+    useEffect(() => {
+        (async () => {
+            try {
+                const f = await fetchFacets();
+                setFacets(f as any);
+            } catch (err) {
+                console.error('Error fetching facets', err);
+            }
+        })();
+    }, []);
 
-        setGroups(collected);
-      } catch (err) {
-        console.error("Error fetching decks:", err);
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
+    if (loading) return <Loading />;
 
-  if (loading) return <Loading />;
+    return (
+        <div className="cardsPageRoot">
+            <FiltersPanel
+                tipos={facets.tipos}
+                colores={facets.colores}
+                expansions={facets.expansions}
+                rarezas={facets.rarezas}
+                maxCostAvailable={facets.maxCost}
 
-  return (
-    <>
-      {Object.entries(groups).map(([groupName, items]) => (
-        <DeckPanel
-          key={groupName}
-          groupName={groupName}
-          items={items}
-          onSelect={setActive}
-        />
-      ))}
+                query={query}
+                setQuery={setQuery}
+                tiposSelected={tipos}
+                setTiposSelected={setTipos}
+                coloresSelected={colores}
+                setColoresSelected={setColores}
+                expansion={expansion}
+                setExpansion={setExpansion}
+                rareza={rareza}
+                setRareza={setRareza}
+                costeMin={costeMin}
+                setCosteMin={setCosteMin}
+                costeMax={costeMax}
+                setCosteMax={setCosteMax}
+                sort={sort}
+                setSort={setSort}
+            />
 
-      {active && (
-        <div
-          className="modalBackdrop is-open"
-          onClick={() => setActive(null)}
-          role="dialog"
-          aria-modal="true"
-        >
-          <div className="modalContent" onClick={(e) => e.stopPropagation()}>
-            <button
-              className="closeBtn"
-              aria-label="Cerrar"
-              onClick={() => setActive(null)}
-            >
-              ✖
-            </button>
-            <img src={active} alt="" />
-          </div>
+            <div className="cardsPage__content">
+                <CardsGrid cards={results} onSelect={(url) => setActive(url)} />
+            </div>
+
+            {active && (
+                <div className="modalBackdrop is-open" onClick={() => setActive(null)} role="dialog" aria-modal="true">
+                    <div className="modalContent" onClick={(e) => e.stopPropagation()}>
+                        <button className="closeBtn" aria-label="Cerrar" onClick={() => setActive(null)}>
+                            ✖
+                        </button>
+                        <img src={active} alt="" />
+                    </div>
+                </div>
+            )}
         </div>
-      )}
-    </>
-  );
+    );
 };
 
 export default React.memo(CardsPage);
