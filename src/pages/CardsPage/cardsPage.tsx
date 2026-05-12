@@ -25,6 +25,8 @@ const CardsPage: React.FC = () => {
         setTipos,
         colores,
         setColores,
+        colorMatchMode,
+        setColorMatchMode,
         expansion,
         setExpansion,
         rareza,
@@ -35,6 +37,7 @@ const CardsPage: React.FC = () => {
         setCosteMax,
         sort,
         setSort,
+        availableTipos
     } = useCardSearch();
 
     useEffect(() => {
@@ -54,6 +57,7 @@ const CardsPage: React.FC = () => {
         <div className="cardsPageRoot">
             <FiltersPanel
                 tipos={facets.tipos}
+                availableTipos={availableTipos}
                 colores={facets.colores}
                 expansions={facets.expansions}
                 rarezas={facets.rarezas}
@@ -65,6 +69,8 @@ const CardsPage: React.FC = () => {
                 setTiposSelected={setTipos}
                 coloresSelected={colores}
                 setColoresSelected={setColores}
+                colorMatchMode={colorMatchMode}
+                setColorMatchMode={setColorMatchMode}
                 expansion={expansion}
                 setExpansion={setExpansion}
                 rareza={rareza}

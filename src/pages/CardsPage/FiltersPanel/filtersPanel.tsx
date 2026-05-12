@@ -1,10 +1,12 @@
 import React, { useMemo, useState } from 'react';
 import Slider from '@mui/material/Slider';
 import './filtersPanel.scss';
+import { normalizeString } from 'hooks/useCardSearch';
 
 type Props = {
     // facets to populate controls
     tipos: string[];
+    availableTipos: Set<string>;
     colores: string[];
     expansions: string[];
     rarezas: string[];
@@ -17,6 +19,8 @@ type Props = {
     setTiposSelected: (v: string[]) => void;
     coloresSelected: string[];
     setColoresSelected: (v: string[]) => void;
+    colorMatchMode: 'AND' | 'OR';
+    setColorMatchMode: (v: 'AND' | 'OR') => void;
     expansion: string | null;
     setExpansion: (v: string | null) => void;
     rareza: string | null;
@@ -29,9 +33,28 @@ type Props = {
     setSort: (v: any) => void;
 };
 
+const GENERAL_TYPES = [
+    'Líder', 'Criatura', 'Dote', 'Runa', 'Conjuro', 'Trampa', 'Objeto', 'Objeto Mágico'
+];
+
+const GENERAL_TYPES_NORMALIZED = GENERAL_TYPES.map(normalizeString);
+
+const COLOR_MAP: Record<string, string> = {
+    '#ff0000': 'Rojo',
+    '#0000ff': 'Azul',
+    '#ffff00': 'Amarillo',
+    '#00ff00': 'Verde',
+    '#800080': 'Morado',
+};
+
+const getDisplayColorName = (hex: string) => {
+    return COLOR_MAP[hex.toLowerCase()] || hex;
+};
+
 const FiltersPanel: React.FC<Props> = (props) => {
     const {
         tipos,
+        availableTipos,
         colores,
         expansions,
         rarezas,
@@ -42,6 +65,8 @@ const FiltersPanel: React.FC<Props> = (props) => {
         setTiposSelected,
         coloresSelected,
         setColoresSelected,
+        colorMatchMode,
+        setColorMatchMode,
         expansion,
         setExpansion,
         rareza,
@@ -71,6 +96,7 @@ const FiltersPanel: React.FC<Props> = (props) => {
         setQuery('');
         setTiposSelected([]);
         setColoresSelected([]);
+        setColorMatchMode('OR');
         setExpansion(null);
         setRareza(null);
         setCosteMin(null);
@@ -80,11 +106,33 @@ const FiltersPanel: React.FC<Props> = (props) => {
         setShowAllTipos(false);
     };
 
-    const filteredTipos = useMemo(() => {
-        return tipos.filter(t => t.toLowerCase().includes(tiposSearch.toLowerCase()));
-    }, [tipos, tiposSearch]);
+    const { generalTipos, subTipos } = useMemo(() => {
+        const g: string[] = [];
+        const s: string[] = [];
+        tipos.forEach(t => {
+            if (GENERAL_TYPES_NORMALIZED.includes(normalizeString(t))) {
+                g.push(t);
+            } else {
+                if (availableTipos.has(normalizeString(t))) {
+                    s.push(t);
+                }
+            }
+        });
+        
+        tiposSelected.forEach(ts => {
+            if (!GENERAL_TYPES_NORMALIZED.includes(normalizeString(ts)) && !s.includes(ts)) {
+                s.push(ts);
+            }
+        });
 
-    const visibleTipos = showAllTipos || tiposSearch ? filteredTipos : filteredTipos.slice(0, 8);
+        return { generalTipos: g, subTipos: s };
+    }, [tipos, availableTipos, tiposSelected]);
+
+    const filteredSubTipos = useMemo(() => {
+        return subTipos.filter(t => normalizeString(t).includes(normalizeString(tiposSearch)));
+    }, [subTipos, tiposSearch]);
+
+    const visibleSubTipos = showAllTipos || tiposSearch ? filteredSubTipos : filteredSubTipos.slice(0, 8);
 
     const actualMin = costeMin ?? 0;
     const actualMax = costeMax ?? maxCostAvailable;
@@ -102,15 +150,9 @@ const FiltersPanel: React.FC<Props> = (props) => {
             </div>
 
             <div className="cardsFilters__section">
-                <label className="cardsFilters__label">Tipos</label>
-                <input
-                    className="cardsFilters__input cardsFilters__input--search"
-                    placeholder="Buscar tipo..."
-                    value={tiposSearch}
-                    onChange={(e) => setTiposSearch(e.target.value)}
-                />
+                <label className="cardsFilters__label">Tipo General</label>
                 <div className="cardsFilters__chips">
-                    {visibleTipos.map((t) => (
+                    {generalTipos.map((t) => (
                         <button
                             key={t}
                             type="button"
@@ -121,24 +163,72 @@ const FiltersPanel: React.FC<Props> = (props) => {
                         </button>
                     ))}
                 </div>
-                {!tiposSearch && tipos.length > 8 && (
-                    <button type="button" className="cardsFilters__moreBtn link link--bold" onClick={() => setShowAllTipos(!showAllTipos)}>
-                        {showAllTipos ? 'Ver menos...' : `Ver ${tipos.length - 8} más...`}
-                    </button>
-                )}
             </div>
 
+            {subTipos.length > 0 && (
+                <div className="cardsFilters__section">
+                    <label className="cardsFilters__label">Subtipos</label>
+                    <input
+                        className="cardsFilters__input cardsFilters__input--search"
+                        placeholder="Buscar subtipo..."
+                        value={tiposSearch}
+                        onChange={(e) => setTiposSearch(e.target.value)}
+                    />
+                    <div className="cardsFilters__chips">
+                        {visibleSubTipos.map((t) => (
+                            <button
+                                key={t}
+                                type="button"
+                                className={`chip ${tiposSelected.includes(t) ? 'is-active' : ''}`}
+                                onClick={() => toggleTipo(t)}
+                            >
+                                {t}
+                            </button>
+                        ))}
+                    </div>
+                    {!tiposSearch && subTipos.length > 8 && (
+                        <button type="button" className="cardsFilters__moreBtn link link--bold" onClick={() => setShowAllTipos(!showAllTipos)}>
+                            {showAllTipos ? 'Ver menos...' : `Ver ${subTipos.length - 8} más...`}
+                        </button>
+                    )}
+                </div>
+            )}
+
             <div className="cardsFilters__section">
-                <label className="cardsFilters__label">Colores</label>
-                <div className="cardsFilters__chips">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
+                    <label className="cardsFilters__label" style={{ marginBottom: 0 }}>Colores</label>
+                    {coloresSelected.length > 1 && (
+                        <button 
+                            className="link link--bold" 
+                            style={{ fontSize: '0.8rem', background: 'none', border: 'none', cursor: 'pointer' }}
+                            onClick={() => setColorMatchMode(colorMatchMode === 'AND' ? 'OR' : 'AND')}
+                        >
+                            {colorMatchMode === 'AND' ? 'Exigir todos (Y)' : 'Cualquiera (O)'}
+                        </button>
+                    )}
+                </div>
+                <div className="cardsFilters__chips" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap' }}>
                     {colores.map((c) => (
                         <button
                             key={c}
                             type="button"
-                            className={`chip ${coloresSelected.includes(c) ? 'is-active' : ''}`}
+                            className={`chip-color ${coloresSelected.includes(c) ? 'is-active' : ''}`}
                             onClick={() => toggleColor(c)}
+                            style={{
+                                width: '32px',
+                                height: '32px',
+                                borderRadius: '50%',
+                                border: coloresSelected.includes(c) ? '3px solid var(--colors-darkRed)' : '1px solid #ccc',
+                                backgroundColor: c,
+                                cursor: 'pointer',
+                                position: 'relative',
+                                display: 'inline-flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                padding: 0
+                            }}
+                            title={getDisplayColorName(c)}
                         >
-                            {c}
                         </button>
                     ))}
                 </div>
@@ -197,6 +287,9 @@ const FiltersPanel: React.FC<Props> = (props) => {
                             }
                         }}
                     />
+                </div>
+                <div className="cardsFilters__costeMobileText">
+                    Coste seleccionado: {actualMin} - {actualMax}
                 </div>
             </div>
 

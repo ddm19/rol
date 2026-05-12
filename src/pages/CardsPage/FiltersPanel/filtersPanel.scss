@@ -1,6 +1,6 @@
 .cardsFilters
 {
-    width: 20%;
+    width: 90%;
     padding: var(--spacing-3);
     background: var(--background-color);
     color: var(--colors-font);
@@ -90,6 +90,30 @@
         {
             background: var(--colors-darkRed);
             color: var(--colors-white);
+        }
+    }
+
+    .chip-color
+    {
+        transition: transform 0.2s;
+
+        &:hover
+        {
+            transform: scale(1.1);
+        }
+    }
+
+    &__costeMobileText
+    {
+        display: none;
+        font-size: 0.85rem;
+        color: var(--colors-font);
+        text-align: center;
+        margin-top: var(--spacing-1);
+
+        @media (max-width: 900px)
+        {
+            display: block;
         }
     }
 
