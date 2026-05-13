@@ -13,6 +13,7 @@ const UserButton = () => {
     const [session, setSession] = useState<any>(null);
     const [profile, setProfile] = useState<any>(null);
 
+    const isMobile = window.innerWidth <= 768;
 
     useEffect(() => {
         const fetchSessionAndProfile = async () => {
@@ -50,9 +51,11 @@ const UserButton = () => {
                         alt="avatar"
                         className="userButton__avatar"
                     />
-                    <span className="userButton__username">
-                        {displayName}
-                    </span>
+                    {!isMobile &&
+                        <span className="userButton__username">
+                            {displayName}
+                        </span>
+                    }
                 </Button>
             ) : (
                 <Button onClick={toggleAuthPopup} id="loginButton">

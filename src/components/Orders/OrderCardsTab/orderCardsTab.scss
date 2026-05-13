@@ -1,19 +1,21 @@
+@use "../../../styles/common/breakpoints" as breakpoints;
+
 .orderCardsTab
 {
     display: flex;
     justify-content: center;
     align-items: flex-start;
-    min-height: 600px;
-    padding: 2rem;
-    background: linear-gradient(135deg, var(--dndBg) 0%, var(--dndBg2) 100%);
+    min-height: var(--orders-tab-min-height);
+    padding: var(--spacing-4);
+    background: var(--orders-bg-gradient);
 
     &__container
     {
         display: flex;
         flex-direction: column;
-        gap: 2rem;
-        max-width: 600px;
-        width: 100%;
+        gap: var(--spacing-4);
+        max-width: var(--content-size-md);
+        width: var(--size-full);
     }
 
     &__searchSection
@@ -31,28 +33,28 @@
     &__searchIcon
     {
         position: absolute;
-        left: 1rem;
+        left: var(--spacing-4);
         color: var(--colors-subtitle);
         pointer-events: none;
-        z-index: 1;
+        z-index: var(--z-dropdown);
     }
 
     &__searchInput
     {
-        width: 100%;
-        padding: 0.75rem 1rem 0.75rem 2.5rem;
-        font-size: 1rem;
-        border: 2px solid var(--dndLine);
-        border-radius: 8px;
+        width: var(--size-full);
+        padding: var(--spacing-3) var(--spacing-4) var(--spacing-3) var(--spacing-10);
+        font-size: var(--font-size-4);
+        border: var(--border-size-2) solid var(--dndLine);
+        border-radius: var(--radius-3);
         outline: none;
         background: var(--colors-white);
         color: var(--colors-font);
-        transition: all 0.3s ease;
+        transition: all var(--motion-duration-base) var(--motion-ease-standard);
 
         &:focus
         {
             border-color: var(--dndGold);
-            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow-focus);
         }
 
         &::placeholder
@@ -64,14 +66,14 @@
     &__clearButton
     {
         position: absolute;
-        right: 0.75rem;
+        right: var(--spacing-3);
         background: none;
         border: none;
         color: var(--colors-subtitle);
-        font-size: 1rem;
+        font-size: var(--font-size-4);
         cursor: pointer;
-        padding: 0.25rem 0.5rem;
-        transition: color 0.2s ease;
+        padding: var(--spacing-1) var(--spacing-2);
+        transition: color var(--motion-duration-fast) var(--motion-ease-standard);
         display: flex;
         align-items: center;
 
@@ -84,32 +86,32 @@
     &__searchResults
     {
         position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
+        top: var(--size-full);
+        left: var(--spacing-0);
+        right: var(--spacing-0);
         background: var(--colors-white);
-        border: 2px solid var(--dndLine);
+        border: var(--border-size-2) solid var(--dndLine);
         border-top: none;
-        border-radius: 0 0 8px 8px;
-        max-height: 300px;
+        border-radius: var(--spacing-0) var(--spacing-0) var(--radius-3) var(--radius-3);
+        max-height: var(--orders-search-results-max-height);
         overflow-y: auto;
-        z-index: 10;
-        box-shadow: 0 4px 12px var(--dndShadow);
+        z-index: var(--z-orders-modal-header);
+        box-shadow: var(--shadow-2);
     }
 
     &__resultItem
     {
-        width: 100%;
-        padding: 0.75rem 1rem;
+        width: var(--size-full);
+        padding: var(--spacing-3) var(--spacing-4);
         background: none;
         border: none;
-        border-bottom: 1px solid var(--dndLine);
+        border-bottom: var(--border-size-1) solid var(--dndLine);
         text-align: left;
         cursor: pointer;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        transition: background 0.2s ease;
+        transition: background var(--motion-duration-fast) var(--motion-ease-standard);
         color: var(--colors-font);
 
         &:last-child
@@ -130,7 +132,7 @@
 
     &__resultName
     {
-        font-weight: 500;
+        font-weight: var(--font-weight-3);
         color: var(--colors-font);
         flex: 1;
         text-align: left;
@@ -138,55 +140,55 @@
 
     &__resultExpansion
     {
-        font-size: 0.85rem;
+        font-size: var(--font-size-2);
         color: var(--colors-subtitle);
-        margin-left: 1rem;
+        margin-left: var(--spacing-4);
         white-space: nowrap;
     }
 
     &__noResults
     {
-        padding: 1rem;
+        padding: var(--spacing-4);
         text-align: center;
         color: var(--colors-subtitle);
-        font-size: 0.9rem;
+        font-size: var(--font-size-3);
     }
 
     &__selectedSection
     {
         background: var(--colors-white);
-        border-radius: 12px;
-        padding: 1.5rem;
-        box-shadow: 0 2px 8px var(--dndShadow);
-        border: 1px solid var(--dndLine);
+        border-radius: var(--radius-4);
+        padding: var(--spacing-6);
+        box-shadow: var(--shadow-1);
+        border: var(--border-size-1) solid var(--dndLine);
     }
 
     &__sectionTitle
     {
-        margin: 0 0 1rem 0;
+        margin: var(--spacing-0) var(--spacing-0) var(--spacing-4) var(--spacing-0);
         color: var(--colors-darkRed);
-        font-size: 1rem;
-        font-weight: 600;
+        font-size: var(--font-size-4);
+        font-weight: var(--font-weight-4);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: var(--letter-spacing-1);
     }
 
     &__empty
     {
         text-align: center;
         color: var(--colors-subtitle);
-        font-size: 0.95rem;
-        padding: 1.5rem;
+        font-size: var(--font-size-3);
+        padding: var(--spacing-6);
         background: var(--dndBg);
-        border-radius: 8px;
-        border: 1px dashed var(--dndLine);
+        border-radius: var(--radius-3);
+        border: var(--border-size-1) dashed var(--dndLine);
     }
 
     &__selectedList
     {
         display: flex;
         flex-direction: column;
-        gap: 0.75rem;
+        gap: var(--spacing-3);
     }
 
     &__selectedCard
@@ -194,36 +196,36 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
-        padding: 1rem;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4);
         background: var(--dndBg);
-        border-radius: 8px;
-        border: 1px solid var(--dndLine);
-        transition: all 0.2s ease;
+        border-radius: var(--radius-3);
+        border: var(--border-size-1) solid var(--dndLine);
+        transition: all var(--motion-duration-fast) var(--motion-ease-standard);
 
         &:hover
         {
             background: var(--dndBg2);
             border-color: var(--dndGold);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: var(--shadow-1);
         }
     }
 
     &__cardImage
     {
-        width: 60px;
-        height: 90px;
-        border-radius: 6px;
+        width: var(--orders-card-thumb-width-md);
+        height: var(--orders-card-thumb-height-md);
+        border-radius: var(--radius-2);
         overflow: hidden;
-        flex-shrink: 0;
+        flex-shrink: var(--spacing-0);
         background: var(--colors-white);
-        border: 1px solid var(--dndLine);
-        box-shadow: 0 2px 6px var(--dndShadow);
+        border: var(--border-size-1) solid var(--dndLine);
+        box-shadow: var(--shadow-1);
 
         img
         {
-            width: 100%;
-            height: 100%;
+            width: var(--size-full);
+            height: var(--size-full);
             object-fit: cover;
         }
     }
@@ -231,17 +233,17 @@
     &__cardInfo
     {
         flex: 1;
-        min-width: 0;
+        min-width: var(--spacing-0);
         display: flex;
         flex-direction: column;
-        gap: 0.25rem;
+        gap: var(--spacing-1);
     }
 
     &__cardName
     {
-        font-weight: 600;
+        font-weight: var(--font-weight-4);
         color: var(--colors-font);
-        font-size: 0.95rem;
+        font-size: var(--font-size-3);
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -249,7 +251,7 @@
 
     &__cardExpansion
     {
-        font-size: 0.8rem;
+        font-size: var(--font-size-2);
         color: var(--colors-subtitle);
     }
 
@@ -257,28 +259,28 @@
     {
         display: flex;
         align-items: center;
-        gap: 0.5rem;
+        gap: var(--spacing-2);
         background: var(--colors-white);
-        border-radius: 6px;
-        border: 1px solid var(--dndLine);
-        padding: 0.25rem;
-        flex-shrink: 0;
+        border-radius: var(--radius-2);
+        border: var(--border-size-1) solid var(--dndLine);
+        padding: var(--spacing-1);
+        flex-shrink: var(--spacing-0);
     }
 
     &__quantityBtn
     {
         background: none;
         border: none;
-        width: 30px;
-        height: 30px;
+        width: var(--orders-control-size-md);
+        height: var(--orders-control-size-md);
         display: flex;
         align-items: center;
         justify-content: center;
         cursor: pointer;
         color: var(--colors-font);
         font-weight: bold;
-        font-size: 0.9rem;
-        transition: all 0.2s ease;
+        font-size: var(--font-size-3);
+        transition: all var(--motion-duration-fast) var(--motion-ease-standard);
 
         &:hover:not(:disabled)
         {
@@ -288,28 +290,28 @@
 
         &:disabled
         {
-            opacity: 0.5;
+            opacity: var(--opacity-disabled);
             cursor: not-allowed;
         }
     }
 
     &__quantityInput
     {
-        width: 40px;
-        height: 30px;
+        width: var(--spacing-10);
+        height: var(--orders-control-size-md);
         text-align: center;
         border: none;
         outline: none;
         background: transparent;
-        font-weight: 600;
+        font-weight: var(--font-weight-4);
         color: var(--colors-font);
-        font-size: 0.9rem;
+        font-size: var(--font-size-3);
 
         &::-webkit-outer-spin-button,
         &::-webkit-inner-spin-button
         {
             -webkit-appearance: none;
-            margin: 0;
+            margin: var(--spacing-0);
         }
 
         &[type='number']
@@ -324,14 +326,14 @@
         background: none;
         border: none;
         color: var(--colors-subtitle);
-        font-size: 1rem;
+        font-size: var(--font-size-4);
         cursor: pointer;
-        padding: 0.25rem 0.5rem;
-        transition: color 0.2s ease;
+        padding: var(--spacing-1) var(--spacing-2);
+        transition: color var(--motion-duration-fast) var(--motion-ease-standard);
         display: flex;
         align-items: center;
         justify-content: center;
-        flex-shrink: 0;
+        flex-shrink: var(--spacing-0);
 
         &:hover
         {
@@ -343,72 +345,72 @@
     {
         display: flex;
         flex-direction: column;
-        gap: 1rem;
+        gap: var(--spacing-4);
         align-items: center;
     }
 
     &__error
     {
-        background: rgba(0, 0, 0, 0.03);
+        background: var(--dndNoticeErrorBg);
         color: var(--colors-mediumRed);
-        padding: 1rem;
-        border-radius: 8px;
+        padding: var(--spacing-4);
+        border-radius: var(--radius-3);
         text-align: center;
-        font-size: 0.9rem;
-        border-left: 4px solid var(--colors-mediumRed);
-        width: 100%;
+        font-size: var(--font-size-3);
+        border-left: var(--border-size-4) solid var(--colors-mediumRed);
+        width: var(--size-full);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: var(--spacing-2);
     }
 
     &__success
     {
-        background: rgba(0, 0, 0, 0.02);
+        background: var(--dndNoticeSuccessBg);
         color: var(--colors-green);
-        padding: 1rem;
-        border-radius: 8px;
+        padding: var(--spacing-4);
+        border-radius: var(--radius-3);
         text-align: center;
-        font-size: 0.9rem;
-        border-left: 4px solid var(--colors-green);
-        font-weight: 600;
-        width: 100%;
-        animation: slideIn 0.3s ease;
+        font-size: var(--font-size-3);
+        border-left: var(--border-size-4) solid var(--colors-green);
+        font-weight: var(--font-weight-4);
+        width: var(--size-full);
+        animation: slideIn var(--motion-duration-base) var(--motion-ease-standard);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: var(--spacing-2);
     }
 
     &__button
     {
-        background: linear-gradient(135deg, var(--dndGold) 0%, var(--dndAccent2) 100%);
+        background: var(--orders-primary-gradient);
         color: var(--colors-white);
         border: none;
-        padding: 1rem 2.5rem;
-        border-radius: 8px;
-        font-size: 1rem;
-        font-weight: 700;
+        padding: var(--spacing-4) var(--spacing-10);
+        border-radius: var(--radius-3);
+        font-size: var(--font-size-4);
+        font-weight: var(--font-weight-5);
         cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px var(--dndShadow);
-        letter-spacing: 0.5px;
+        transition: all var(--motion-duration-base) var(--motion-ease-standard);
+        box-shadow: var(--shadow-3);
+        letter-spacing: var(--letter-spacing-1);
         text-transform: uppercase;
-        width: 100%;
-        max-width: 300px;
+        width: var(--size-full);
+        max-width: var(--content-size-sm);
 
         &:hover:not(:disabled)
         {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px var(--dndShadow);
-            background: linear-gradient(135deg, var(--dndAccent2) 0%, var(--dndGold) 100%);
+            transform: var(--motion-transform-lift);
+            box-shadow: var(--shadow-3);
+            background: var(--orders-primary-hover-gradient);
         }
 
         &:active:not(:disabled)
         {
-            transform: translateY(0);
-            box-shadow: 0 2px 10px var(--dndShadow);
+            transform: var(--motion-transform-active);
+            box-shadow: var(--shadow-1);
         }
 
         &:disabled
@@ -416,8 +418,8 @@
             background: var(--colors-subtitle);
             color: var(--dndInkSoft);
             cursor: not-allowed;
-            box-shadow: none;
-            opacity: 0.6;
+            box-shadow: var(--shadow-none);
+            opacity: var(--opacity-muted);
         }
     }
 
@@ -425,8 +427,8 @@
     {
         text-align: center;
         color: var(--colors-subtitle);
-        font-size: 1.1rem;
-        padding: 2rem;
+        font-size: var(--font-size-5);
+        padding: var(--spacing-8);
     }
 }
 
@@ -434,28 +436,28 @@
 {
     from
     {
-        opacity: 0;
-        transform: translateY(-10px);
+        opacity: var(--opacity-hidden);
+        transform: var(--motion-transform-enter-small);
     }
 
     to
     {
-        opacity: 1;
-        transform: translateY(0);
+        opacity: var(--opacity-visible);
+        transform: var(--motion-transform-active);
     }
 }
 
 // Responsive
-@media (max-width: 768px)
+@media (max-width: breakpoints.$ordersTabletMaxWidth)
 {
     .orderCardsTab
     {
         min-height: auto;
-        padding: 1rem;
+        padding: var(--spacing-4);
 
         &__container
         {
-            gap: 1.5rem;
+            gap: var(--spacing-6);
         }
 
         &__selectedCard
@@ -465,7 +467,7 @@
 
             &:not(:last-child)
             {
-                margin-bottom: 0.5rem;
+                margin-bottom: var(--spacing-2);
             }
         }
 
@@ -476,58 +478,58 @@
 
         &__cardInfo
         {
-            width: 100%;
+            width: var(--size-full);
         }
 
         &__button
         {
-            padding: 0.8rem 2rem;
-            font-size: 0.9rem;
+            padding: var(--spacing-3) var(--spacing-8);
+            font-size: var(--font-size-3);
         }
     }
 }
 
-@media (max-width: 480px)
+@media (max-width: breakpoints.$ordersMobileMaxWidth)
 {
     .orderCardsTab
     {
         &__selectedSection
         {
-            padding: 1rem;
+            padding: var(--spacing-4);
         }
 
         &__selectedCard
         {
-            padding: 0.75rem;
-            gap: 0.5rem;
+            padding: var(--spacing-3);
+            gap: var(--spacing-2);
         }
 
         &__cardImage
         {
-            width: 50px;
-            height: 75px;
+            width: var(--orders-card-thumb-width-sm);
+            height: var(--orders-card-thumb-height-sm);
         }
 
         &__cardName
         {
-            font-size: 0.85rem;
+            font-size: var(--font-size-2);
         }
 
         &__quantityControl
         {
-            min-width: 80px;
+            min-width: var(--input-size-2);
         }
 
         &__quantityBtn
         {
-            width: 26px;
-            height: 26px;
+            width: var(--orders-control-size-sm);
+            height: var(--orders-control-size-sm);
         }
 
         &__quantityInput
         {
-            width: 35px;
-            height: 26px;
+            width: var(--spacing-8);
+            height: var(--orders-control-size-sm);
         }
     }
 }

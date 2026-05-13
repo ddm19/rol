@@ -30,6 +30,20 @@
   --dndRow: rgba(43, 34, 23, 0.04);
   --dndRow2: rgba(122, 31, 31, 0.04);
   --dndShadow: rgba(0, 0, 0, 0.08);
+  --dndOverlay: rgba(0, 0, 0, 0.5);
+  --dndShadowStrong: rgba(0, 0, 0, 0.3);
+  --dndTextShadow: rgba(0, 0, 0, 0.35);
+  --dndFocusRing: rgba(0, 0, 0, 0.05);
+  --dndNoticeErrorBg: rgba(0, 0, 0, 0.03);
+  --dndNoticeSuccessBg: rgba(0, 0, 0, 0.02);
+  --dndShimmer: rgba(255, 255, 255, 0.3);
+  --orders-bg-gradient: linear-gradient(135deg, var(--dndBg) 0%, var(--dndBg2) 100%);
+  --orders-primary-gradient: linear-gradient(135deg, var(--dndGold) 0%, var(--dndAccent2) 100%);
+  --orders-primary-hover-gradient: linear-gradient(135deg, var(--dndAccent2) 0%, var(--dndGold) 100%);
+  --orders-limit-gradient: linear-gradient(90deg, var(--colors-green) 0%, var(--colors-darkYellow) 100%);
+  --orders-shimmer-gradient: linear-gradient(90deg, transparent, var(--dndShimmer), transparent);
+  --orders-gacha-glow-start: color-mix(in srgb, var(--colors-mediumRed) 35%, transparent);
+  --orders-gacha-glow-end: color-mix(in srgb, var(--colors-mediumRed) 0%, transparent);
 }
 
 
@@ -65,4 +79,18 @@
   --dndRow: rgba(255, 255, 255, 0.03);
   --dndRow2: rgba(217, 74, 62, 0.05);
   --dndShadow: rgba(0, 0, 0, 0.35);
+  --dndOverlay: rgba(0, 0, 0, 0.65);
+  --dndShadowStrong: rgba(0, 0, 0, 0.55);
+  --dndTextShadow: rgba(0, 0, 0, 0.65);
+  --dndFocusRing: rgba(232, 220, 195, 0.08);
+  --dndNoticeErrorBg: rgba(255, 107, 107, 0.08);
+  --dndNoticeSuccessBg: rgba(102, 187, 106, 0.08);
+  --dndShimmer: rgba(255, 255, 255, 0.24);
+  --orders-bg-gradient: linear-gradient(135deg, var(--dndBg) 0%, var(--dndBg2) 100%);
+  --orders-primary-gradient: linear-gradient(135deg, var(--dndGold) 0%, var(--dndAccent2) 100%);
+  --orders-primary-hover-gradient: linear-gradient(135deg, var(--dndAccent2) 0%, var(--dndGold) 100%);
+  --orders-limit-gradient: linear-gradient(90deg, var(--colors-green) 0%, var(--colors-darkYellow) 100%);
+  --orders-shimmer-gradient: linear-gradient(90deg, transparent, var(--dndShimmer), transparent);
+  --orders-gacha-glow-start: color-mix(in srgb, var(--colors-mediumRed) 35%, transparent);
+  --orders-gacha-glow-end: color-mix(in srgb, var(--colors-mediumRed) 0%, transparent);
 }

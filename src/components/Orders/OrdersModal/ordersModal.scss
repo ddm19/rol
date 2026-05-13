@@ -1,66 +1,69 @@
+@use "../../../styles/common/breakpoints" as breakpoints;
+
 .ordersModalBackdrop
 {
     position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: rgba(0, 0, 0, 0.5);
+    top: var(--spacing-0);
+    left: var(--spacing-0);
+    right: var(--spacing-0);
+    bottom: var(--spacing-0);
+    background: var(--dndOverlay);
     display: flex;
     align-items: center;
     justify-content: center;
-    z-index: 1000;
-    backdrop-filter: blur(3px);
-    animation: fadeIn 0.2s ease;
-    padding: 1rem;
+    z-index: var(--z-orders-modal-backdrop);
+    backdrop-filter: blur(var(--orders-backdrop-blur));
+    animation: fadeIn var(--motion-duration-fast) var(--motion-ease-standard);
+    padding: var(--spacing-2);
+
+
 }
 
 .ordersModal
 {
     background: var(--colors-white);
-    border-radius: 12px;
-    max-width: 700px;
-    width: 100%;
-    max-height: 90vh;
+    border-radius: var(--radius-4);
+    max-width: var(--content-size-lg);
+    width: var(--size-full);
     overflow-y: auto;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-    animation: slideUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    border: 1px solid var(--dndLine);
+    box-shadow: var(--shadow-4);
+    animation: slideUp var(--motion-duration-base) var(--motion-ease-bounce);
+    border: var(--border-size-1) solid var(--dndLine);
 
     &__header
     {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding: 1.5rem;
-        border-bottom: 2px solid var(--dndLine);
+        padding: var(--spacing-3);
+        border-bottom: var(--border-size-2) solid var(--dndLine);
         position: sticky;
-        top: 0;
+        top: var(--spacing-0);
         background: var(--colors-white);
-        z-index: 10;
+        z-index: var(--z-orders-modal-header);
     }
 
     &__title
     {
-        margin: 0;
+        margin: var(--spacing-0);
         color: var(--colors-darkRed);
-        font-size: 1.5rem;
-        font-weight: 700;
-        letter-spacing: 0.5px;
+        font-size: var(--font-size-6);
+        font-weight: var(--font-weight-5);
+        letter-spacing: var(--letter-spacing-1);
     }
 
     &__closeButton
     {
         background: none;
         border: none;
-        font-size: 1.5rem;
+        font-size: var(--font-size-6);
         color: var(--colors-subtitle);
         cursor: pointer;
-        padding: 0.5rem;
+        padding: var(--spacing-2);
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: color 0.2s ease;
+        transition: color var(--motion-duration-fast) var(--motion-ease-standard);
 
         &:hover
         {
@@ -70,19 +73,19 @@
 
     &__notLoggedIn
     {
-        padding: 3rem;
+        padding: var(--spacing-12);
         text-align: center;
         color: var(--colors-subtitle);
 
         p
         {
-            margin: 0.5rem 0;
-            font-size: 1rem;
+            margin: var(--spacing-2) var(--spacing-0);
+            font-size: var(--font-size-4);
             color: var(--colors-font);
 
             &:first-child
             {
-                font-weight: 600;
+                font-weight: var(--font-weight-4);
                 color: var(--colors-darkRed);
             }
         }
@@ -91,32 +94,32 @@
     &__tabs
     {
         display: flex;
-        gap: 0;
-        border-bottom: 2px solid var(--dndLine);
-        padding: 0 1.5rem;
+        gap: var(--spacing-0);
+        border-bottom: var(--border-size-2) solid var(--dndLine);
+        padding: var(--spacing-0) var(--spacing-6);
         background: var(--dndBg);
     }
 
     &__tab
     {
         flex: 1;
-        padding: 1rem;
+        padding: var(--spacing-4);
         background: none;
         border: none;
         color: var(--colors-subtitle);
-        font-size: 0.95rem;
-        font-weight: 600;
+        font-size: var(--font-size-3);
+        font-weight: var(--font-weight-4);
         cursor: pointer;
-        transition: all 0.3s ease;
+        transition: all var(--motion-duration-base) var(--motion-ease-standard);
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 0.5rem;
+        gap: var(--spacing-2);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: var(--letter-spacing-1);
         position: relative;
-        border-bottom: 3px solid transparent;
-        margin-bottom: -2px;
+        border-bottom: var(--border-size-3) solid transparent;
+        margin-bottom: calc(-1 * var(--border-size-2));
 
         &:hover
         {
@@ -132,17 +135,17 @@
 
     &__tabIcon
     {
-        font-size: 1.2rem;
+        font-size: var(--font-size-5);
     }
 
     &__content
     {
         overflow-y: auto;
-        max-height: calc(90vh - 200px);
+        max-height: var(--orders-content-max-height);
 
         &::-webkit-scrollbar
         {
-            width: 8px;
+            width: var(--spacing-2);
         }
 
         &::-webkit-scrollbar-track
@@ -153,7 +156,7 @@
         &::-webkit-scrollbar-thumb
         {
             background: var(--dndLine);
-            border-radius: 4px;
+            border-radius: var(--radius-1);
 
             &:hover
             {
@@ -167,12 +170,12 @@
 {
     from
     {
-        opacity: 0;
+        opacity: var(--opacity-hidden);
     }
 
     to
     {
-        opacity: 1;
+        opacity: var(--opacity-visible);
     }
 }
 
@@ -180,59 +183,58 @@
 {
     from
     {
-        opacity: 0;
-        transform: translateY(20px);
+        opacity: var(--opacity-hidden);
+        transform: var(--motion-transform-enter);
     }
 
     to
     {
-        opacity: 1;
-        transform: translateY(0);
+        opacity: var(--opacity-visible);
+        transform: var(--motion-transform-active);
     }
 }
 
 // Responsive
-@media (max-width: 768px)
+@media (max-width: breakpoints.$ordersTabletMaxWidth)
 {
     .ordersModalBackdrop
     {
-        padding: 0;
+        padding: var(--spacing-0);
     }
 
     .ordersModal
     {
-        border-radius: 8px;
-        max-height: 95vh;
+        border-radius: var(--radius-3);
 
         &__header
         {
-            padding: 1.2rem;
+            padding: var(--spacing-5);
         }
 
         &__title
         {
-            font-size: 1.25rem;
+            font-size: var(--font-size-5);
         }
 
         &__tab
         {
-            padding: 0.8rem;
-            font-size: 0.85rem;
+            padding: var(--spacing-3);
+            font-size: var(--font-size-3);
         }
 
         &__tabIcon
         {
-            font-size: 1rem;
+            font-size: var(--font-size-4);
         }
 
         &__content
         {
-            max-height: calc(95vh - 180px);
+            max-height: var(--orders-content-mobile-max-height);
         }
     }
 }
 
-@media (max-width: 480px)
+@media (max-width: breakpoints.$ordersMobileMaxWidth)
 {
     .ordersModalBackdrop
     {
@@ -241,29 +243,32 @@
 
     .ordersModal
     {
-        border-radius: 12px 12px 0 0;
-        max-height: 80vh;
+        border-radius: var(--radius-4);
+        margin-bottom: var(--spacing-2);
+        width: var(--size-full);
+        max-height: 100%;
+        max-width: 85%;
 
         &__header
         {
-            padding: 1rem;
+            padding: var(--spacing-4);
         }
 
         &__title
         {
-            font-size: 1.1rem;
+            font-size: var(--font-size-4);
         }
 
         &__tabs
         {
-            padding: 0 1rem;
+            padding: var(--spacing-0) var(--spacing-4);
         }
 
         &__tab
         {
-            padding: 0.7rem;
-            font-size: 0.8rem;
-            gap: 0.25rem;
+            padding: var(--spacing-2);
+            font-size: var(--font-size-2);
+            gap: var(--spacing-1);
         }
 
         &__tabIcon
@@ -273,7 +278,7 @@
 
         &__content
         {
-            max-height: calc(80vh - 160px);
+            max-height: var(--orders-content-sheet-max-height);
         }
     }
 }
