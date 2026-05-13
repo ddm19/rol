@@ -11,10 +11,19 @@
     }
 }
 
-.cardsPage__content
+.cardsPage
 {
-    display: block;
+    &__content
+    {
+        display: block;
+    }
+
+    &__header
+    {
+        justify-items: center;
+    }
 }
+
 
 .modalBackdrop
 {
@@ -35,18 +44,23 @@
 .modalContent
 {
     position: relative;
-    max-width: 35vw;
+    max-width: 100%;
     margin-top: 5%;
 
     @media (max-width: 700px)
     {
         pointer-events: none;
         max-width: 95vw;
+
+        img
+        {
+            width: 100%;
+        }
     }
 
     img
     {
-        width: 100%;
+        width: 80%;
         height: auto;
         border-radius: 0.25rem;
     }
@@ -55,12 +69,12 @@
 .closeBtn
 {
     position: absolute;
-    top: 0;
-    right: 0;
+    top: -var(--spacing-8);
+    right: var(--spacing-8);
     background: none;
     border: none;
     cursor: pointer;
-    font-size: var(--font-size-4);
+    font-size: var(--font-size-7);
     color: var(--colors-mediumRed);
     padding: var(--spacing-1);
     transition: color 0.2s;
@@ -69,5 +83,10 @@
     &:hover
     {
         color: var(--colors-darkYellow);
+    }
+
+    @media (max-width: 700px)
+    {
+        font-size: var(--font-size-4);
     }
 }
