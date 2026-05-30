@@ -10,6 +10,7 @@ import { Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTheme } from "hooks/useTheme";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
+import { OrdersButton } from "components/Orders";
 
 export interface NavigationLink {
   name: string;
@@ -67,7 +68,7 @@ const NavBar: React.FC = () => {
           ></NavigationLinksRender>
 
           <VillazarcilloButton />
-
+          <OrdersButton variant="navbar" />
         </ul>
         <DiscordButton></DiscordButton>
 

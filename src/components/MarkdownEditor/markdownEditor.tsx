@@ -175,7 +175,7 @@ const MarkdownEditor = ({ value, onChange, isEditing, setIsEditing }: MarkdownEd
         }
         <button type="button" title="Edit" onClick={() => setIsEditing !== undefined && setIsEditing(!isEditing)}>
           {isEditing ?
-            <><FontAwesomeIcon icon={faEyeLowVision} /> {" Ver"}</> :
+            <><FontAwesomeIcon icon={faEyeLowVision} /> {" Aceptar Cambios"}</> :
             <><FontAwesomeIcon icon={faPenToSquare} /> {" Editar"}</>
           }
         </button>

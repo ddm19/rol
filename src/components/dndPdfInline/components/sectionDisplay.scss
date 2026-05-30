@@ -1,4 +1,4 @@
-.inventoryDisplay
+.sectionDisplay
 {
     width: 100%;
     padding: var(--spacing-4);
@@ -12,6 +12,39 @@
     {
         padding: 0;
 
+    }
+
+    &__header
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        cursor: pointer;
+        user-select: none;
+
+        h2
+        {
+            margin: 0;
+            flex: 1;
+        }
+    }
+
+    &__collapseButton
+    {
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: var(--spacing-2);
+        color: var(--colors-text);
+        font-size: var(--font-size-5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover
+        {
+            opacity: 0.7;
+        }
     }
 
     .markdownEditor
@@ -95,5 +128,26 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
+    }
+
+    &__beautifyButton
+    {
+        padding: var(--spacing-2) var(--spacing-4);
+        background-color: var(--colors-darkRed);
+        color: white;
+        border: none;
+        border-radius: var(--spacing-2);
+        cursor: pointer;
+        font-size: var(--font-size-4);
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        margin: var(--spacing-2) auto;
+
+        &:hover
+        {
+            opacity: 0.8;
+        }
     }
 }

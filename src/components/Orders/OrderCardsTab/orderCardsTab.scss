@@ -1,0 +1,535 @@
+@use "../../../styles/common/breakpoints" as breakpoints;
+
+.orderCardsTab
+{
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: var(--orders-tab-min-height);
+    padding: var(--spacing-4);
+    background: var(--orders-bg-gradient);
+
+    &__container
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+        max-width: var(--content-size-md);
+        width: var(--size-full);
+    }
+
+    &__searchSection
+    {
+        position: relative;
+    }
+
+    &__searchBox
+    {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    &__searchIcon
+    {
+        position: absolute;
+        left: var(--spacing-4);
+        color: var(--colors-subtitle);
+        pointer-events: none;
+        z-index: var(--z-dropdown);
+    }
+
+    &__searchInput
+    {
+        width: var(--size-full);
+        padding: var(--spacing-3) var(--spacing-4) var(--spacing-3) var(--spacing-10);
+        font-size: var(--font-size-4);
+        border: var(--border-size-2) solid var(--dndLine);
+        border-radius: var(--radius-3);
+        outline: none;
+        background: var(--colors-white);
+        color: var(--colors-font);
+        transition: all var(--motion-duration-base) var(--motion-ease-standard);
+
+        &:focus
+        {
+            border-color: var(--dndGold);
+            box-shadow: var(--shadow-focus);
+        }
+
+        &::placeholder
+        {
+            color: var(--colors-subtitle);
+        }
+    }
+
+    &__clearButton
+    {
+        position: absolute;
+        right: var(--spacing-3);
+        background: none;
+        border: none;
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-4);
+        cursor: pointer;
+        padding: var(--spacing-1) var(--spacing-2);
+        transition: color var(--motion-duration-fast) var(--motion-ease-standard);
+        display: flex;
+        align-items: center;
+
+        &:hover
+        {
+            color: var(--colors-font);
+        }
+    }
+
+    &__searchResults
+    {
+        position: absolute;
+        top: var(--size-full);
+        left: var(--spacing-0);
+        right: var(--spacing-0);
+        background: var(--colors-white);
+        border: var(--border-size-2) solid var(--dndLine);
+        border-top: none;
+        border-radius: var(--spacing-0) var(--spacing-0) var(--radius-3) var(--radius-3);
+        max-height: var(--orders-search-results-max-height);
+        overflow-y: auto;
+        z-index: var(--z-orders-modal-header);
+        box-shadow: var(--shadow-2);
+    }
+
+    &__resultItem
+    {
+        width: var(--size-full);
+        padding: var(--spacing-3) var(--spacing-4);
+        background: none;
+        border: none;
+        border-bottom: var(--border-size-1) solid var(--dndLine);
+        text-align: left;
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: background var(--motion-duration-fast) var(--motion-ease-standard);
+        color: var(--colors-font);
+
+        &:last-child
+        {
+            border-bottom: none;
+        }
+
+        &:hover
+        {
+            background: var(--dndRow);
+        }
+
+        &:active
+        {
+            background: var(--dndRow2);
+        }
+    }
+
+    &__resultName
+    {
+        font-weight: var(--font-weight-3);
+        color: var(--colors-font);
+        flex: 1;
+        text-align: left;
+    }
+
+    &__resultExpansion
+    {
+        font-size: var(--font-size-2);
+        color: var(--colors-subtitle);
+        margin-left: var(--spacing-4);
+        white-space: nowrap;
+    }
+
+    &__noResults
+    {
+        padding: var(--spacing-4);
+        text-align: center;
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-3);
+    }
+
+    &__selectedSection
+    {
+        background: var(--colors-white);
+        border-radius: var(--radius-4);
+        padding: var(--spacing-6);
+        box-shadow: var(--shadow-1);
+        border: var(--border-size-1) solid var(--dndLine);
+    }
+
+    &__sectionTitle
+    {
+        margin: var(--spacing-0) var(--spacing-0) var(--spacing-4) var(--spacing-0);
+        color: var(--colors-darkRed);
+        font-size: var(--font-size-4);
+        font-weight: var(--font-weight-4);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-1);
+    }
+
+    &__empty
+    {
+        text-align: center;
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-3);
+        padding: var(--spacing-6);
+        background: var(--dndBg);
+        border-radius: var(--radius-3);
+        border: var(--border-size-1) dashed var(--dndLine);
+    }
+
+    &__selectedList
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+
+    &__selectedCard
+    {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4);
+        background: var(--dndBg);
+        border-radius: var(--radius-3);
+        border: var(--border-size-1) solid var(--dndLine);
+        transition: all var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &:hover
+        {
+            background: var(--dndBg2);
+            border-color: var(--dndGold);
+            box-shadow: var(--shadow-1);
+        }
+    }
+
+    &__cardImage
+    {
+        width: var(--orders-card-thumb-width-md);
+        height: var(--orders-card-thumb-height-md);
+        border-radius: var(--radius-2);
+        overflow: hidden;
+        flex-shrink: var(--spacing-0);
+        background: var(--colors-white);
+        border: var(--border-size-1) solid var(--dndLine);
+        box-shadow: var(--shadow-1);
+
+        img
+        {
+            width: var(--size-full);
+            height: var(--size-full);
+            object-fit: cover;
+        }
+    }
+
+    &__cardInfo
+    {
+        flex: 1;
+        min-width: var(--spacing-0);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+    }
+
+    &__cardName
+    {
+        font-weight: var(--font-weight-4);
+        color: var(--colors-font);
+        font-size: var(--font-size-3);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__cardExpansion
+    {
+        font-size: var(--font-size-2);
+        color: var(--colors-subtitle);
+    }
+
+    &__quantityControl
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        background: var(--colors-white);
+        border-radius: var(--radius-2);
+        border: var(--border-size-1) solid var(--dndLine);
+        padding: var(--spacing-1);
+        flex-shrink: var(--spacing-0);
+    }
+
+    &__quantityBtn
+    {
+        background: none;
+        border: none;
+        width: var(--orders-control-size-md);
+        height: var(--orders-control-size-md);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        color: var(--colors-font);
+        font-weight: bold;
+        font-size: var(--font-size-3);
+        transition: all var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &:hover:not(:disabled)
+        {
+            background: var(--dndRow);
+            color: var(--dndGold);
+        }
+
+        &:disabled
+        {
+            opacity: var(--opacity-disabled);
+            cursor: not-allowed;
+        }
+    }
+
+    &__quantityInput
+    {
+        width: var(--spacing-10);
+        height: var(--orders-control-size-md);
+        text-align: center;
+        border: none;
+        outline: none;
+        background: transparent;
+        font-weight: var(--font-weight-4);
+        color: var(--colors-font);
+        font-size: var(--font-size-3);
+
+        &::-webkit-outer-spin-button,
+        &::-webkit-inner-spin-button
+        {
+            -webkit-appearance: none;
+            margin: var(--spacing-0);
+        }
+
+        &[type='number']
+        {
+            appearance: textfield;
+            -moz-appearance: textfield;
+        }
+    }
+
+    &__removeButton
+    {
+        background: none;
+        border: none;
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-4);
+        cursor: pointer;
+        padding: var(--spacing-1) var(--spacing-2);
+        transition: color var(--motion-duration-fast) var(--motion-ease-standard);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: var(--spacing-0);
+
+        &:hover
+        {
+            color: var(--colors-mediumRed);
+        }
+    }
+
+    &__actionSection
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+        align-items: center;
+    }
+
+    &__error
+    {
+        background: var(--dndNoticeErrorBg);
+        color: var(--colors-mediumRed);
+        padding: var(--spacing-4);
+        border-radius: var(--radius-3);
+        text-align: center;
+        font-size: var(--font-size-3);
+        border-left: var(--border-size-4) solid var(--colors-mediumRed);
+        width: var(--size-full);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+    }
+
+    &__success
+    {
+        background: var(--dndNoticeSuccessBg);
+        color: var(--colors-green);
+        padding: var(--spacing-4);
+        border-radius: var(--radius-3);
+        text-align: center;
+        font-size: var(--font-size-3);
+        border-left: var(--border-size-4) solid var(--colors-green);
+        font-weight: var(--font-weight-4);
+        width: var(--size-full);
+        animation: slideIn var(--motion-duration-base) var(--motion-ease-standard);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+    }
+
+    &__button
+    {
+        background: var(--orders-primary-gradient);
+        color: var(--colors-white);
+        border: none;
+        padding: var(--spacing-4) var(--spacing-10);
+        border-radius: var(--radius-3);
+        font-size: var(--font-size-4);
+        font-weight: var(--font-weight-5);
+        cursor: pointer;
+        transition: all var(--motion-duration-base) var(--motion-ease-standard);
+        box-shadow: var(--shadow-3);
+        letter-spacing: var(--letter-spacing-1);
+        text-transform: uppercase;
+        width: var(--size-full);
+        max-width: var(--content-size-sm);
+
+        &:hover:not(:disabled)
+        {
+            transform: var(--motion-transform-lift);
+            box-shadow: var(--shadow-3);
+            background: var(--orders-primary-hover-gradient);
+        }
+
+        &:active:not(:disabled)
+        {
+            transform: var(--motion-transform-active);
+            box-shadow: var(--shadow-1);
+        }
+
+        &:disabled
+        {
+            background: var(--colors-subtitle);
+            color: var(--dndInkSoft);
+            cursor: not-allowed;
+            box-shadow: var(--shadow-none);
+            opacity: var(--opacity-muted);
+        }
+    }
+
+    &__message
+    {
+        text-align: center;
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-5);
+        padding: var(--spacing-8);
+    }
+}
+
+@keyframes slideIn
+{
+    from
+    {
+        opacity: var(--opacity-hidden);
+        transform: var(--motion-transform-enter-small);
+    }
+
+    to
+    {
+        opacity: var(--opacity-visible);
+        transform: var(--motion-transform-active);
+    }
+}
+
+// Responsive
+@media (max-width: breakpoints.$ordersTabletMaxWidth)
+{
+    .orderCardsTab
+    {
+        min-height: auto;
+        padding: var(--spacing-4);
+
+        &__container
+        {
+            gap: var(--spacing-6);
+        }
+
+        &__selectedCard
+        {
+            flex-direction: column;
+            align-items: flex-start;
+
+            &:not(:last-child)
+            {
+                margin-bottom: var(--spacing-2);
+            }
+        }
+
+        &__cardImage
+        {
+            align-self: center;
+        }
+
+        &__cardInfo
+        {
+            width: var(--size-full);
+        }
+
+        &__button
+        {
+            padding: var(--spacing-3) var(--spacing-8);
+            font-size: var(--font-size-3);
+        }
+    }
+}
+
+@media (max-width: breakpoints.$ordersMobileMaxWidth)
+{
+    .orderCardsTab
+    {
+        &__selectedSection
+        {
+            padding: var(--spacing-4);
+        }
+
+        &__selectedCard
+        {
+            padding: var(--spacing-3);
+            gap: var(--spacing-2);
+        }
+
+        &__cardImage
+        {
+            width: var(--orders-card-thumb-width-sm);
+            height: var(--orders-card-thumb-height-sm);
+        }
+
+        &__cardName
+        {
+            font-size: var(--font-size-2);
+        }
+
+        &__quantityControl
+        {
+            min-width: var(--input-size-2);
+        }
+
+        &__quantityBtn
+        {
+            width: var(--orders-control-size-sm);
+            height: var(--orders-control-size-sm);
+        }
+
+        &__quantityInput
+        {
+            width: var(--spacing-8);
+            height: var(--orders-control-size-sm);
+        }
+    }
+}

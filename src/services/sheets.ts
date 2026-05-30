@@ -1,7 +1,7 @@
 import { supabase } from "./supabaseClient"
 import axios from "axios";
 
-export type Sheet = { id: string; owner: string; content: any; updated_at: string }
+export type Sheet = { id: string; owner: string; content: any; updated_at: string, story?: string }
 
 export async function listMySheets(): Promise<Sheet[]> {
   const { data, error } = await supabase
@@ -16,17 +16,17 @@ export async function listMySheets(): Promise<Sheet[]> {
 export async function getSheet(id: string): Promise<Sheet> {
   const { data, error } = await supabase
     .from("sheets")
-    .select("id, owner, content, updated_at")
+    .select("id, owner, content, updated_at, story")
     .eq("id", id).eq("deleted", false)
     .single()
   if (error) throw error
   return data
 }
 
-export async function upsertSheet(id: string, content: any): Promise<Sheet> {
+export async function upsertSheet(id: string, content: any, story?: string): Promise<Sheet> {
   const user = (await supabase.auth.getUser()).data.user
   if (!user) throw new Error("No session")
-  const payload = { id, owner: user.id, content, updated_at: new Date().toISOString() }
+  const payload = { id, owner: user.id, content, story, updated_at: new Date().toISOString() }
   const { data, error } = await supabase
     .from("sheets")
     .upsert(payload, { onConflict: "id, owner" })
@@ -88,9 +88,9 @@ export async function beautifyInventoryMarkdown(raw: string) {
     console.error("OpenRouter API key vacía en el cliente (revisa env + rebuild con cache limpia en Vercel).");
     throw new Error("OpenRouter API key vacía en el cliente (revisa env + rebuild con cache limpia en Vercel).");
   }
-  const model = "tngtech/deepseek-r1t-chimera:free";
+  const model = "poolside/laguna-m.1:free";
   const userPrompt = `Convierte este inventario de D&D a Markdown perfectamente estructurado:
-- Encabezados (pequeños) para secciones (Armas, Armaduras, Consumibles, Misceláneo)
+- Encabezados (pequeños) para secciones basadas en categorías o tipos de objetos
 - Listas con viñetas para ítems
 - Tablas Markdown si hay cantidades o propiedades
 - Sin explicación ni texto extra. Devuelve únicamente el Markdown final.
@@ -104,8 +104,12 @@ ${raw}`;
       { role: "system", content: "Eres un formateador que devuelve exclusivamente Markdown válido para fichas de D&D." },
       { role: "user", content: userPrompt }
     ],
+    reasoning: 
+    {
+      "effort": "none",
+    },
     temperature: 0.2,
-    max_tokens: 1200
+    max_tokens: 4000
   });
   const out = r.data?.choices?.[0]?.message?.content ?? "";
   return extractMarkdown(stripThinkSafe(out));

@@ -1,0 +1,328 @@
+@use "../../../styles/common/breakpoints" as breakpoints;
+
+.ordersButtonPanel
+{
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+    position: relative;
+
+    &__counter
+    {
+        min-width: max-content;
+        padding: var(--spacing-1) var(--spacing-2);
+        border: var(--border-size-1) solid currentColor;
+        border-radius: var(--radius-round);
+        color: var(--colors-white);
+        font-size: var(--font-size-3);
+        font-weight: var(--font-weight-6);
+        line-height: var(--line-height-1);
+        letter-spacing: var(--letter-spacing-0);
+        text-transform: uppercase;
+        box-shadow: var(--shadow-1);
+        text-shadow: 0 var(--border-size-1) var(--border-size-2) var(--dndTextShadow);
+
+        &.is-ready
+        {
+            background: var(--colors-green);
+            border-color: var(--colors-green);
+        }
+
+        &.is-locked
+        {
+            background: var(--colors-mediumRed);
+            border-color: var(--colors-mediumRed);
+        }
+
+        &.is-nearUnlock
+        {
+            animation: gachaUnlockShake var(--motion-duration-gacha) var(--motion-ease-emphasis) infinite, gachaUnlockGlow var(--motion-duration-loop) var(--motion-ease-emphasis) infinite;
+        }
+    }
+
+    &--floating
+    {
+        position: fixed;
+        right: var(--spacing-6);
+        bottom: var(--spacing-5);
+        z-index: var(--z-orders-floating);
+
+        .ordersButtonPanel__counter
+        {
+            font-size: var(--font-size-1);
+            max-width: var(--input-size-4);
+            white-space: normal;
+            text-align: center;
+            line-height: var(--line-height-2);
+        }
+    }
+}
+
+.ordersButton
+{
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-2);
+    background: var(--orders-primary-gradient);
+    color: var(--colors-white);
+    border: none;
+    border-radius: var(--radius-3);
+    font-weight: var(--font-weight-5);
+    cursor: pointer;
+    transition: all var(--motion-duration-base) var(--motion-ease-standard);
+    position: relative;
+    letter-spacing: var(--letter-spacing-1);
+
+    &__icon
+    {
+        font-size: var(--font-size-5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__text
+    {
+        font-size: var(--font-size-3);
+        text-transform: uppercase;
+    }
+
+    &__badge
+    {
+        position: absolute;
+        top: calc(-1 * var(--spacing-2));
+        right: calc(-1 * var(--spacing-2));
+        background: var(--colors-mediumRed);
+        color: var(--colors-white);
+        border-radius: var(--radius-circle);
+        width: var(--orders-badge-size-sm);
+        height: var(--orders-badge-size-sm);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--font-size-2);
+        font-weight: var(--font-weight-5);
+        box-shadow: var(--shadow-1);
+        animation: badgePulse var(--motion-duration-loop) var(--motion-ease-emphasis) infinite;
+    }
+
+    // Variante navbar
+    &--navbar
+    {
+        padding: var(--spacing-2) var(--spacing-4);
+        box-shadow: var(--shadow-1);
+
+        &:hover
+        {
+            transform: var(--motion-transform-lift);
+            box-shadow: var(--shadow-2);
+            background: var(--orders-primary-hover-gradient);
+        }
+
+        &:active
+        {
+            transform: var(--motion-transform-active);
+            box-shadow: var(--shadow-1);
+        }
+    }
+
+    // Variante flotante
+    &--floating
+    {
+        width: var(--orders-floating-size-lg);
+        height: var(--orders-floating-size-lg);
+        border-radius: var(--radius-circle);
+        padding: var(--spacing-0);
+        justify-content: center;
+        box-shadow: var(--shadow-2);
+        z-index: var(--z-orders-floating);
+
+        &:hover
+        {
+            transform: scale(var(--motion-scale-hover));
+            box-shadow: var(--shadow-3);
+        }
+
+        &:active
+        {
+            transform: scale(var(--motion-scale-active));
+        }
+
+        .ordersButton__icon
+        {
+            font-size: var(--font-size-6);
+        }
+
+        .ordersButton__text
+        {
+            display: none;
+        }
+
+        .ordersButton__badge
+        {
+            width: var(--orders-badge-size-md);
+            height: var(--orders-badge-size-md);
+            top: calc(-1 * var(--spacing-3));
+            right: calc(-1 * var(--spacing-3));
+            font-size: var(--font-size-2);
+        }
+    }
+}
+
+@keyframes badgePulse
+{
+
+    0%,
+    100%
+    {
+        box-shadow: var(--shadow-1), 0 0 0 var(--spacing-0) var(--dndOverlay);
+    }
+
+    50%
+    {
+        box-shadow: var(--shadow-1), 0 0 0 var(--spacing-2) transparent;
+    }
+}
+
+@keyframes gachaUnlockShake
+{
+
+    0%,
+    100%
+    {
+        transform: translateX(var(--spacing-0)) rotate(var(--motion-rotate-none));
+    }
+
+    25%
+    {
+        transform: translate(calc(-1 * var(--border-size-1)), calc(-1 * var(--border-size-1))) scale(var(--motion-scale-gacha-high));
+    }
+
+    50%
+    {
+        transform: translate(var(--border-size-1), calc(-1 * var(--border-size-1))) scale(var(--motion-scale-gacha-low));
+    }
+
+    75%
+    {
+        transform: translate(calc(-1 * var(--border-size-1)), var(--border-size-1)) scale(var(--motion-scale-gacha-high));
+    }
+}
+
+@keyframes gachaUnlockGlow
+{
+
+    0%,
+    100%
+    {
+        box-shadow: var(--shadow-1), 0 0 0 var(--spacing-0) var(--orders-gacha-glow-start);
+    }
+
+    50%
+    {
+        box-shadow: var(--shadow-1), 0 0 0 var(--spacing-1-5) var(--orders-gacha-glow-end);
+    }
+}
+
+// Responsive
+@media (max-width: breakpoints.$ordersTabletMaxWidth)
+{
+    .ordersButton
+    {
+        &--navbar
+        {
+            padding: var(--spacing-2) var(--spacing-4);
+            font-size: var(--font-size-3);
+
+            .ordersButton__icon
+            {
+                font-size: var(--font-size-4);
+            }
+
+            .ordersButton__text
+            {
+                font-size: var(--font-size-2);
+            }
+        }
+
+        &--floating
+        {
+            width: var(--orders-floating-size-md);
+            height: var(--orders-floating-size-md);
+
+            .ordersButton__icon
+            {
+                font-size: var(--font-size-5);
+            }
+        }
+    }
+
+    .ordersButtonPanel
+    {
+        &--floating
+        {
+            bottom: var(--spacing-4);
+            right: var(--spacing-5);
+        }
+    }
+}
+
+@media (max-width: breakpoints.$ordersMobileMaxWidth)
+{
+    .ordersButton
+    {
+        &--navbar
+        {
+            padding: var(--spacing-1) var(--spacing-3);
+            gap: var(--spacing-1);
+
+            .ordersButton__icon
+            {
+                font-size: var(--font-size-3);
+            }
+
+            .ordersButton__text
+            {
+                font-size: var(--font-size-2);
+            }
+        }
+
+        &--floating
+        {
+            width: var(--orders-floating-size-sm);
+            height: var(--orders-floating-size-sm);
+
+            .ordersButton__icon
+            {
+                font-size: var(--font-size-5);
+            }
+
+            .ordersButton__badge
+            {
+                width: var(--orders-badge-size-sm);
+                height: var(--orders-badge-size-sm);
+                top: calc(-1 * var(--spacing-2));
+                right: calc(-1 * var(--spacing-2));
+                font-size: var(--font-size-2);
+            }
+        }
+    }
+
+    .ordersButtonPanel
+    {
+        gap: var(--spacing-1);
+
+        &__counter
+        {
+            font-size: var(--font-size-1);
+            padding: var(--spacing-1) var(--spacing-2);
+        }
+
+        &--floating
+        {
+            right: var(--spacing-4);
+            bottom: var(--spacing-3);
+        }
+    }
+}
