@@ -12,6 +12,59 @@
   <script type="module" src="/src/index.tsx"></script>
  
   <title>Hispania</title>
+  
+  <!-- OneSignal Setup -->
+  <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignalSDK.page.js" defer></script>
+  <script>
+    window.OneSignalDeferred = window.OneSignalDeferred || [];
+    OneSignalDeferred.push(async function(OneSignal) {
+      await OneSignal.init({
+        appId: "d010363b-8851-46d3-b5ce-3c2af6546303",
+        allowLocalhostAsSecureOrigin: true, // Útil para desarrollo, quitar en producción si se desea
+      });
+    });
+
+    window.addEventListener('message', async (event) => {
+      // 1. Validar el origen (Seguridad)
+      // Cambia localhost por tu entorno local de pruebas si es necesario.
+      const allowedOrigins = ['https://villazarcillo.vercel.app', 'http://localhost:5173'];
+      if (!allowedOrigins.includes(event.origin)) {
+        return;
+      }
+
+      const message = event.data;
+
+      // 2. Gestionar la solicitud de estado (cuando el iframe carga)
+      if (message.type === 'CHECK_ONESIGNAL_PERMISSION') {
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        window.OneSignalDeferred.push(function(OneSignal) {
+          const hasPermission = OneSignal.Notifications.permission;
+          event.source.postMessage({ 
+            type: 'ONESIGNAL_PERMISSION_STATUS', 
+            granted: hasPermission 
+          }, event.origin);
+        });
+      }
+
+      // 3. Gestionar la petición de permiso (cuando el usuario clica en el iframe)
+      if (message.type === 'REQUEST_ONESIGNAL_PERMISSION') {
+        window.OneSignalDeferred = window.OneSignalDeferred || [];
+        window.OneSignalDeferred.push(async function(OneSignal) {
+          try {
+            const permission = await OneSignal.Notifications.requestPermission();
+            if (permission) {
+              event.source.postMessage({ type: 'ONESIGNAL_PERMISSION_GRANTED' }, event.origin);
+            } else {
+              event.source.postMessage({ type: 'ONESIGNAL_PERMISSION_DENIED' }, event.origin);
+            }
+          } catch (error) {
+            console.error("Error pidiendo permiso a OneSignal:", error);
+            event.source.postMessage({ type: 'ONESIGNAL_PERMISSION_DENIED' }, event.origin);
+          }
+        });
+      }
+    });
+  </script>
 </head>
 
 <body>
