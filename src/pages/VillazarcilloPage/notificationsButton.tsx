@@ -134,16 +134,9 @@ const NotificationsButton = () => {
                     </p>
                     <ol className="notificationsModal__list">
                         <li>Toca el botón de <strong>menú</strong> <FontAwesomeIcon icon={faEllipsisV} /> en la parte superior derecha de tu navegador.</li>
-                        <li>Selecciona <strong>Instalar aplicación</strong> o <strong>Añadir a la pantalla de inicio</strong>.</li>
-                        <li>Abre la aplicación desde tu pantalla de inicio y vuelve a pulsar la campana para suscribirte.</li>
+                        <li>Selecciona <strong>"Añadir a la pantalla de inicio" </strong>e<strong> Instalar aplicación</strong>.</li>
+                        <li>Abre la aplicación desde tu pantalla de inicio y vuelve aquí para suscribirte.</li>
                     </ol>
-                    <p className="notificationsModal__text" style={{ marginTop: '1rem' }}>
-                        O si lo prefieres, puedes intentar suscribirte directamente desde aquí:
-                    </p>
-                    <button className="notificationsModal__actionButton" onClick={requestNotificationPermission} disabled={permission === 'granted'}>
-                        <FontAwesomeIcon icon={faBell} />
-                        Suscribirse
-                    </button>
                 </div>
             );
         }
