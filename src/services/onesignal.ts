@@ -13,8 +13,8 @@ export const addUsertosubscriptionList = async (userId: string) => {
                     .from('villazarcillo_notification_subscriptions')
                     .upsert({ 
                         user_id: userId, 
-                        enabled: true 
+                        enabled: true,
                     }, { 
-                        onConflict: 'user_id' // Usa la nueva restricción única
+                        onConflict: 'user_id'
                     });
 };

@@ -9,11 +9,28 @@ import { addUsertosubscriptionList } from 'services/onesignal';
 const NotificationsButton = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [permission, setPermission] = useState<NotificationPermission | null>(null);
+    const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
         if ('Notification' in window) {
             setPermission(Notification.permission);
         }
+
+        const initializeOneSignal = async () => {
+            if (!OneSignal.Session) {
+                try {
+                    await OneSignal.init({
+                        appId: import.meta.env.VITE_ONESIGNAL_APP_ID,
+                        allowLocalhostAsSecureOrigin: true,
+                    });
+                } catch (e) {
+                    console.error("Error initializing OneSignal", e);
+                }
+            }
+            setIsInitialized(true);
+        };
+
+        initializeOneSignal();
     }, []);
 
     const getPlatform = () => {
@@ -41,31 +58,35 @@ const NotificationsButton = () => {
         setIsModalVisible(!isModalVisible);
     };
 
-    const initOneSignal = async () => {
-        if (!OneSignal.Session) {
-            await OneSignal.init({
-                appId: import.meta.env.VITE_ONESIGNAL_APP_ID,
-                allowLocalhostAsSecureOrigin: true,
-            });
+    const requestNotificationPermission = async () => {
+        if (!isInitialized) {
+            console.log('⏳ Esperando a que OneSignal se inicialice...');
+            return;
         }
 
-        await OneSignal.Notifications.requestPermission();
+        console.log('🔔 Iniciando proceso de solicitud de permiso para notificaciones...');
+        try {
+            await OneSignal.Notifications.requestPermission();
+            console.log('🔔 Permiso de notificaciones solicitado.');
 
-        if (Notification.permission === 'granted') {
-            setPermission('granted');
-            const user = (await supabase.auth.getUser()).data?.user?.id;
+            if (Notification.permission === 'granted') {
+                setPermission('granted');
+                const user = (await supabase.auth.getUser()).data?.user?.id;
 
-            if (!user) {
-                console.error('❌ No se pudo obtener el ID del usuario de Supabase.');
-                return;
+                if (!user) {
+                    console.error('❌ No se pudo obtener el ID del usuario de Supabase.');
+                    return;
+                }
+                await OneSignal.login(user);
+
+                await addUsertosubscriptionList(user);
+
+                console.log('✅ Permiso concedido y usuario enlazado a OneSignal con ID:', user);
+            } else {
+                console.log('❌ El usuario no ha concedido el permiso de notificaciones.');
             }
-            await OneSignal.login(user);
-
-            await addUsertosubscriptionList(user);
-
-            console.log('✅ Permiso concedido y usuario enlazado a OneSignal con ID:', user);
-        } else {
-            console.log('❌ El usuario no ha concedido el permiso de notificaciones.');
+        } catch (e) {
+            console.error('Error al solicitar permiso:', e);
         }
     };
 
@@ -79,7 +100,7 @@ const NotificationsButton = () => {
                     <p className="notificationsModal__text">
                         Suscríbete para recibir mensajes de nuevos chats en las misiones a las que estés apuntado. Así como nuevas misiones.
                     </p>
-                    <button className="notificationsModal__actionButton" onClick={initOneSignal}>
+                    <button className="notificationsModal__actionButton" onClick={requestNotificationPermission}>
                         <FontAwesomeIcon icon={faBell} />
                         Suscribirse
                     </button>
@@ -116,7 +137,7 @@ const NotificationsButton = () => {
                     <p className="notificationsModal__text" style={{ marginTop: '1rem' }}>
                         O si lo prefieres, puedes intentar suscribirte directamente desde aquí:
                     </p>
-                    <button className="notificationsModal__actionButton" onClick={initOneSignal} disabled={permission === 'granted'}>
+                    <button className="notificationsModal__actionButton" onClick={requestNotificationPermission} disabled={permission === 'granted'}>
                         <FontAwesomeIcon icon={faBell} />
                         Suscribirse
                     </button>
