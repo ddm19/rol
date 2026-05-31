@@ -1,0 +1,11 @@
+.notificationsButton
+{
+    position: fixed;
+    bottom: var(--spacing-2);
+    right: var(--spacing-2);
+    background-color: var(--colors-darkRed);
+    z-index: var(--z-modal);
+    border: none;
+    padding: var(--spacing-3);
+
+}
