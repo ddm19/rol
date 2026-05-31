@@ -1,11 +1,140 @@
-.notificationsButton
-{
+.notificationsButton {
     position: fixed;
-    bottom: var(--spacing-2);
-    right: var(--spacing-2);
+    bottom: var(--spacing-4);
+    right: var(--spacing-4);
     background-color: var(--colors-darkRed);
+    color: var(--colors-white);
     z-index: var(--z-modal);
     border: none;
     padding: var(--spacing-3);
+    border-radius: 50%;
+    width: 55px;
+    height: 55px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease-in-out, background-color 0.2s;
 
+    &:hover {
+        transform: scale(1.05);
+        background-color: var(--colors-mediumRed);
+    }
+
+    svg {
+        font-size: 1.5rem;
+    }
+}
+
+.notificationsModal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: var(--z-modal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &__overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: var(--dndOverlay, rgba(0, 0, 0, 0.65));
+    }
+
+    &__content {
+        position: relative;
+        background-color: var(--dndBg, var(--background-color));
+        padding: var(--spacing-8);
+        border-radius: var(--spacing-2);
+        max-width: 90vw;
+        width: 450px;
+        box-shadow: 0 4px 20px var(--dndShadowStrong, rgba(0, 0, 0, 0.5));
+        border: 1px solid var(--dndLine, rgba(0, 0, 0, 0.1));
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+        z-index: 1;
+    }
+
+    &__close {
+        position: absolute;
+        top: var(--spacing-4);
+        right: var(--spacing-4);
+        background: transparent;
+        border: none;
+        cursor: pointer;
+        color: var(--colors-font);
+        font-size: 1.2rem;
+        transition: color 0.2s;
+
+        &:hover {
+            color: var(--colors-darkRed);
+        }
+    }
+
+    &__title {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        color: var(--colors-darkRed);
+        font-size: 1.5rem;
+        
+        &-icon {
+            color: var(--colors-darkYellow);
+        }
+    }
+
+    &__content-body {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+    }
+
+    &__text {
+        margin: 0;
+        color: var(--colors-font);
+        line-height: 1.5;
+    }
+
+    &__list {
+        margin: 0;
+        padding-left: var(--spacing-5);
+        color: var(--colors-font);
+        line-height: 1.6;
+
+        li {
+            margin-bottom: var(--spacing-2);
+            strong {
+                color: var(--colors-darkRed);
+            }
+        }
+    }
+
+    &__actionButton {
+        align-self: flex-start;
+        background-color: var(--colors-darkRed);
+        color: var(--colors-white);
+        border: none;
+        padding: var(--spacing-2) var(--spacing-4);
+        border-radius: var(--spacing-1);
+        font-weight: bold;
+        cursor: pointer;
+        transition: background-color 0.2s, transform 0.2s;
+        margin-top: var(--spacing-2);
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+
+        &:hover {
+            background-color: var(--colors-mediumRed);
+            transform: scale(1.02);
+        }
+    }
 }
