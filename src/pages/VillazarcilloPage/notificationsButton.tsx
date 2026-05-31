@@ -4,7 +4,7 @@ import { faBell, faTimes, faCheck, faShareSquare, faPlusSquare, faEllipsisV } fr
 import { useEffect, useState } from 'react';
 import OneSignal from 'react-onesignal';
 import { supabase } from 'services/supabaseClient';
-import { addUsertosubscriptionList } from 'services/onesignal';
+import { addUsertosubscriptionList, initOneSignal } from 'services/onesignal';
 
 const NotificationsButton = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -12,6 +12,13 @@ const NotificationsButton = () => {
     const [isInitialized, setIsInitialized] = useState(false);
 
     useEffect(() => {
+        initOneSignal().then(() => {
+            console.log("✅ OneSignal inicializado correctamente.");
+        }
+        ).catch((e) => {
+            console.error("❌ Error al inicializar OneSignal:", e);
+        });
+
         if ('Notification' in window) {
             setPermission(Notification.permission);
         }
@@ -60,14 +67,11 @@ const NotificationsButton = () => {
 
     const requestNotificationPermission = async () => {
         if (!isInitialized) {
-            console.log('⏳ Esperando a que OneSignal se inicialice...');
             return;
         }
 
-        console.log('🔔 Iniciando proceso de solicitud de permiso para notificaciones...');
         try {
             await OneSignal.Notifications.requestPermission();
-            console.log('🔔 Permiso de notificaciones solicitado.');
 
             if (Notification.permission === 'granted') {
                 setPermission('granted');
@@ -81,7 +85,6 @@ const NotificationsButton = () => {
 
                 await addUsertosubscriptionList(user);
 
-                console.log('✅ Permiso concedido y usuario enlazado a OneSignal con ID:', user);
             } else {
                 console.log('❌ El usuario no ha concedido el permiso de notificaciones.');
             }
