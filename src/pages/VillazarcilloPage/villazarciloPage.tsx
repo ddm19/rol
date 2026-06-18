@@ -1,9 +1,12 @@
 import { useEffect, useRef } from "react";
 import { supabase } from "services/supabaseClient";
+import NotificationsButton from "./notificationsButton";
 
 const VillazarcilloPage = () => {
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const villazarcilloUrl = import.meta.env.VITE_VILLAZARCILLO_URL;
+
+
 
     useEffect(() => {
         const iframe = iframeRef.current;
@@ -38,13 +41,16 @@ const VillazarcilloPage = () => {
     }, [villazarcilloUrl]);
 
     return (
-        <iframe
-            ref={iframeRef}
-            src={villazarcilloUrl}
-            style={{ width: '100%', height: '100%', border: 'none' }}
-            title="Villazarcillo"
-            allowFullScreen
-        />
+        <>
+            <NotificationsButton />
+            <iframe
+                ref={iframeRef}
+                src={villazarcilloUrl}
+                style={{ width: '100%', height: '100%', border: 'none' }}
+                title="Villazarcillo"
+                allowFullScreen
+            />
+        </>
     );
 }
 
