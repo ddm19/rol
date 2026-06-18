@@ -119,6 +119,15 @@ export async function createBoosterOrder(
 }
 
 /**
+ * Obtener el coste en slots de un tipo de sobre.
+ * Las expansiones con sufijo '-L' (Leyenda) ocupan 2 slots.
+ */
+export function getBoosterSlotCost(expansion: string): number {
+  if (!expansion) return 1;
+  return expansion.endsWith('-L') ? 2 : 1;
+}
+
+/**
  * Obtener órdenes del usuario de la semana actual
  */
 export async function getUserWeeklyBoosterOrders(userId: string): Promise<BoosterOrder[]> {

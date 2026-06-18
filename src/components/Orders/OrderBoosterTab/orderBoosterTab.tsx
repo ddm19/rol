@@ -23,12 +23,22 @@ const OrderBoosterTab: React.FC = () => {
     const EXPANSION_NAME = 'Aires de progreso';
     const WEEKLY_LIMIT = 2;
     const BOOSTER_IMAGE = '/images/booster-aires-progreso.png';
+    const BOOSTER_IMAGE_LEYENDA = '/images/booster-aires-progreso-leyenda.png';
+
+    // selection: 'normal' | 'leyenda'
+    const [selection, setSelection] = useState<'normal' | 'leyenda'>('normal');
 
     useEffect(() => {
         if (user?.id) {
             loadWeeklyData();
         }
     }, [user?.id]);
+
+    // Recompute whether the user can order based on selection and weeklyCount
+    useEffect(() => {
+        const requestedQuantity = selection === 'leyenda' ? 2 : 1;
+        setCanOrder(weeklyCount + requestedQuantity <= WEEKLY_LIMIT);
+    }, [weeklyCount, selection]);
 
     const loadWeeklyData = async () => {
         try {
@@ -54,14 +64,16 @@ const OrderBoosterTab: React.FC = () => {
                 return;
             }
 
-            const canOrderMore = await canOrderMoreBoosters(user.id, 1);
+            const requestedQuantity = selection === 'leyenda' ? 2 : 1;
+            const canOrderMore = await canOrderMoreBoosters(user.id, requestedQuantity);
             if (!canOrderMore) {
-                setError(`Has alcanzado el límite semanal de ${WEEKLY_LIMIT} sobres. Intenta de nuevo más tarde.`);
+                setError(`No puedes pedir esa opción: ocupas ${requestedQuantity} slot(s). Límite semanal de ${WEEKLY_LIMIT} sobres alcanzado o insuficiente.`);
                 return;
             }
 
             setLoading(true);
-            await createBoosterOrder(user.id, EXPANSION_NAME, 1);
+            const expansionIdentifier = selection === 'leyenda' ? `${EXPANSION_NAME}-L` : EXPANSION_NAME;
+            await createBoosterOrder(user.id, expansionIdentifier, requestedQuantity);
 
             setSuccess(true);
             setError(null);
@@ -131,18 +143,57 @@ const OrderBoosterTab: React.FC = () => {
             <div className="orderBoosterTab__container">
                 <div className="orderBoosterTab__boosterDisplay">
                     <div className="orderBoosterTab__boosterWrapper">
-                        <div className="orderBoosterTab__booster">
-                            <img
-                                src={BOOSTER_IMAGE}
-                                alt={`Sobre ${EXPANSION_NAME}`}
-                                className="orderBoosterTab__boosterImage"
-                                draggable={false}
-                            />
+                        <div className="orderBoosterTab__boosterRow">
+                            <div
+                                className={`orderBoosterTab__boosterCard ${selection === 'normal' ? 'is-selected' : ''}`}
+                                onClick={() => setSelection('normal')}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === 'Enter') setSelection('normal'); }}
+                            >
+                                <img
+                                    src={BOOSTER_IMAGE}
+                                    alt={`Sobre ${EXPANSION_NAME}`}
+                                    className="orderBoosterTab__boosterImage"
+                                    draggable={false}
+                                />
+                                <div className="orderBoosterTab__cardLabel">Normal</div>
+                            </div>
+
+                            <div
+                                className={`orderBoosterTab__boosterCard ${selection === 'leyenda' ? 'is-selected' : ''}`}
+                                onClick={() => setSelection('leyenda')}
+                                role="button"
+                                tabIndex={0}
+                                onKeyDown={(e) => { if (e.key === 'Enter') setSelection('leyenda'); }}
+                            >
+                                <img
+                                    src={BOOSTER_IMAGE_LEYENDA}
+                                    alt={`Sobre ${EXPANSION_NAME} - Leyenda`}
+                                    className="orderBoosterTab__boosterImage"
+                                    draggable={false}
+                                />
+                                <div className="orderBoosterTab__cardLabel">Leyenda (Cuenta como 2 sobres)</div>
+                            </div>
                         </div>
+
                         <div className="orderBoosterTab__boosterInfo">
-                            <h3>{EXPANSION_NAME}</h3>
-                            <p>Sobre de cartas de la nueva expansión</p>
-                            <p className="orderBoosterTab__expansion">Cartas Exclusivas</p>
+                            <h3>{EXPANSION_NAME}{selection === 'leyenda' ? ' - Leyenda' : ''}</h3>
+                            {selection === 'normal' ? (
+                                <>
+                                    <p>Sobre de cartas de la nueva expansión</p>
+                                    <p className="orderBoosterTab__expansion">Contenido:</p>
+                                    <p className="orderBoosterTab__expansion">9 cartas aleatorias</p>
+                                    <p className="orderBoosterTab__expansion">2 zeones</p>
+                                </>
+                            ) : (
+                                <>
+                                    <p>Sobre de Leyenda (sin zeón)</p>
+                                    <p className="orderBoosterTab__expansion">Contenido:</p>
+                                    <p className="orderBoosterTab__expansion">9 cartas - Mayor probabilidad de Raras</p>
+                                    <p className="orderBoosterTab__expansion">1 Héroe o Líder asegurado por Sobre.</p>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
@@ -169,6 +220,7 @@ const OrderBoosterTab: React.FC = () => {
                             </div>
                         </div>
                     </div>
+
                 </div>
 
                 <div className="orderBoosterTab__actionSection">

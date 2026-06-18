@@ -35,6 +35,40 @@
         width: var(--size-full);
     }
 
+    &__boosterRow
+    {
+        display: flex;
+        gap: var(--spacing-4);
+        align-items: center;
+        justify-content: center;
+    }
+
+    &__boosterCard
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        cursor: pointer;
+        border-radius: var(--radius-3);
+        padding: var(--spacing-2);
+        transition: box-shadow var(--motion-duration-base), transform var(--motion-duration-base);
+
+        &.is-selected
+        {
+            box-shadow: 0 0 0 3px var(--dndGold) inset, var(--shadow-3);
+            transform: translateY(-6px);
+        }
+    }
+
+    &__cardLabel
+    {
+        margin-top: var(--spacing-2);
+        font-size: var(--font-size-2);
+        color: var(--colors-subtitle);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-1);
+    }
+
     &__booster
     {
         width: var(--image-size-2);
