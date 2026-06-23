@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
     faMagnifyingGlass,
@@ -7,62 +7,43 @@ import {
     faXmark,
     faMinus,
     faPlus,
-    faTrash
+    faTrash,
+    faCartShopping
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from 'hooks/useAuth';
-import { CardDTO, fetchAllCards } from 'services/cardsService';
+import { CardDTO } from 'services/cardsService';
 import { createCardOrder, OrderItem } from 'services/ordersService';
 import useCardSearch from 'hooks/useCardSearch';
+import { useCardOrderCart } from 'hooks/useCardOrderCart';
 import './orderCardsTab.scss';
-
-type SelectedCard = {
-    card: CardDTO;
-    quantity: number;
-};
 
 const OrderCardsTab: React.FC = () => {
     const { user } = useAuth();
     const { results: searchResults, query, setQuery } = useCardSearch();
-    const [selectedCards, setSelectedCards] = useState<SelectedCard[]>([]);
+    const {
+        cart,
+        totalQuantity,
+        addCard,
+        removeCard,
+        updateQuantity,
+        clearCart,
+        maxCardQuantity
+    } = useCardOrderCart();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [showSearchResults, setShowSearchResults] = useState(false);
 
     const handleSelectCard = (card: CardDTO) => {
-        const existing = selectedCards.find(sc => sc.card.id_archivo === card.id_archivo);
-
-        if (existing) {
-            if (existing.quantity < 4) {
-                setSelectedCards(
-                    selectedCards.map(sc =>
-                        sc.card.id_archivo === card.id_archivo
-                            ? { ...sc, quantity: sc.quantity + 1 }
-                            : sc
-                    )
-                );
-            }
-        } else {
-            setSelectedCards([...selectedCards, { card, quantity: 1 }]);
-        }
+        addCard(card);
     };
 
     const handleRemoveCard = (cardId: string) => {
-        setSelectedCards(selectedCards.filter(sc => sc.card.id_archivo !== cardId));
+        removeCard(cardId);
     };
 
     const handleUpdateQuantity = (cardId: string, quantity: number) => {
-        if (quantity <= 0) {
-            handleRemoveCard(cardId);
-        } else if (quantity <= 4) {
-            setSelectedCards(
-                selectedCards.map(sc =>
-                    sc.card.id_archivo === cardId
-                        ? { ...sc, quantity }
-                        : sc
-                )
-            );
-        }
+        updateQuantity(cardId, quantity);
     };
 
     const handleOrderCards = async () => {
@@ -75,14 +56,14 @@ const OrderCardsTab: React.FC = () => {
                 return;
             }
 
-            if (selectedCards.length === 0) {
+            if (cart.length === 0) {
                 setError('Debes seleccionar al menos una carta');
                 return;
             }
 
             setLoading(true);
 
-            const items: OrderItem[] = selectedCards.map(sc => ({
+            const items: OrderItem[] = cart.map(sc => ({
                 quantity: sc.quantity,
                 card_id_archivo: sc.card.id_archivo,
             }));
@@ -91,7 +72,7 @@ const OrderCardsTab: React.FC = () => {
 
             setSuccess(true);
             setError(null);
-            setSelectedCards([]);
+            clearCart();
             setQuery('');
 
             setTimeout(() => setSuccess(false), 3000);
@@ -121,7 +102,7 @@ const OrderCardsTab: React.FC = () => {
                         <FontAwesomeIcon icon={faMagnifyingGlass} className="orderCardsTab__searchIcon" />
                         <input
                             type="text"
-                            placeholder="Busca cartas por nombre..."
+                            placeholder="Busca cartas para añadir por nombre..."
                             value={query}
                             onChange={(e) => {
                                 setQuery(e.target.value);
@@ -156,6 +137,7 @@ const OrderCardsTab: React.FC = () => {
                                 >
                                     <span className="orderCardsTab__resultName">{card.nombre}</span>
                                     <span className="orderCardsTab__resultExpansion">{card.expansion}</span>
+                                    <FontAwesomeIcon icon={faPlus} className="orderCardsTab__resultAddIcon" />
                                 </button>
                             ))}
                         </div>
@@ -167,19 +149,41 @@ const OrderCardsTab: React.FC = () => {
                         </div>
                     )}
                 </div>
+                <div className="orderCardsTab__cartHeader">
+                    <div className="orderCardsTab__cartIcon">
+                        <FontAwesomeIcon icon={faCartShopping} />
+                    </div>
+                    <div className="orderCardsTab__cartSummary">
+                        <h3 className="orderCardsTab__cartTitle">Carrito de cartas</h3>
+                        <span className="orderCardsTab__cartCount">
+                            {totalQuantity} carta{totalQuantity !== 1 ? 's' : ''} en el pedido
+                        </span>
+                    </div>
+                    {cart.length > 0 && (
+                        <button
+                            type="button"
+                            className="orderCardsTab__clearCartButton"
+                            onClick={clearCart}
+                        >
+                            Vaciar
+                        </button>
+                    )}
+                </div>
+
+
 
                 <div className="orderCardsTab__selectedSection">
                     <h3 className="orderCardsTab__sectionTitle">
-                        Cartas seleccionadas ({selectedCards.length})
+                        Pedido actual ({cart.length})
                     </h3>
 
-                    {selectedCards.length === 0 ? (
+                    {cart.length === 0 ? (
                         <div className="orderCardsTab__empty">
-                            Selecciona cartas del buscador de arriba para agregarlas a tu pedido
+                            El carrito esta vacio. Anade cartas desde la pestana de cartas o desde el buscador.
                         </div>
                     ) : (
                         <div className="orderCardsTab__selectedList">
-                            {selectedCards.map(({ card, quantity }) => (
+                            {cart.map(({ card, quantity }) => (
                                 <div key={card.id_archivo} className="orderCardsTab__selectedCard">
                                     <div className="orderCardsTab__cardImage">
                                         <img
@@ -207,7 +211,7 @@ const OrderCardsTab: React.FC = () => {
                                         <input
                                             type="number"
                                             min="1"
-                                            max="4"
+                                            max={maxCardQuantity}
                                             value={quantity}
                                             onChange={(e) => {
                                                 const val = parseInt(e.target.value) || 1;
@@ -218,7 +222,7 @@ const OrderCardsTab: React.FC = () => {
                                         <button
                                             className="orderCardsTab__quantityBtn"
                                             onClick={() => handleUpdateQuantity(card.id_archivo, quantity + 1)}
-                                            disabled={quantity >= 4}
+                                            disabled={quantity >= maxCardQuantity}
                                             aria-label="Aumentar cantidad"
                                         >
                                             <FontAwesomeIcon icon={faPlus} />
@@ -239,7 +243,6 @@ const OrderCardsTab: React.FC = () => {
                     )}
                 </div>
 
-                {/* Sección de acciones */}
                 <div className="orderCardsTab__actionSection">
                     {error && (
                         <div className="orderCardsTab__error">
@@ -258,9 +261,9 @@ const OrderCardsTab: React.FC = () => {
                     <button
                         className="orderCardsTab__button"
                         onClick={handleOrderCards}
-                        disabled={loading || selectedCards.length === 0}
+                        disabled={loading || cart.length === 0}
                     >
-                        {loading ? 'Procesando...' : `Pedir ${selectedCards.length} carta${selectedCards.length !== 1 ? 's' : ''}`}
+                        {loading ? 'Procesando...' : `Pedir ${totalQuantity} carta${totalQuantity !== 1 ? 's' : ''}`}
                     </button>
                 </div>
             </div>

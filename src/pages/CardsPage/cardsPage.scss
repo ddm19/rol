@@ -44,32 +44,63 @@
 .modalContent
 {
     position: relative;
-    max-width: 30%;
+    width: min(90vw, 28rem);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-3);
 
     @media (max-width: 700px)
     {
-        pointer-events: none;
-        max-width: 95vw;
-
-        img
-        {
-            width: 30%;
-        }
+        width: min(95vw, 24rem);
     }
 
     img
     {
-        width: 80%;
+        width: 100%;
         height: auto;
         border-radius: 0.25rem;
+    }
+
+    &__addButton
+    {
+        width: 100%;
+        min-height: 3rem;
+        border: none;
+        border-radius: var(--radius-3);
+        background: var(--orders-primary-gradient);
+        color: var(--colors-white);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+        font-size: var(--font-size-4);
+        font-weight: var(--font-weight-5);
+        box-shadow: var(--shadow-3);
+        transition: transform var(--motion-duration-fast) var(--motion-ease-standard),
+            box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+            background var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &:hover
+        {
+            background: var(--orders-primary-hover-gradient);
+            box-shadow: var(--shadow-4);
+
+        }
+
+        &:active
+        {
+            transform: var(--motion-transform-active);
+        }
     }
 }
 
 .closeBtn
 {
     position: absolute;
-    top: -var(--spacing-8);
-    right: var(--spacing-8);
+    top: calc(-1*var(--spacing-6));
+    right: calc(-1*var(--spacing-6));
     background: none;
     border: none;
     cursor: pointer;
@@ -79,9 +110,10 @@
     transition: color 0.2s;
     border-radius: 25%;
 
-    &:hover
+    &:hover:not(:disabled)
     {
-        color: var(--colors-darkYellow);
+        background-color: none;
+        background: none;
     }
 
     @media (max-width: 700px)

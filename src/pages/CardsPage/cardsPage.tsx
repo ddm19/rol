@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCartPlus, faXmark } from '@fortawesome/free-solid-svg-icons';
 import './cardsPage.scss';
 import Loading from 'components/Loading/Loading';
 import FiltersPanel from './FiltersPanel/filtersPanel';
 import CardsGrid from './CardsGrid/cardsGrid';
 import useCardSearch from 'hooks/useCardSearch';
-import { fetchFacets } from 'services/cardsService';
-import { OrdersButton } from 'components/Orders';
+import { CardDTO, fetchFacets } from 'services/cardsService';
+import { useCardOrderCart } from 'hooks/useCardOrderCart';
 
 const CardsPage: React.FC = () => {
     const [facets, setFacets] = useState({
@@ -15,7 +17,8 @@ const CardsPage: React.FC = () => {
         rarezas: [] as string[],
         maxCost: 10
     });
-    const [active, setActive] = useState<string | null>(null);
+    const [active, setActive] = useState<CardDTO | null>(null);
+    const { addCard } = useCardOrderCart();
 
     const {
         loading,
@@ -87,16 +90,42 @@ const CardsPage: React.FC = () => {
             </div>
 
             <div className="cardsPage__content">
-                <CardsGrid cards={results} onSelect={(url) => setActive(url)} />
+                <CardsGrid
+                    cards={results}
+                    onSelect={(card) => setActive(card)}
+                    onAddToCart={addCard}
+                />
             </div>
 
             {active && (
                 <div className="modalBackdrop is-open" onClick={() => setActive(null)} role="dialog" aria-modal="true">
                     <div className="modalContent" onClick={(e) => e.stopPropagation()}>
                         <button className="closeBtn" aria-label="Cerrar" onClick={() => setActive(null)}>
-                            ✖
+                            <FontAwesomeIcon icon={faXmark} />
                         </button>
-                        <img src={active} alt="" />
+                        <img src={active.imagen_url || '/images/card-fallback.png'} alt={active.nombre} />
+                        <button
+                            type="button"
+                            className="modalContent__addButton"
+                            onClick={(event) => {
+                                addCard(active)
+                                const button = event.currentTarget;
+                                const originalText = button.innerHTML;
+                                button.classList.add('cardsGrid__addButton--bought');
+                                button.disabled = true;
+                                button.innerHTML = '<span>¡Añadido!</span>';
+                                setTimeout(() => {
+                                    button.classList.remove('cardsGrid__addButton--bought');
+                                    button.disabled = false;
+                                    button.innerHTML = originalText;
+                                }, 500);
+                            }}
+                            title="Añadir al pedido"
+                            aria-label={`Añadir ${active.nombre} al pedido`}
+                        >
+                            <FontAwesomeIcon icon={faCartPlus} />
+                            <span>Añadir al pedido</span>
+                        </button>
                     </div>
                 </div>
             )}

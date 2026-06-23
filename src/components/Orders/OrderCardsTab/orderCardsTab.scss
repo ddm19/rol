@@ -18,6 +18,75 @@
         width: var(--size-full);
     }
 
+    &__cartHeader
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        background: var(--colors-white);
+        border: var(--border-size-1) solid var(--dndLine);
+        border-radius: var(--radius-4);
+        box-shadow: var(--shadow-1);
+        padding: var(--spacing-4);
+    }
+
+    &__cartIcon
+    {
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        background: var(--orders-primary-gradient);
+        color: var(--colors-white);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--font-size-5);
+        flex-shrink: 0;
+    }
+
+    &__cartSummary
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+        min-width: 0;
+        flex: 1;
+    }
+
+    &__cartTitle
+    {
+        margin: 0;
+        color: var(--colors-darkRed);
+        font-size: var(--font-size-5);
+        font-weight: var(--font-weight-5);
+    }
+
+    &__cartCount
+    {
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-3);
+    }
+
+    &__clearCartButton
+    {
+        border: var(--border-size-1) solid var(--dndLine);
+        border-radius: var(--radius-2);
+        background: var(--colors-white);
+        color: var(--colors-mediumRed);
+        cursor: pointer;
+        padding: var(--spacing-2) var(--spacing-4);
+        font-size: var(--font-size-3);
+        font-weight: var(--font-weight-4);
+        transition: background var(--motion-duration-fast) var(--motion-ease-standard),
+            border-color var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &:hover
+        {
+            background: var(--dndNoticeErrorBg);
+            border-color: var(--colors-mediumRed);
+        }
+    }
+
     &__searchSection
     {
         position: relative;
@@ -144,6 +213,13 @@
         color: var(--colors-subtitle);
         margin-left: var(--spacing-4);
         white-space: nowrap;
+    }
+
+    &__resultAddIcon
+    {
+        color: var(--dndGold);
+        margin-left: var(--spacing-3);
+        flex-shrink: 0;
     }
 
     &__noResults
@@ -458,6 +534,17 @@
         &__container
         {
             gap: var(--spacing-6);
+        }
+
+        &__cartHeader
+        {
+            align-items: flex-start;
+            flex-wrap: wrap;
+        }
+
+        &__clearCartButton
+        {
+            margin-left: auto;
         }
 
         &__selectedCard

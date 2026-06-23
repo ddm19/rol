@@ -1,3 +1,4 @@
 {
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "claudeCodeChat.permissions.yoloMode": false
 }

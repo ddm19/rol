@@ -27,6 +27,48 @@
         overflow: hidden;
         text-overflow: ellipsis;
     }
+
+    &__addButton
+    {
+        width: 80%;
+        border: none;
+        border-radius: var(--radius-2);
+        background: var(--orders-primary-gradient);
+        color: var(--colors-white);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+        font-size: var(--font-size-3);
+        font-weight: var(--font-weight-4);
+        transition: transform var(--motion-duration-fast) var(--motion-ease-standard),
+            box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+            background var(--motion-duration-fast) var(--motion-ease-standard);
+
+
+        &:hover
+        {
+            background: var(--orders-primary-hover-gradient);
+            box-shadow: var(--shadow-2);
+        }
+
+        &:active
+        {
+            transform: var(--motion-transform-active);
+        }
+
+        &--bought
+        {
+            background: var(--colors-green);
+
+            &:hover
+            {
+                background: var(--colors-green);
+                box-shadow: var(--shadow-2);
+            }
+        }
+    }
 }
 
 .cardsGrid__card
@@ -71,6 +113,9 @@
         padding: var(--spacing-2);
         background: rgba(139, 0, 0, 0.05);
         border-top: 1px solid var(--colors-darkRed);
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-2);
     }
 
     &__title
@@ -106,5 +151,38 @@
         font-size: 0.85rem;
         flex-shrink: 0;
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    &__addButton
+    {
+        transform: scale(2);
+        width: 100%;
+        min-height: 2.5rem;
+        border: none;
+        border-radius: var(--radius-2);
+        background: var(--orders-primary-gradient);
+        color: var(--colors-white);
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-2);
+        font-size: var(--font-size-3);
+        font-weight: var(--font-weight-4);
+        transition: transform var(--motion-duration-fast) var(--motion-ease-standard),
+            box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
+            background var(--motion-duration-fast) var(--motion-ease-standard);
+
+
+        &:hover
+        {
+            background: var(--orders-primary-hover-gradient);
+            box-shadow: var(--shadow-2);
+        }
+
+        &:active
+        {
+            transform: var(--motion-transform-active);
+        }
     }
 }

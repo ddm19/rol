@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBox, faClipboardList, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBox, faCartShopping, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from 'hooks/useAuth';
 import OrderBoosterTab from '../OrderBoosterTab/orderBoosterTab';
 import OrderCardsTab from '../OrderCardsTab/orderCardsTab';
@@ -14,7 +14,7 @@ interface OrdersModalProps {
 }
 
 const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose }) => {
-    const [activeTab, setActiveTab] = useState<Tab>('booster');
+    const [activeTab, setActiveTab] = useState<Tab>('cards');
     const { user } = useAuth();
 
     if (!isOpen) return null;
@@ -54,7 +54,7 @@ const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose }) => {
                                 className={`ordersModal__tab ${activeTab === 'cards' ? 'is-active' : ''}`}
                                 onClick={() => setActiveTab('cards')}
                             >
-                                <FontAwesomeIcon icon={faClipboardList} className="ordersModal__tabIcon" />
+                                <FontAwesomeIcon icon={faCartShopping} className="ordersModal__tabIcon" />
                                 Pedir Cartas
                             </button>
                         </div>
