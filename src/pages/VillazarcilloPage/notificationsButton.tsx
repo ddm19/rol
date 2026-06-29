@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import OneSignal from 'react-onesignal';
 import { supabase } from 'services/supabaseClient';
 import { addUsertosubscriptionList, initOneSignal } from 'services/onesignal';
+import { getMyProfile, Profile } from 'services/profiles';
 
 const NotificationsButton = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -29,6 +30,7 @@ const NotificationsButton = () => {
                     await OneSignal.init({
                         appId: import.meta.env.VITE_ONESIGNAL_APP_ID,
                         allowLocalhostAsSecureOrigin: true,
+
                     });
                 } catch (e) {
                     console.error("Error initializing OneSignal", e);
@@ -75,15 +77,26 @@ const NotificationsButton = () => {
 
             if (Notification.permission === 'granted') {
                 setPermission('granted');
-                const user = (await supabase.auth.getUser()).data?.user?.id;
+                const user = (await supabase.auth.getUser()).data?.user;
+                let userProfile: Profile;
+
+
 
                 if (!user) {
                     console.error('❌ No se pudo obtener el ID del usuario de Supabase.');
                     return;
                 }
-                await OneSignal.login(user);
+                await OneSignal.login(user.id);
+                await OneSignal.User.addEmail(user.email || 'Sin correo electrónico');
+                getMyProfile().then((profile) => {
+                    userProfile = profile;
+                    OneSignal.User.addAlias('profile', userProfile?.username || 'Sin nombre de usuario');
 
-                await addUsertosubscriptionList(user);
+                }).catch((e) => {
+                    console.error('❌ Error al obtener el perfil del usuario:', e);
+                });
+
+                await addUsertosubscriptionList(user.id);
 
             } else {
                 console.log('❌ El usuario no ha concedido el permiso de notificaciones.');

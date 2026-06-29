@@ -1,12 +1,19 @@
 import { supabase } from "./supabaseClient"
 
+export interface Profile {
+  id: string
+  username?: string
+  avatar_key?: string
+  updated_at?: string
+}
+
 export async function getCurrentUser() {
   const { data, error } = await supabase.auth.getUser()
   if (error || !data.user) throw error || new Error('No session')
   return data.user
 }
 
-export async function getMyProfile() {
+export async function getMyProfile() : Promise<Profile> {
   const user = await getCurrentUser()
   const { data, error } = await supabase
     .from('profiles')
