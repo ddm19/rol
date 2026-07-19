@@ -1,6 +1,6 @@
 .emailForm>input,.article
 {
-    transition: all 0.4s cubic-bezier(0.47, 1.64, 0.18, -0.35);
+    transition: transform 0.4s cubic-bezier(0.47, 1.64, 0.18, -0.35);
 }
 
 .emailForm>input:hover

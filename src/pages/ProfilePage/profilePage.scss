@@ -1,6 +1,7 @@
 .profilePage
 {
-    display: grid;
+    display: flex;
+    align-items: center;
     place-items: center;
     padding: var(--spacing-4);
     min-height: 80vh;
@@ -36,7 +37,6 @@
 
     &__card
     {
-        background: var(--colors-lightYellow);
         border: 1px solid var(--colors-border);
         border-radius: var(--spacing-2);
         box-shadow: 0 0 var(--spacing-4) rgba(0, 0, 0, 0.2);
@@ -53,7 +53,6 @@
     {
         padding: var(--spacing-4);
         border-bottom: 1px solid var(--colors-border);
-        background: var(--colors-darkYellow);
     }
 
     &__title
@@ -83,9 +82,7 @@
         display: flex;
         padding: var(--spacing-2) var(--spacing-4);
         border-radius: var(--spacing-2);
-        border: 1px solid var(--colors-darkRed);
-        background: var(--colors-lightYellow);
-        color: var(--colors-darkRed);
+        color: var(--colors-white);
         font-weight: bold;
         font-size: var(--font-size-5);
         cursor: pointer;
@@ -117,8 +114,8 @@
         padding: var(--spacing-2) var(--spacing-4);
         border-radius: var(--spacing-2);
         border: 1px solid var(--colors-border);
-        background: var(--colors-lightYellow);
         color: var(--colors-black);
+        background-color: var(--background-color);
     }
 
     &__saveBtn
@@ -135,6 +132,7 @@
     {
         position: fixed;
         inset: 0;
+        z-index: var(--z-orders-modal-backdrop, var(--z-modal));
         display: grid;
         place-items: center;
         background: rgba(0, 0, 0, 0.5);
@@ -146,7 +144,6 @@
         position: relative;
         width: 60%;
         max-height: 60%;
-        background: var(--colors-lightYellow);
         border: 1px solid var(--colors-border);
         border-radius: var(--spacing-2);
         padding: var(--spacing-4);
@@ -195,7 +192,6 @@
         padding: var(--spacing-2);
         border-radius: var(--spacing-2);
         border: 1px solid var(--colors-border);
-        background: var(--colors-lightYellow);
         cursor: pointer;
         transition: transform 120ms ease;
 

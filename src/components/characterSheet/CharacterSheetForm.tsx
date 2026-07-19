@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getSheet, createSheetWithId, upsertSheet, deleteSheet, beautifyInventoryMarkdown } from "services/sheets";
 import { supabase } from "services/supabaseClient";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faDice, faEraser, faFistRaised, faHandFist, faHeart, faHeartPulse, faMagic, faRunning, faSave, faShield, faTrash, faUpload, faWandMagic, faWandMagicSparkles, faX } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowUp, faDice, faEraser, faFistRaised, faHandFist, faHeart, faHeartPulse, faMagic, faRunning, faSave, faShield, faTrash, faUpload, faWandMagic, faWandMagicSparkles, faX } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import SectionDisplay, { SectionItem } from "components/dndPdfInline/components/SectionDisplay";
 import Loading from "components/Loading/Loading";
@@ -30,7 +30,27 @@ export default function CharacterSheetForm() {
     const [story, setStory] = useState("");
     const [magicItems, setMagicItems] = useState<SectionItem[]>([]);
     const [tab, setTab] = useState<Tab>("stats");
+    const [showScrollTop, setShowScrollTop] = useState(false);
     const dirtyRef = useRef(false);
+
+    // ---------- botón volver arriba (móvil) ----------
+    useEffect(() => {
+        const getScrollTop = () => Math.max(window.scrollY || 0, document.documentElement.scrollTop || 0, document.body.scrollTop || 0);
+        const onScroll = () => setShowScrollTop(getScrollTop() > 400);
+        window.addEventListener("scroll", onScroll, { passive: true });
+        document.body.addEventListener("scroll", onScroll, { passive: true });
+        onScroll();
+        return () => {
+            window.removeEventListener("scroll", onScroll);
+            document.body.removeEventListener("scroll", onScroll);
+        };
+    }, []);
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: "smooth" });
+        document.documentElement.scrollTo({ top: 0, behavior: "smooth" });
+        document.body.scrollTo({ top: 0, behavior: "smooth" });
+    };
 
     // ---------- carga ----------
     useEffect(() => {
@@ -673,6 +693,16 @@ export default function CharacterSheetForm() {
                 />
                 <SectionDisplay title="Historia del Personaje" content={story} onContentChange={setStory} createItemLink="/article" />
             </div>
+
+            <button
+                type="button"
+                className={`characterSheetForm__scrollTop ${showScrollTop ? "characterSheetForm__scrollTop--visible" : ""}`}
+                onClick={scrollToTop}
+                title="Volver arriba"
+                aria-label="Volver arriba"
+            >
+                <FontAwesomeIcon icon={faArrowUp} />
+            </button>
         </div>
     );
 }

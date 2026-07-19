@@ -6,6 +6,14 @@
     min-height: 100%;
     padding-bottom: var(--spacing-8);
     width: 100%;
+    max-width: 100%;
+
+    *,
+    *::before,
+    *::after
+    {
+        box-sizing: border-box;
+    }
 
     input[type="checkbox"]
     {
@@ -66,6 +74,14 @@
         grid-template-columns: 60% 1fr;
         gap: var(--spacing-4);
         padding: var(--spacing-4);
+        max-width: 100%;
+
+        @media (max-width: 900px)
+        {
+            grid-template-columns: 1fr;
+            padding: var(--spacing-2);
+            gap: var(--spacing-3);
+        }
     }
 
     &__topbar
@@ -96,6 +112,7 @@
             align-items: center;
             gap: var(--spacing-1);
             transition: all 0.2s ease-in-out;
+            white-space: nowrap;
 
             &:hover
             {
@@ -105,14 +122,29 @@
             }
 
         }
+
+        @media (max-width: 600px)
+        {
+            padding: var(--spacing-2);
+            margin: var(--spacing-2) 0;
+
+            button
+            {
+                justify-content: center;
+                white-space: normal;
+            }
+        }
     }
 
     &__info
     {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: var(--spacing-1-5);
         font-size: var(--font-size-2);
+        min-width: 0;
+        max-width: 100%;
 
         input
         {
@@ -122,6 +154,17 @@
             padding: var(--spacing-1) var(--spacing-2);
             background: var(--dndBg);
             color: var(--dndInk);
+            min-width: 0;
+        }
+
+        @media (max-width: 600px)
+        {
+            width: 100%;
+
+            input
+            {
+                flex: 1;
+            }
         }
     }
 
@@ -162,6 +205,10 @@
         border: var(--border-size-2) solid var(--dndInk);
         border-bottom: none;
         border-radius: var(--radius-3) var(--radius-3) 0 0;
+        position: sticky;
+        top: 8%;
+        z-index: 5;
+        box-shadow: var(--shadow-2);
 
         button
         {
@@ -176,6 +223,8 @@
             opacity: var(--opacity-muted);
             font-size: var(--font-size-3);
             font-weight: var(--font-weight-4);
+            min-width: 0;
+            overflow-wrap: break-word;
 
             &.active
             {
@@ -184,6 +233,14 @@
                 font-weight: var(--font-weight-5);
                 box-shadow: var(--shadow-1);
                 color: var(--dndGold);
+            }
+        }
+
+        @media (max-width: 480px)
+        {
+            button
+            {
+                padding: var(--spacing-1);
             }
         }
     }
@@ -202,6 +259,11 @@
         @media (max-width: 700px)
         {
             padding: var(--spacing-3);
+        }
+
+        @media (max-width: 480px)
+        {
+            padding: var(--spacing-2);
         }
     }
 
@@ -223,10 +285,10 @@
             object-fit: cover;
         }
 
-        @media (max-width: 700px)
+        @media (max-width: 480px)
         {
-            width: var(--image-size-1);
-            height: var(--image-size-1);
+            float: none;
+            margin: 0 auto var(--spacing-3);
         }
     }
 
@@ -241,6 +303,53 @@
         @media (max-width: 900px)
         {
             grid-template-columns: 1fr;
+        }
+    }
+
+    &__scrollTop
+    {
+        display: none;
+        position: fixed;
+        right: var(--spacing-3);
+        bottom: var(--spacing-4);
+        width: 3rem;
+        height: 3rem;
+        align-items: center;
+        justify-content: center;
+        border-radius: var(--radius-circle);
+        border: none;
+        background: var(--dndGold);
+        color: var(--dndInk);
+        font-size: var(--font-size-4);
+        box-shadow: var(--shadow-3);
+        cursor: pointer;
+        z-index: 10;
+        opacity: 0;
+        transform: translateY(12px) scale(0.9);
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease, background 0.2s ease;
+
+        &--visible
+        {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            pointer-events: auto;
+        }
+
+        &:hover
+        {
+            background: var(--dndAccent2);
+            color: white;
+        }
+
+        &:active
+        {
+            transform: scale(0.92);
+        }
+
+        @media (max-width: 700px)
+        {
+            display: flex;
         }
     }
 
@@ -304,18 +413,16 @@
 
         @media (max-width: 700px)
         {
-            grid-template-columns: repeat(2, 1fr);
-        }
-
-        @media (max-width: 480px)
-        {
             grid-template-columns: 1fr;
+            margin-bottom: var(--spacing-3);
         }
     }
 }
 
 .field
 {
+    min-width: 0;
+
     label
     {
         display: block;
@@ -329,6 +436,8 @@
 
 .card
 {
+    min-width: 0;
+    max-width: 100%;
     border: var(--border-size-1) solid var(--dndLine);
     border-radius: var(--radius-3);
     background: var(--dndRow);
@@ -422,6 +531,17 @@
         display: flex;
         flex-direction: column;
         gap: var(--spacing-3);
+        min-width: 0;
+
+        &--abilities
+        {
+            @media (max-width: 700px)
+            {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
     }
 }
 
@@ -492,6 +612,7 @@
 .combatStats
 {
     display: flex;
+    flex-wrap: wrap;
     gap: var(--spacing-2);
     align-items: center;
     justify-content: center;
@@ -499,6 +620,7 @@
     label
     {
         flex: 1;
+        min-width: 4rem;
         display: flex;
         flex-direction: column;
         font-size: var(--font-size-2);
@@ -508,6 +630,8 @@
 
         input
         {
+            width: 100%;
+            min-width: 0;
             border: var(--border-size-1) solid var(--dndLine);
             border-radius: var(--radius-2);
             padding: var(--spacing-1);
@@ -895,6 +1019,11 @@
     gap: var(--spacing-2);
     width: -webkit-fill-available;
 
+    @media (max-width: 700px)
+    {
+        grid-template-columns: 1fr 1fr;
+    }
+
     &__passive
     {
         position: absolute;
@@ -934,6 +1063,8 @@
 {
     display: flex;
     align-items: center;
+    flex-wrap: wrap;
+    min-width: 0;
     gap: var(--spacing-1-5);
     font-size: var(--font-size-2);
     padding: var(--spacing-1) 0;
@@ -964,6 +1095,8 @@
     grid-template-columns: 2fr 1fr 1.4fr;
     gap: var(--spacing-1-5);
     margin-bottom: var(--spacing-1-5);
+
+
 }
 
 .spellsGrid
@@ -988,6 +1121,7 @@
     &__header
     {
         display: flex;
+        flex-wrap: wrap;
         align-items: center;
         gap: var(--spacing-2);
         font-size: var(--font-size-1);
@@ -1120,10 +1254,13 @@
 .annotatedField
 {
     position: relative;
+    min-width: 0;
+    max-width: 100%;
 
     &__wrapper
     {
         position: relative;
+        min-width: 0;
     }
 
     &__editable

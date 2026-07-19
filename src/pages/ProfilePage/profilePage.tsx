@@ -118,8 +118,7 @@ const ProfilePage: React.FC = () => {
                     onSave={handleSaveAvatar}
                 />
             )}
-            <button className="profilePage__btn " onClick={() => navigate('/sheets/new')}>Crear nueva ficha</button>
-            <SheetsList />
+            <SheetsList visibleCount={2} />
         </div>
     );
 };
