@@ -45,7 +45,7 @@ const SheetsList: React.FC<SheetsListProps> = ({ visibleCount = DEFAULT_VISIBLE_
                         characterName: r.content?.CharacterName || "",
                         classLevel: r.content?.ClassLevel || "",
                         race: r.content?.Race || "",
-                    })).slice(0, 2)
+                    }))
                 )
             )
             .finally(() => setLoading(false));
