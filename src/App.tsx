@@ -13,13 +13,13 @@ import ArticleSearch from "pages/ArticleSearch/ArticleSearch";
 import UtilitiesPage from "pages/Utilities/UtilitiesPage";
 import AuthCallback from "pages/AuthCallBack/authCallBack";
 import ProfilePage from "pages/ProfilePage/profilePage";
-import DnDPdfInline from "components/dndPdfInline/dndPdfInline";
 import PrivateRoute from "components/NavBar/PrivateRoute/privateRoute";
 import VillazarcilloPage from "pages/VillazarcilloPage/villazarciloPage";
 import PJMaker from "pages/PjMaker/PjMaker";
 import AdminPage from "pages/AdminPage/adminPage";
 import AdminRoute from "components/NavBar/PrivateRoute/adminRoute";
 import RuleSearch from "pages/RulesSearcher/RuleSearch";
+import CharacterSheetForm from "components/characterSheet/CharacterSheetForm";
 
 
 function App() {
@@ -56,7 +56,7 @@ function App() {
           <Route path="/Campaigns" element={<ArticleSearch category={{ "id": "campaign", "name": "Campaña" }} />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/sheets/:id" element={<DnDPdfInline />} />
+          <Route path="/sheets/:id" element={<CharacterSheetForm />} />
           <Route path="*" element={<NoPage />} />
           <Route path="/Rules" element={<RuleSearch />} />
 

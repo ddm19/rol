@@ -1,0 +1,1272 @@
+.characterSheetForm
+{
+    font-family: inherit;
+    color: var(--dndInk);
+    background: var(--dndBg2);
+    min-height: 100%;
+    padding-bottom: var(--spacing-8);
+    width: 100%;
+
+    input[type="checkbox"]
+    {
+        appearance: none;
+        width: var(--font-size-4);
+        height: var(--font-size-4);
+        border: var(--border-size-1) solid var(--dndInkSoft);
+        border-radius: var(--radius-3);
+        background-color: var(--dndBg);
+        background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.04), transparent 60%);
+        cursor: pointer;
+        display: grid;
+        place-content: center;
+        flex-shrink: 0;
+        position: relative;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+
+        &::before
+        {
+            content: "";
+            width: calc(var(--font-size-4) * 0.6);
+            height: calc(var(--font-size-4) * 0.6);
+            clip-path: polygon(20% 45%, 0% 65%, 45% 100%, 100% 10%, 78% 0%, 42% 58%);
+            transform: scale(0);
+            background-color: var(--dndGold);
+            transition: transform 0.15s ease-in-out;
+        }
+
+        &:checked
+        {
+            border-color: var(--dndGold);
+
+            &::before
+            {
+                transform: scale(1);
+            }
+        }
+
+        &:focus-visible
+        {
+            outline: none;
+            box-shadow: 0 0 0 var(--border-size-2) var(--dndGold);
+        }
+
+        &:hover
+        {
+            border-color: var(--dndGold);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+    }
+
+    &__container
+    {
+        display: grid;
+        grid-template-columns: 60% 1fr;
+        gap: var(--spacing-4);
+        padding: var(--spacing-4);
+    }
+
+    &__topbar
+    {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-3);
+        align-items: center;
+        padding: var(--spacing-3) var(--spacing-4);
+        background: var(--background-color);
+        border: var(--border-size-2) solid var(--dndInk);
+        margin: var(--spacing-4) 0;
+        color: var(--dndBg);
+
+        border-radius: var(--radius-3);
+
+        button
+        {
+            font-family: inherit;
+            border: none;
+            border-radius: var(--radius-2);
+            padding: var(--spacing-1-5) var(--spacing-3);
+            cursor: pointer;
+            background: var(--dndGold);
+            color: var(--dndInk);
+            font-weight: var(--font-weight-4);
+            display: inline-flex;
+            align-items: center;
+            gap: var(--spacing-1);
+
+            &:hover
+            {
+                background: color-mix(in srgb, var(--dndGold) 85%, white);
+            }
+        }
+    }
+
+    &__info
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1-5);
+        font-size: var(--font-size-2);
+
+        input
+        {
+            font-family: inherit;
+            border-radius: var(--radius-2);
+            border: var(--border-size-1) solid var(--dndLine);
+            padding: var(--spacing-1) var(--spacing-2);
+            background: var(--dndBg);
+            color: var(--dndInk);
+        }
+    }
+
+    &__button
+    {
+        &--green
+        {
+            background: var(--colors-green);
+            color: white;
+        }
+
+        &--red
+        {
+            background: var(--dndAccent);
+            color: white;
+        }
+    }
+
+    &__lastSaved
+    {
+        font-size: var(--font-size-1);
+        opacity: var(--opacity-muted);
+    }
+
+    &__tabs
+    {
+        display: grid;
+        gap: var(--spacing-1);
+        grid-template-columns: 1fr 1fr 1fr;
+        background: var(--dndBg);
+        border: var(--border-size-2) solid var(--dndInk);
+        border-bottom: none;
+        border-radius: var(--radius-3) var(--radius-3) 0 0;
+
+        button
+        {
+            font-family: inherit;
+            letter-spacing: var(--letter-spacing-1);
+            border: none;
+            background: var(--dndBg2);
+            color: var(--dndInk);
+            padding: var(--spacing-2) var(--spacing-4);
+            border-radius: var(--radius-2) var(--radius-2) 0 0;
+            cursor: pointer;
+            opacity: var(--opacity-muted);
+            font-size: var(--font-size-3);
+
+            &.active
+            {
+                opacity: var(--opacity-visible);
+                background: var(--dndBg);
+                font-weight: var(--font-weight-5);
+                box-shadow: var(--shadow-1);
+            }
+        }
+    }
+
+    &__sheet
+    {
+        max-width: 100%;
+        background: var(--dndBg);
+        border: var(--border-size-2) solid var(--dndInk);
+        border-top: none;
+        border-radius: 0 0 var(--radius-3) var(--radius-3);
+        padding: var(--spacing-5);
+        position: relative;
+        box-shadow: var(--shadow-3);
+
+        @media (max-width: 700px)
+        {
+            padding: var(--spacing-3);
+        }
+    }
+
+    &__avatar
+    {
+        float: right;
+        width: var(--image-size-2);
+        height: var(--image-size-2);
+        border: var(--border-size-2) solid var(--dndGold);
+        border-radius: var(--radius-circle);
+        overflow: hidden;
+        margin: 0 0 var(--spacing-2) var(--spacing-3);
+        box-shadow: var(--shadow-2);
+
+        img
+        {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        @media (max-width: 700px)
+        {
+            width: var(--image-size-1);
+            height: var(--image-size-1);
+        }
+    }
+
+    &__inventoryContainer
+    {
+        margin: var(--spacing-4) auto 0;
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction: column;
+        gap: var(--spacing-4);
+
+        @media (max-width: 900px)
+        {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    #inspiration
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        flex-direction: column;
+        font-size: var(--font-size-3);
+
+        input[type="checkbox"]
+        {
+            width: var(--font-size-7);
+            height: var(--font-size-7);
+
+            &::before
+            {
+                width: calc(var(--font-size-10) * 0.6);
+                height: calc(var(--font-size-10) * 0.6);
+                clip-path: none;
+                background-color: var(--dndGold);
+                -webkit-mask-size: contain;
+                mask-size: contain;
+                -webkit-mask-position: center;
+                mask-position: center;
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black'%3E%3Cpolygon points='12,4 4,8 4,16 12,20 20,16 20,8' stroke-width='1.5' fill='none' stroke-linejoin='round'/%3E%3Cpolygon points='12,4 8.5,11 15.5,11' stroke-width='1.5' fill='none' stroke-linejoin='round'/%3E%3Cpolygon points='12,20 8.5,11 15.5,11' stroke-width='1.5' fill='none' stroke-linejoin='round'/%3E%3Cline x1='4' y1='8' x2='8.5' y2='11' stroke-width='1.5'/%3E%3Cline x1='4' y1='16' x2='8.5' y2='11' stroke-width='1.5'/%3E%3Cline x1='20' y1='8' x2='15.5' y2='11' stroke-width='1.5'/%3E%3Cline x1='20' y1='16' x2='15.5' y2='11' stroke-width='1.5'/%3E%3Cpath d='M19 1 Q 19 3 21 3 Q 19 3 19 5 Q 19 3 17 3 Q 19 3 19 1 Z' fill='black' stroke='none'/%3E%3Cpath d='M5 1 Q 5 2.5 6.5 2.5 Q 5 2.5 5 4 Q 5 2.5 3.5 2.5 Q 5 2.5 5 1 Z' fill='black' stroke='none'/%3E%3Cpath d='M22 17 Q 22 18.5 23.5 18.5 Q 22 18.5 22 20 Q 22 18.5 20.5 18.5 Q 22 18.5 22 17 Z' fill='black' stroke='none'/%3E%3C/svg%3E");
+                mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black'%3E%3Cpolygon points='12,4 4,8 4,16 12,20 20,16 20,8' stroke-width='1.5' fill='none' stroke-linejoin='round'/%3E%3Cpolygon points='12,4 8.5,11 15.5,11' stroke-width='1.5' fill='none' stroke-linejoin='round'/%3E%3Cpolygon points='12,20 8.5,11 15.5,11' stroke-width='1.5' fill='none' stroke-linejoin='round'/%3E%3Cline x1='4' y1='8' x2='8.5' y2='11' stroke-width='1.5'/%3E%3Cline x1='4' y1='16' x2='8.5' y2='11' stroke-width='1.5'/%3E%3Cline x1='20' y1='8' x2='15.5' y2='11' stroke-width='1.5'/%3E%3Cline x1='20' y1='16' x2='15.5' y2='11' stroke-width='1.5'/%3E%3Cpath d='M19 1 Q 19 3 21 3 Q 19 3 19 5 Q 19 3 17 3 Q 19 3 19 1 Z' fill='black' stroke='none'/%3E%3Cpath d='M5 1 Q 5 2.5 6.5 2.5 Q 5 2.5 5 4 Q 5 2.5 3.5 2.5 Q 5 2.5 5 1 Z' fill='black' stroke='none'/%3E%3Cpath d='M22 17 Q 22 18.5 23.5 18.5 Q 22 18.5 22 20 Q 22 18.5 20.5 18.5 Q 22 18.5 22 17 Z' fill='black' stroke='none'/%3E%3C/svg%3E");
+
+            }
+        }
+
+    }
+}
+
+.sheetHeader
+{
+    margin-bottom: var(--spacing-4);
+    border-bottom: var(--border-size-2) solid var(--dndGold);
+    padding-bottom: var(--spacing-3);
+
+    &__name .annotatedField__editable
+    {
+        font-size: var(--font-size-8);
+        font-weight: var(--font-weight-6);
+        border: none;
+        padding: 0;
+        min-height: auto;
+    }
+
+    &__row
+    {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: var(--spacing-3);
+        margin-top: var(--spacing-3);
+
+        @media (max-width: 700px)
+        {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        @media (max-width: 480px)
+        {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+.field
+{
+    label
+    {
+        display: block;
+        font-size: var(--font-size-1);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-1);
+        color: var(--dndInkSoft);
+        margin-bottom: var(--spacing-1);
+    }
+}
+
+.card
+{
+    border: var(--border-size-1) solid var(--dndLine);
+    border-radius: var(--radius-3);
+    background: var(--dndRow);
+    padding: var(--spacing-3);
+    box-shadow: var(--shadow-1);
+
+    &__title
+    {
+        display: flex;
+        gap: var(--spacing-1);
+        justify-content: center;
+        font-size: var(--font-size-1);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-1);
+        color: var(--dndGold);
+        font-weight: var(--font-weight-5);
+        margin-bottom: var(--spacing-2);
+
+    }
+
+    &--compact
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+        font-size: var(--font-size-1);
+        text-transform: uppercase;
+        align-items: center;
+
+        input
+        {
+            width: 3rem;
+            text-align: center;
+        }
+    }
+
+    &--flex
+    {
+        display: flex;
+        gap: var(--spacing-2);
+        flex-wrap: wrap;
+    }
+
+    &--checkbox
+    {
+        flex-direction: row;
+        align-items: center;
+        cursor: pointer;
+    }
+
+
+}
+
+.sheetPage
+{
+    &__grid
+    {
+        display: grid;
+        grid-template-columns: 130px 1fr 1.3fr;
+        gap: var(--spacing-4);
+        width: 100%;
+
+        @media (max-width: 900px)
+        {
+            grid-template-columns: 1fr;
+        }
+
+        &--personality
+        {
+            grid-template-columns: repeat(2, 1fr);
+
+            @media (max-width: 700px)
+            {
+                grid-template-columns: 1fr;
+            }
+
+            .span2
+            {
+                grid-column: span 2;
+
+                @media (max-width: 700px)
+                {
+                    grid-column: span 1;
+                }
+            }
+        }
+    }
+
+    &__col
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-3);
+    }
+}
+
+.abilityBox
+{
+    border: var(--border-size-2) solid var(--dndInk);
+    border-radius: var(--radius-4);
+    padding: var(--spacing-2);
+    text-align: center;
+    background: var(--dndBg);
+    box-shadow: var(--shadow-1);
+
+    &__label
+    {
+        font-size: var(--font-size-1);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-1);
+        color: var(--dndInkSoft);
+    }
+
+    &__mod
+    {
+        font-size: var(--font-size-7);
+        font-weight: var(--font-weight-6);
+        color: var(--dndAccent2);
+    }
+
+    &__score
+    {
+        width: 30%;
+        text-align: center;
+        margin: var(--spacing-1) auto;
+        border: var(--border-size-1) solid var(--dndLine);
+        border-radius: var(--radius-2);
+        background: var(--dndBg2);
+        color: var(--dndInk);
+        align-items: center;
+
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button
+        {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
+    }
+
+    &__save
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        font-size: var(--font-size-3);
+        margin-top: var(--spacing-1);
+    }
+
+    &__saveMod
+    {
+        font-size: var(--font-size-4);
+        font-weight: var(--font-weight-5);
+        color: var(--dndAccent2);
+        border: none;
+        border-bottom: var(--border-size-1) dashed var(--dndAccent2);
+    }
+}
+
+.combatStats
+{
+    display: flex;
+    gap: var(--spacing-2);
+    align-items: center;
+    justify-content: center;
+
+    label
+    {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        font-size: var(--font-size-1);
+        text-transform: uppercase;
+        color: var(--dndInkSoft);
+        align-items: center;
+
+        input
+        {
+            border: var(--border-size-1) solid var(--dndLine);
+            border-radius: var(--radius-2);
+            padding: var(--spacing-1);
+            background: var(--dndBg);
+            color: var(--dndInk);
+            font-size: var(--font-size-4);
+        }
+    }
+
+    &--column
+    {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+.deathSaves
+{
+    flex: 2;
+    font-size: var(--font-size-1);
+    color: var(--dndInkSoft);
+
+    &__row
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-1);
+        margin-top: var(--spacing-1);
+    }
+
+    div
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+    }
+
+    input[type="checkbox"]
+    {
+        appearance: none;
+        width: var(--font-size-10);
+        height: var(--font-size-10);
+        border: var(--border-size-2) solid var(--dndInkSoft);
+        border-radius: var(--radius-2);
+        background-color: var(--dndBg);
+        background-image: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.04), transparent 60%);
+        cursor: pointer;
+        display: grid;
+        place-content: center;
+        flex-shrink: 0;
+        position: relative;
+        transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.15s ease;
+
+        &::before
+        {
+            content: "";
+            display: block;
+            width: calc(var(--font-size-10) * 0.65);
+            height: calc(var(--font-size-10) * 0.65);
+            clip-path: polygon(20% 45%, 0% 65%, 45% 100%, 100% 10%, 78% 0%, 42% 58%);
+            background-color: var(--dndGold);
+            transform: scale(0) rotate(-25deg);
+            transform-origin: center;
+            transition: transform 0.15s ease-in-out;
+        }
+
+        &::after
+        {
+            content: "";
+            position: absolute;
+            inset: -4px;
+            border-radius: inherit;
+            border: var(--border-size-1) solid transparent;
+            pointer-events: none;
+            opacity: 0;
+        }
+
+        &:hover
+        {
+            border-color: var(--dndGold);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+        }
+
+        &:checked
+        {
+            border-color: var(--dndGold);
+            animation: seal-stamp 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+
+            &::before
+            {
+                transform: scale(1) rotate(0deg);
+                filter: drop-shadow(0 0 4px var(--dndGold));
+            }
+
+            &::after
+            {
+                border-color: var(--dndGold);
+                opacity: 1;
+                animation: rune-pulse 0.6s ease-out;
+            }
+        }
+
+        &:active
+        {
+            transform: scale(0.92);
+        }
+
+        &:focus-visible
+        {
+            outline: none;
+            box-shadow: 0 0 0 var(--border-size-2) var(--dndGold);
+        }
+
+        &.deathSave__success
+        {
+            border-color: var(--dndInkSoft);
+
+            &::before
+            {
+                width: calc(var(--font-size-10) * 0.6);
+                height: calc(var(--font-size-10) * 0.6);
+                clip-path: none;
+                background-color: var(--colors-green);
+                -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M50,15 C35,0 10,0 10,25 C10,45 30,60 50,80 C70,60 90,45 90,25 C90,0 65,0 50,15 Z'/></svg>");
+                mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path d='M50,15 C35,0 10,0 10,25 C10,45 30,60 50,80 C70,60 90,45 90,25 C90,0 65,0 50,15 Z'/></svg>");
+                -webkit-mask-size: contain;
+                mask-size: contain;
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                -webkit-mask-position: center;
+                mask-position: center;
+            }
+
+            &:checked
+            {
+                border-color: var(--colors-green);
+
+                &::before
+                {
+                    filter: drop-shadow(0 0 5px var(--colors-green));
+                }
+
+                &::after
+                {
+                    border-color: var(--colors-green);
+                    animation: bless-pulse 0.7s ease-out;
+                }
+            }
+        }
+
+        &.deathSave__failure
+        {
+            border-color: var(--dndAccent);
+
+            &::before
+            {
+                width: calc(var(--font-size-10) * 0.6);
+                height: calc(var(--font-size-10) * 0.6);
+                clip-path: none;
+                background-color: var(--dndAccent);
+                -webkit-mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill-rule='evenodd' d='M50,5 C28,5 12,22 12,42 C12,54 18,63 25,70 L25,82 L75,82 L75,70 C82,63 88,54 88,42 C88,22 72,5 50,5 Z M32,38 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 M68,38 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 M50,46 L45,58 L55,58 Z'/></svg>");
+                mask-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><path fill-rule='evenodd' d='M50,5 C28,5 12,22 12,42 C12,54 18,63 25,70 L25,82 L75,82 L75,70 C82,63 88,54 88,42 C88,22 72,5 50,5 Z M32,38 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 M68,38 m-7,0 a7,7 0 1,0 14,0 a7,7 0 1,0 -14,0 M50,46 L45,58 L55,58 Z'/></svg>");
+                -webkit-mask-size: contain;
+                mask-size: contain;
+                -webkit-mask-repeat: no-repeat;
+                mask-repeat: no-repeat;
+                -webkit-mask-position: center;
+                mask-position: center;
+            }
+
+            &:checked
+            {
+                border-color: var(--dndAccent);
+                animation: crack-shake 0.4s ease-in-out;
+
+                &::before
+                {
+                    filter: drop-shadow(0 0 5px var(--dndAccent));
+                }
+
+                &::after
+                {
+                    border-color: var(--dndAccent);
+                    animation: rune-pulse 0.6s ease-out;
+                }
+            }
+        }
+
+
+    }
+
+    @keyframes seal-stamp
+    {
+        0%
+        {
+            transform: scale(0.85);
+        }
+
+        50%
+        {
+            transform: scale(1.08);
+        }
+
+        100%
+        {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes rune-pulse
+    {
+        0%
+        {
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.35);
+            opacity: 1;
+        }
+
+        100%
+        {
+            box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+            opacity: 0;
+        }
+    }
+
+    @keyframes bless-pulse
+    {
+        0%
+        {
+            box-shadow: 0 0 0 0 rgba(80, 200, 120, 0.5);
+            opacity: 1;
+        }
+
+        100%
+        {
+            box-shadow: 0 0 0 8px rgba(80, 200, 120, 0);
+            opacity: 0;
+        }
+    }
+
+    @keyframes crack-shake
+    {
+
+        0%,
+        100%
+        {
+            transform: translateX(0);
+        }
+
+        20%
+        {
+            transform: translateX(-2px) rotate(-3deg);
+        }
+
+        40%
+        {
+            transform: translateX(2px) rotate(3deg);
+        }
+
+        60%
+        {
+            transform: translateX(-1px) rotate(-2deg);
+        }
+
+        80%
+        {
+            transform: translateX(1px) rotate(2deg);
+        }
+    }
+
+
+    @keyframes seal-stamp
+    {
+        0%
+        {
+            transform: scale(0.85);
+        }
+
+        50%
+        {
+            transform: scale(1.08);
+        }
+
+        100%
+        {
+            transform: scale(1);
+        }
+    }
+
+    @keyframes rune-pulse
+    {
+        0%
+        {
+            box-shadow: 0 0 0 0 rgba(255, 255, 255, 0.35);
+            opacity: 1;
+        }
+
+        100%
+        {
+            box-shadow: 0 0 0 6px rgba(255, 255, 255, 0);
+            opacity: 0;
+        }
+    }
+
+    @keyframes bless-pulse
+    {
+        0%
+        {
+            box-shadow: 0 0 0 0 rgba(80, 200, 120, 0.5);
+            opacity: 1;
+        }
+
+        100%
+        {
+            box-shadow: 0 0 0 8px rgba(80, 200, 120, 0);
+            opacity: 0;
+        }
+    }
+
+    @keyframes crack-shake
+    {
+
+        0%,
+        100%
+        {
+            transform: translateX(0);
+        }
+
+        20%
+        {
+            transform: translateX(-2px) rotate(-3deg);
+        }
+
+        40%
+        {
+            transform: translateX(2px) rotate(3deg);
+        }
+
+        60%
+        {
+            transform: translateX(-1px) rotate(-2deg);
+        }
+
+        80%
+        {
+            transform: translateX(1px) rotate(2deg);
+        }
+    }
+
+    &__cancel
+    {
+        // X button
+        width: var(--font-size-3);
+        height: var(--font-size-3);
+        border: none;
+        color: var(--dndInk);
+        border-radius: var(--radius-circle);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        transition: transform 0.15s ease;
+
+        &:hover
+        {
+            transform: scale(1.1);
+        }
+    }
+}
+
+
+.skillsList
+{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    position: relative;
+    padding-top: var(--spacing-8);
+    gap: var(--spacing-2);
+    width: -webkit-fill-available;
+
+    &__passive
+    {
+        position: absolute;
+        top: 0;
+        left: 0;
+        margin: var(--spacing-2);
+        font-size: var(--font-size-2);
+        font-weight: var(--font-weight-5);
+        border-bottom: var(--border-size-1) solid var(--dndLine);
+        padding-bottom: var(--spacing-2);
+        margin-bottom: var(--spacing-2);
+    }
+
+    &__group
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+        margin-bottom: var(--spacing-2);
+    }
+
+    &__groupHeader
+    {
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--dndGold);
+        border-bottom: 1px solid var(--dndInkSoft);
+        padding-bottom: 2px;
+        margin-top: 4px;
+    }
+
+}
+
+.skillRow
+{
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1-5);
+    font-size: var(--font-size-2);
+    padding: var(--spacing-1) 0;
+    border-radius: var(--radius-1);
+
+    &:hover
+    {
+        background: var(--dndRow2);
+    }
+
+    &__mod
+    {
+        width: 2rem;
+        display: inline-block;
+        font-weight: var(--font-weight-5);
+    }
+
+    &__ability
+    {
+        opacity: var(--opacity-muted);
+        font-size: var(--font-size-1);
+    }
+}
+
+.weaponRow
+{
+    display: grid;
+    grid-template-columns: 2fr 1fr 1.4fr;
+    gap: var(--spacing-1-5);
+    margin-bottom: var(--spacing-1-5);
+}
+
+.spellsGrid
+{
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-3);
+
+    @media (max-width: 900px)
+    {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    @media (max-width: 600px)
+    {
+        grid-template-columns: 1fr;
+    }
+}
+
+.spellLevelBlock
+{
+    &__header
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--font-size-1);
+        margin-bottom: var(--spacing-2);
+        color: var(--dndInkSoft);
+
+        label
+        {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-1);
+            margin: 0;
+
+            input
+            {
+                width: 2.5rem;
+                border: var(--border-size-1) solid var(--dndLine);
+                border-radius: var(--radius-1);
+                background: var(--dndBg);
+                color: var(--dndInk);
+            }
+        }
+    }
+
+    &__num
+    {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.7rem;
+        height: 1.7rem;
+        border-radius: var(--radius-circle);
+        border: var(--border-size-2) solid var(--dndGold);
+        font-weight: var(--font-weight-6);
+        color: var(--dndGold);
+    }
+
+    &__add
+    {
+        font-size: var(--font-size-1);
+        background: none;
+        border: var(--border-size-1) dashed var(--dndLine);
+        border-radius: var(--radius-2);
+        padding: var(--spacing-1) var(--spacing-2);
+        cursor: pointer;
+        width: 100%;
+        color: var(--dndInkSoft);
+
+        &:hover
+        {
+            border-color: var(--dndGold);
+            color: var(--dndGold);
+        }
+    }
+}
+
+.spellEntry
+{
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-1);
+    margin-bottom: var(--spacing-1);
+
+    &__name
+    {
+        flex: 1;
+        min-width: 0;
+    }
+
+    &--review
+    {
+        background: color-mix(in srgb, var(--dndGold) 12%, transparent);
+        border-radius: var(--radius-1);
+    }
+
+    &__reviewBadge
+    {
+        border: none;
+        background: var(--dndGold);
+        color: var(--dndInk);
+        border-radius: var(--radius-circle);
+        width: 1.4rem;
+        height: 1.4rem;
+        cursor: pointer;
+        flex-shrink: 0;
+    }
+
+    >button:last-child
+    {
+        border: none;
+        background: none;
+        cursor: pointer;
+        opacity: var(--opacity-muted);
+        flex-shrink: 0;
+    }
+}
+
+// ---------- Campo editable con notas ancladas ----------
+.annotatedField
+{
+    position: relative;
+
+    &__wrapper
+    {
+        position: relative;
+    }
+
+    &__editable
+    {
+        border: var(--border-size-1) solid var(--dndLine);
+        border-radius: var(--radius-2);
+        background: var(--dndBg);
+        color: var(--dndInk);
+        padding: var(--spacing-1) var(--spacing-2);
+        font-family: inherit;
+        font-size: var(--font-size-3);
+        outline: none;
+        white-space: pre-wrap;
+        word-break: break-word;
+
+        &:focus
+        {
+            border-color: var(--dndGold);
+            box-shadow: var(--shadow-focus);
+        }
+
+        &--single
+        {
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+    }
+
+    &__placeholder
+    {
+        position: absolute;
+        left: var(--spacing-2);
+        top: var(--spacing-1);
+        color: var(--dndInkSoft);
+        opacity: var(--opacity-muted);
+        pointer-events: none;
+        font-size: var(--font-size-3);
+    }
+
+    &__editable mark.annotatedField__mark
+    {
+        background: color-mix(in srgb, var(--dndGold) 45%, transparent);
+        border-bottom: var(--border-size-2) solid var(--dndGold);
+        border-radius: var(--radius-1);
+        cursor: pointer;
+        padding: 0 1px;
+        color: inherit;
+    }
+
+    &__orphans
+    {
+        margin-top: var(--spacing-1);
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-1);
+    }
+
+    &__orphan
+    {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        font-size: var(--font-size-1);
+        background: var(--dndNoticeErrorBg);
+        border: var(--border-size-1) dashed var(--dndAccent2);
+        border-radius: var(--radius-2);
+        padding: 2px var(--spacing-1);
+        color: var(--dndInkSoft);
+
+        button
+        {
+            border: none;
+            background: none;
+            cursor: pointer;
+            opacity: var(--opacity-muted);
+        }
+    }
+
+    &__pill
+    {
+        position: fixed;
+        transform: translate(-50%, -130%);
+        z-index: var(--z-tooltip);
+        background: var(--dndInk);
+        color: var(--dndGold);
+        border: none;
+        border-radius: var(--radius-round);
+        padding: var(--spacing-1) var(--spacing-2);
+        font-size: var(--font-size-1);
+        cursor: pointer;
+        box-shadow: var(--shadow-2);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        white-space: nowrap;
+    }
+
+    &__scrim
+    {
+        position: fixed;
+        inset: 0;
+        z-index: var(--z-modal);
+        background: transparent;
+    }
+
+    &__bubble
+    {
+        position: fixed;
+        transform: translate(-50%, var(--spacing-2));
+        z-index: var(--z-orders-modal-backdrop, var(--z-modal));
+        background: var(--dndBg);
+        border: var(--border-size-2) solid var(--dndGold);
+        border-radius: var(--radius-3);
+        padding: var(--spacing-2);
+        width: min(280px, 80vw);
+        box-shadow: var(--shadow-4);
+
+        textarea
+        {
+            width: 100%;
+            font-family: inherit;
+            font-size: var(--font-size-2);
+            border: var(--border-size-1) solid var(--dndLine);
+            border-radius: var(--radius-2);
+            padding: var(--spacing-1-5);
+            background: var(--dndBg2);
+            color: var(--dndInk);
+            resize: vertical;
+        }
+
+        &--sheet
+        {
+            position: fixed;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: auto;
+            transform: none;
+            width: 100%;
+            border-radius: var(--radius-4) var(--radius-4) 0 0;
+            padding: var(--spacing-4);
+        }
+    }
+
+    &__bubbleHeader
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        font-size: var(--font-size-1);
+        color: var(--dndGold);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-1);
+        margin-bottom: var(--spacing-1);
+    }
+
+    &__bubbleActions
+    {
+        display: flex;
+        justify-content: space-between;
+        margin-top: var(--spacing-2);
+
+        button
+        {
+            border: none;
+            border-radius: var(--radius-2);
+            padding: var(--spacing-1) var(--spacing-2);
+            font-size: var(--font-size-1);
+            cursor: pointer;
+        }
+    }
+
+    &__bubbleDelete
+    {
+        background: var(--dndNoticeErrorBg);
+        color: var(--dndAccent2);
+    }
+
+    &__bubbleSave
+    {
+        background: var(--dndGold);
+        color: var(--dndInk);
+        font-weight: var(--font-weight-5);
+    }
+}
+
+@media (max-width: 600px)
+{
+    .characterSheetForm__topbar
+    {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .annotatedField__editable
+    {
+        font-size: var(--font-size-4);
+        padding: var(--spacing-2);
+    }
+}

@@ -1,0 +1,673 @@
+import { useEffect, useRef, useState, useCallback } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { getSheet, createSheetWithId, upsertSheet, deleteSheet, beautifyInventoryMarkdown } from "services/sheets";
+import { supabase } from "services/supabaseClient";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faArrowLeft, faDice, faFistRaised, faHandFist, faHeart, faHeartPulse, faMagic, faRunning, faSave, faShield, faTrash, faWandMagic, faWandMagicSparkles, faX } from "@fortawesome/free-solid-svg-icons";
+import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
+import SectionDisplay, { SectionItem } from "components/dndPdfInline/components/SectionDisplay";
+import Loading from "components/Loading/Loading";
+import AnnotatedField from "./components/AnnotatedField";
+import { AbilityBox, SkillRow, WeaponRow, SpellLevelBlock, SpellEntryRow } from "./components/SheetBits";
+import { migrateLegacyContent } from "./migration";
+import { ABILITIES, SKILLS, SheetContent, TextAnnotation, abilityMod, fmtMod, emptySpells, newId } from "./types";
+import "./characterSheetForm.scss";
+
+type Tab = "stats" | "personality" | "spells";
+
+export default function CharacterSheetForm() {
+    const { id: routeId = "" } = useParams();
+    const navigate = useNavigate();
+    const isNew = routeId === "new";
+
+    const [sheetName, setSheetName] = useState(isNew ? "" : routeId);
+    const [content, setContent] = useState<SheetContent>({});
+    const [saving, setSaving] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [lastSaved, setLastSaved] = useState<string>("");
+    const [avatarUrl, setAvatarUrl] = useState<string>("");
+    const [inventory, setInventory] = useState("");
+    const [story, setStory] = useState("");
+    const [magicItems, setMagicItems] = useState<SectionItem[]>([]);
+    const [tab, setTab] = useState<Tab>("stats");
+    const dirtyRef = useRef(false);
+
+    // ---------- carga ----------
+    useEffect(() => {
+        if (isNew || !routeId) return;
+        setIsLoading(true);
+        getSheet(routeId)
+            .then(async (s) => {
+                const migrated = migrateLegacyContent(s?.content || {});
+                setContent(migrated);
+                setInventory(migrated.inventory || "");
+                setMagicItems((migrated.magicItems as SectionItem[]) || []);
+                setStory(s?.story || "");
+                setLastSaved(s?.updated_at || "");
+
+                let url = migrated.avatarUrl || "";
+                const name = (s?.id || routeId || "").trim();
+                if (name && name !== "new") {
+                    const safe = name.replace(/[^a-zA-Z0-9._-]/g, "_");
+                    try {
+                        const { data: items, error } = await supabase.storage.from("CharacterImages").list("avatars", { limit: 1000 });
+                        if (!error) {
+                            const found = (items || []).find((it: any) => typeof it?.name === "string" && it.name.toLowerCase().startsWith((safe + ".").toLowerCase()));
+                            if (found) {
+                                const { data: pub } = supabase.storage.from("CharacterImages").getPublicUrl(`avatars/${found.name}`);
+                                if (pub?.publicUrl) url = pub.publicUrl;
+                            }
+                        }
+                    } catch (err) {
+                        console.warn("Error buscando avatar en bucket:", err);
+                    }
+                }
+                setAvatarUrl(url);
+            })
+            .catch(() => {
+                setContent(migrateLegacyContent({}));
+                setInventory("");
+                setMagicItems([]);
+                setAvatarUrl("");
+            })
+            .finally(() => setIsLoading(false));
+    }, [isNew, routeId]);
+
+    const patch = useCallback((changes: Partial<SheetContent>) => {
+        dirtyRef.current = true;
+        setContent((prev) => ({ ...prev, ...changes }));
+    }, []);
+
+    const setField = useCallback((key: string) => (value: string) => patch({ [key]: value } as Partial<SheetContent>), [patch]);
+
+    const annotationsFor = useCallback((fieldId: string) => content.annotations?.[fieldId] || [], [content.annotations]);
+    const setAnnotationsFor = useCallback(
+        (fieldId: string, list: TextAnnotation[]) => {
+            patch({ annotations: { ...(content.annotations || {}), [fieldId]: list } });
+        },
+        [content.annotations, patch],
+    );
+
+    const profBonus = parseInt(content.ProfBonus || "2", 10) || 0;
+    const passivePerception = 10 + abilityMod(content.WISscore) + (content.perPROF ? profBonus : 0);
+
+    // ---------- autoguardado 15 min ----------
+    useEffect(() => {
+        if (isNew || !routeId) return;
+        const autoSave = async () => {
+            if (!dirtyRef.current) return;
+            try {
+                if (window.confirm("Hace 15 minutos que no guardas. ¿Quieres guardar automáticamente?")) {
+                    await doSave();
+                }
+            } catch (err) {
+                console.error("Error en autoguardado:", err);
+            }
+        };
+        const interval = setInterval(autoSave, 15 * 60 * 1000);
+        return () => clearInterval(interval);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isNew, routeId, content, inventory, magicItems, avatarUrl, story]);
+
+    const buildPayload = useCallback((): SheetContent => ({ ...content, inventory, magicItems, avatarUrl, schemaVersion: 2 }), [content, inventory, magicItems, avatarUrl]);
+
+    const doSave = async () => {
+        const completeValues = buildPayload();
+        if (isNew) {
+            const saved = await createSheetWithId(sheetName.trim(), completeValues);
+            setLastSaved(saved.updated_at);
+            dirtyRef.current = false;
+            navigate(`/sheets/${encodeURIComponent(sheetName.trim())}`, { replace: true });
+        } else {
+            const saved = await upsertSheet(routeId, completeValues, story);
+            setLastSaved(saved.updated_at);
+            dirtyRef.current = false;
+        }
+    };
+
+    const handleSave = async () => {
+        if (!sheetName.trim()) {
+            alert("Por favor, introduce un nombre para la ficha.");
+            return;
+        }
+        setSaving(true);
+        try {
+            await doSave();
+            if (!isNew) alert("Ficha guardada con éxito.");
+        } catch (err: any) {
+            if (err?.code === "23505") {
+                alert("Ese nombre de ficha ya existe. Elige otro.");
+            } else {
+                console.error(err);
+                alert("Ha ocurrido un error al guardar la ficha: " + (err.message || String(err)));
+            }
+        } finally {
+            setSaving(false);
+        }
+    };
+
+    // ---------- avatar ----------
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const triggerAvatarPicker = () => {
+        if (window.confirm("¿Quieres guardar la ficha antes de subir un avatar para evitar pérdida de datos?")) {
+            handleSave().then(() => fileInputRef.current?.click());
+        } else {
+            fileInputRef.current?.click();
+        }
+    };
+    const handleAvatarPicked = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            const safeName = (sheetName || routeId || "avatar").replace(/[^a-zA-Z0-9._-]/g, "_");
+            const ext = file.name.split(".").pop() || "png";
+            const path = `avatars/${encodeURIComponent(safeName)}.${ext}`;
+            const { error: upErr } = await supabase.storage.from("CharacterImages").upload(path, file, { cacheControl: "0", upsert: true, contentType: file.type || undefined });
+            if (upErr) throw upErr;
+            const { data: pub } = supabase.storage.from("CharacterImages").getPublicUrl(path);
+            setAvatarUrl(pub.publicUrl);
+            alert("Avatar subido y guardado con éxito.");
+        } catch (err) {
+            console.error("Error subiendo avatar:", err);
+            alert("No se pudo subir el avatar. Inténtalo de nuevo. Error: " + (err as Error).message);
+        } finally {
+            if (e.target) e.target.value = "";
+        }
+    };
+    const clearAvatar = async () => {
+        if (!avatarUrl) return;
+        if (!window.confirm("¿Estás seguro de que quieres eliminar el avatar? Esta acción no se puede deshacer.")) return;
+        try {
+            const name = (sheetName || routeId || "").trim();
+            if (name && name !== "new") {
+                const safe = name.replace(/[^a-zA-Z0-9._-]/g, "_");
+                const { data: items } = await supabase.storage.from("CharacterImages").list("avatars", { limit: 1000 });
+                const found = (items || []).find((it: any) => typeof it?.name === "string" && it.name.toLowerCase().startsWith((safe + ".").toLowerCase()));
+                if (found) await supabase.storage.from("CharacterImages").remove([`avatars/${found.name}`]);
+            }
+            setAvatarUrl("");
+        } catch (err) {
+            console.warn("No se pudo eliminar el avatar del bucket:", err);
+            alert("Hubo un error al eliminar el avatar.");
+        }
+    };
+
+    const spells = content.spells || emptySpells();
+    const setSpells = (s: typeof spells) => patch({ spells: s });
+
+    const weapons = content.weapons || [
+        { name: "", atkBonus: "", damage: "" },
+        { name: "", atkBonus: "", damage: "" },
+        { name: "", atkBonus: "", damage: "" },
+    ];
+
+    if (isLoading) return <Loading />;
+
+    const af = (fieldId: string, value: string, onChange: (v: string) => void, opts: { multiline?: boolean; rows?: number; placeholder?: string; className?: string } = {}) => (
+        <AnnotatedField
+            fieldId={fieldId}
+            value={value}
+            onValueChange={onChange}
+            annotations={annotationsFor(fieldId)}
+            onAnnotationsChange={(list) => setAnnotationsFor(fieldId, list)}
+            multiline={opts.multiline}
+            rows={opts.rows}
+            placeholder={opts.placeholder}
+            className={opts.className}
+        />
+    );
+
+    return (
+        <div className="characterSheetForm__container">
+            <div className="characterSheetForm">
+                <div className="characterSheetForm__topbar">
+                    <button onClick={() => navigate(-1)}>
+                        <FontAwesomeIcon icon={faArrowLeft} /> Volver
+                    </button>
+
+                    <div className="characterSheetForm__info">
+                        <label>Nombre de la ficha:</label>
+                        {isNew && <span> (No podrás cambiarlo luego!)</span>}
+                        <input value={sheetName} onChange={(e) => setSheetName(e.target.value)} disabled={!isNew} />
+                    </div>
+
+                    <div className="characterSheetForm__info">
+                        <button onClick={handleSave} disabled={saving} className="characterSheetForm__button--green characterSheetForm__button">
+                            {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
+                            <FontAwesomeIcon icon={faSave} />
+                        </button>
+                        {lastSaved && <span className="characterSheetForm__lastSaved">Última vez: {new Date(lastSaved).toLocaleString("es-ES")}</span>}
+                    </div>
+
+                    <div className="characterSheetForm__info">
+                        <button onClick={triggerAvatarPicker}>Subir Ilustración</button>
+                        {avatarUrl && (
+                            <button onClick={clearAvatar} title="Quitar avatar">
+                                Eliminar Ilustración
+                            </button>
+                        )}
+                        <input type="file" accept="image/*" ref={fileInputRef} style={{ display: "none" }} onChange={handleAvatarPicked} />
+                    </div>
+
+                    {!isNew && (
+                        <button
+                            className="characterSheetForm__button characterSheetForm__button--red"
+                            onClick={async () => {
+                                if (window.confirm("¿Estás seguro de que quieres borrar esta ficha? Esta acción es irreversible.")) {
+                                    await deleteSheet(routeId);
+                                    navigate("/profile");
+                                }
+                            }}
+                        >
+                            <FontAwesomeIcon icon={faTrash} /> Borrar ficha
+                        </button>
+                    )}
+                </div>
+
+                <div className="characterSheetForm__tabs">
+                    <button className={tab === "stats" ? "active" : ""} onClick={() => setTab("stats")}>
+                        Estadísticas
+                    </button>
+                    <button className={tab === "personality" ? "active" : ""} onClick={() => setTab("personality")}>
+                        Personalidad e Historia
+                    </button>
+                    <button className={tab === "spells" ? "active" : ""} onClick={() => setTab("spells")}>
+                        Hechizos
+                    </button>
+                </div>
+
+                <div className="characterSheetForm__sheet">
+                    {avatarUrl && (
+                        <div className="characterSheetForm__avatar">
+                            <img src={avatarUrl} alt="Retrato del personaje" />
+                        </div>
+                    )}
+
+                    {tab === "stats" && (
+                        <div className="sheetPage">
+                            <div className="sheetHeader">
+                                <div className="sheetHeader__name">{af("CharacterName", content.CharacterName || "", setField("CharacterName"), { multiline: false, placeholder: "Nombre del personaje" })}</div>
+                                <div className="sheetHeader__row">
+                                    <div className="field">
+                                        <label>Clase y nivel</label>
+                                        {af("ClassLevel", content.ClassLevel || "", setField("ClassLevel"), { multiline: false })}
+                                    </div>
+                                    <div className="field">
+                                        <label>Trasfondo</label>
+                                        {af("Background", content.Background || "", setField("Background"), { multiline: false })}
+                                    </div>
+                                    <div className="field">
+                                        <label>Nombre del jugador</label>
+                                        {af("PlayerName", content.PlayerName || "", setField("PlayerName"), { multiline: false })}
+                                    </div>
+                                </div>
+                                <div className="sheetHeader__row">
+                                    <div className="field">
+                                        <label>Raza</label>
+                                        {af("Race", content.Race || "", setField("Race"), { multiline: false })}
+                                    </div>
+                                    <div className="field">
+                                        <label>Alineamiento</label>
+                                        {af("Alignment", content.Alignment || "", setField("Alignment"), { multiline: false })}
+                                    </div>
+                                    <div className="field">
+                                        <label>Experiencia</label>
+                                        {af("XP", content.XP || "", setField("XP"), { multiline: false })}
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="sheetPage__grid">
+                                <div className="sheetPage__col sheetPage__col--abilities">
+                                    <div className="card card--compact">
+                                        <label className="card__title">
+                                            Bono competencia
+                                        </label>
+                                        <input className="annotatedField__editable" min="0" value={content.ProfBonus || ""} onChange={(e) => setField("ProfBonus")(e.target.value)} />
+
+                                    </div>
+                                    <label id="inspiration" className="card card--compact card--checkbox card__title">
+                                        Inspiración
+                                        <input type="checkbox" checked={!!content.Inspiration} onChange={(e) => patch({ Inspiration: e.target.checked })} />
+                                    </label>
+                                    {ABILITIES.map((a) => (
+                                        <AbilityBox
+                                            key={a.key}
+                                            label={a.label}
+                                            score={content[`${a.key}score`] || ""}
+                                            savePROF={!!content[`${a.key}savePROF`]}
+                                            profBonus={profBonus}
+                                            onScoreChange={(v) => patch({ [`${a.key}score`]: v } as any)}
+                                            onSaveProfChange={(v) => patch({ [`${a.key}savePROF`]: v } as any)}
+                                        />
+                                    ))}
+                                </div>
+
+                                <div className="sheetPage__col sheetPage__col--skills">
+                                    <div className="card combatStats">
+                                        <label>
+                                            <div className="combatStats">
+                                                <FontAwesomeIcon icon={faShield} />
+                                                CA
+                                            </div>
+                                            <input value={content.AC || ""} onChange={(e) => setField("AC")(e.target.value)} />
+                                        </label>
+                                        <label>
+                                            <div className="combatStats">
+                                                <FontAwesomeIcon icon={faHandFist} />
+                                                Iniciativa
+
+                                            </div>
+                                            <input value={content.Initiative || fmtMod(abilityMod(content.DEXscore))} onChange={(e) => setField("Initiative")(e.target.value)} />
+                                        </label>
+                                        <label>
+                                            <div className="combatStats">
+                                                <FontAwesomeIcon icon={faRunning} />
+                                                Velocidad
+                                            </div>
+                                            <input value={content.Speed || ""} onChange={(e) => setField("Speed")(e.target.value)} />
+                                        </label>
+                                    </div>
+                                    <div className="card combatStats">
+                                        <label>
+                                            <div className="combatStats">
+                                                <FontAwesomeIcon icon={faHeart} />
+                                                PG máx.
+                                            </div>
+                                            <input value={content.HPMax || ""} onChange={(e) => setField("HPMax")(e.target.value)} />
+                                        </label>
+                                        <label>
+                                            <div className="combatStats">
+                                                <FontAwesomeIcon icon={faHeartRegular} />
+                                                PG actuales
+                                            </div>
+                                            <input value={content.HPCurrent || ""} onChange={(e) => setField("HPCurrent")(e.target.value)} />
+                                        </label>
+                                        <label>
+                                            <div className="combatStats">
+                                                <FontAwesomeIcon icon={faHeartPulse} />
+                                                PG temp.
+                                            </div>
+                                            <input value={content.HPTemp || ""} onChange={(e) => setField("HPTemp")(e.target.value)} />
+                                        </label>
+                                    </div>
+                                    <div className="card combatStats">
+                                        <label className="card--flex">
+                                            <div className="combatStats">
+                                                <FontAwesomeIcon icon={faDice} />
+                                                Dados golpe
+                                            </div>
+                                            <input value={content.HD || ""} onChange={(e) => setField("HD")(e.target.value)} />
+                                            <label>
+                                                <div className="combatStats">
+                                                    <FontAwesomeIcon icon={faDice} />
+                                                    Total dados golpe
+                                                </div>
+                                                <input value={content.HDTotal || ""} type="number" onChange={(e) => setField("HDTotal")(e.target.value)} />
+                                            </label>
+                                        </label>
+
+                                        <div className="deathSaves">
+                                            <label className="card__title">Salvaciones de muerte</label>
+                                            <div className="deathSaves__row">
+                                                Éxitos:
+                                                <div>
+                                                    {content.deathSaves?.successes !== 0 && <span className="deathSaves__cancel" onClick={() => {
+                                                        patch({ deathSaves: { ...(content.deathSaves || { successes: 0, failures: 0 }), successes: 0 } })
+                                                    }}>
+                                                        <FontAwesomeIcon icon={faX} />
+                                                    </span>}
+                                                    {[0, 1, 2].map((i) => (
+                                                        <input
+                                                            key={i}
+                                                            type="checkbox"
+                                                            checked={(content.deathSaves?.successes || 0) > i}
+                                                            className="deathSave__success"
+                                                            onChange={() =>
+                                                                patch({
+                                                                    deathSaves: { ...(content.deathSaves || { successes: 0, failures: 0 }), successes: i + 1 === (content.deathSaves?.successes || 0) ? i : i + 1 },
+                                                                })
+                                                            }
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <div className="deathSaves__row">
+                                                Fallos:
+                                                <div>
+                                                    {content.deathSaves?.failures !== 0 && <span className="deathSaves__cancel" onClick={() => {
+                                                        patch({
+                                                            deathSaves: { ...(content.deathSaves?.failures !== undefined ? content.deathSaves : { successes: 0, failures: 0 }), failures: 0 },
+                                                        })
+                                                    }}><FontAwesomeIcon icon={faX} /> </span>}
+
+                                                    {[0, 1, 2].map((i) => (
+                                                        <input
+                                                            key={i}
+                                                            type="checkbox"
+                                                            checked={(content.deathSaves?.failures || 0) > i}
+                                                            className="deathSave__failure"
+                                                            onChange={() =>
+                                                                patch({
+                                                                    deathSaves: { ...(content.deathSaves || { successes: 0, failures: 0 }), failures: i + 1 === (content.deathSaves?.failures || 0) ? i : i + 1 },
+                                                                })
+                                                            }
+                                                        />
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div className="card--flex">
+                                        <div className="card skillsList">
+                                            <div className="skillsList__passive">Sabiduría pasiva (Percepción): {passivePerception}</div>
+
+                                            {ABILITIES.map((a) => {
+                                                const abilitySkills = SKILLS.filter((s) => s.ability === a.key);
+                                                if (abilitySkills.length === 0) return null;
+
+                                                return (
+                                                    <div className="skillsList__group" key={a.key}>
+                                                        <div className="skillsList__groupHeader">{a.label}</div>
+                                                        {abilitySkills.map((s) => (
+                                                            <SkillRow
+                                                                key={s.key}
+                                                                def={s}
+                                                                score={content[`${s.ability}score`] || ""}
+                                                                proficient={!!content[s.profKey]}
+                                                                profBonus={profBonus}
+                                                                onProfChange={(v) => patch({ [s.profKey]: v } as any)}
+                                                            />
+                                                        ))}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                    </div>
+                                    <div className="card">
+                                        <label className="card__title">Otras competencias e idiomas</label>
+                                        {af("ProficienciesLang", content.ProficienciesLang || "", setField("ProficienciesLang"), { rows: 5 })}
+                                    </div>
+                                </div>
+
+                                <div className="sheetPage__col sheetPage__col--details">
+                                    <div className="card">
+                                        <label className="card__title">
+                                            <FontAwesomeIcon icon={faFistRaised} />
+                                            Ataques y conjuros
+                                            <FontAwesomeIcon icon={faWandMagicSparkles} />
+                                        </label>
+                                        {weapons.map((w, idx) => (
+                                            <WeaponRow
+                                                key={idx}
+                                                idx={idx}
+                                                weapon={w}
+                                                onChange={(nw) => {
+                                                    const next = [...weapons];
+                                                    next[idx] = nw;
+                                                    patch({ weapons: next });
+                                                }}
+                                                annotationsFor={annotationsFor}
+                                                setAnnotationsFor={setAnnotationsFor}
+                                            />
+                                        ))}
+                                    </div>
+
+
+
+                                    <div className="card">
+                                        <label className="card__title">Equipo</label>
+                                        {af("Equipment", content.Equipment || "", setField("Equipment"), { rows: 6 })}
+                                    </div>
+
+                                    <div className="card">
+                                        <label className="card__title">Rasgos y dotes</label>
+                                        {af("FeaturesAndTraits", content["Features and Traits"] || "", setField("Features and Traits"), { rows: 10 })}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {tab === "personality" && (
+                        <div className="sheetPage sheetPage--personality">
+                            <div className="sheetHeader__row">
+                                {(["Age", "Height", "Weight", "Eyes", "Skin", "Hair"] as const).map((k) => (
+                                    <div className="field" key={k}>
+                                        <label>{{ Age: "Edad", Height: "Altura", Weight: "Peso", Eyes: "Ojos", Skin: "Piel", Hair: "Pelo" }[k]}</label>
+                                        {af(k, content[k] || "", setField(k), { multiline: false })}
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="sheetPage__grid sheetPage__grid--personality">
+                                <div className="card">
+                                    <label className="card__title">Rasgos de personalidad</label>
+                                    {af("PersonalityTraits", content.PersonalityTraits || "", setField("PersonalityTraits"), { rows: 4 })}
+                                </div>
+                                <div className="card">
+                                    <label className="card__title">Ideales</label>
+                                    {af("Ideals", content.Ideals || "", setField("Ideals"), { rows: 4 })}
+                                </div>
+                                <div className="card">
+                                    <label className="card__title">Vínculos</label>
+                                    {af("Bonds", content.Bonds || "", setField("Bonds"), { rows: 4 })}
+                                </div>
+                                <div className="card">
+                                    <label className="card__title">Defectos</label>
+                                    {af("Flaws", content.Flaws || "", setField("Flaws"), { rows: 4 })}
+                                </div>
+
+                                <div className="card span2">
+                                    <label className="card__title">Apariencia del personaje</label>
+                                    {af("CharacterAppearance", content.CharacterAppearance || "", setField("CharacterAppearance"), { rows: 6 })}
+                                </div>
+
+                                <div className="card span2">
+                                    <label className="card__title">Aliados y organizaciones</label>
+                                    <div className="field">
+                                        <label>Nombre de la organización</label>
+                                        {af("OrgName", content["Name group"] || "", setField("Name group"), { multiline: false })}
+                                    </div>
+                                    {af("Allies", content.Allies || "", setField("Allies"), { rows: 6 })}
+                                </div>
+
+                                <div className="card span2">
+                                    <label className="card__title">Rasgos y dotes adicionales</label>
+                                    {af("AdditionalFeaturesTraits", content.AdditionalFeaturesTraits || "", setField("AdditionalFeaturesTraits"), { rows: 6 })}
+                                </div>
+
+                                <div className="card span2">
+                                    <label className="card__title">Historia del personaje (ficha)</label>
+                                    {af("CharacterBackstory", content.CharacterBackstory || "", setField("CharacterBackstory"), { rows: 8 })}
+                                </div>
+
+                                <div className="card span2">
+                                    <label className="card__title">Tesoro</label>
+                                    {af("Treasure", content.Treasure || "", setField("Treasure"), { rows: 6 })}
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {tab === "spells" && (
+                        <div className="sheetPage sheetPage--spells">
+                            <div className="sheetHeader__row">
+                                <div className="field">
+                                    <label>Clase de lanzador</label>
+                                    {af("SpellcastingClass", spells.spellcastingClass, (v) => setSpells({ ...spells, spellcastingClass: v }), { multiline: false })}
+                                </div>
+                                <div className="field">
+                                    <label>Característica</label>
+                                    {af("SpellcastingAbility", spells.spellcastingAbility, (v) => setSpells({ ...spells, spellcastingAbility: v }), { multiline: false })}
+                                </div>
+                                <div className="field">
+                                    <label>CD de salvación</label>
+                                    {af("SpellSaveDC", spells.saveDC, (v) => setSpells({ ...spells, saveDC: v }), { multiline: false })}
+                                </div>
+                                <div className="field">
+                                    <label>Bono de ataque</label>
+                                    {af("SpellAtkBonus", spells.atkBonus, (v) => setSpells({ ...spells, atkBonus: v }), { multiline: false })}
+                                </div>
+                            </div>
+
+                            <div className="spellsGrid">
+                                <div className="card spellLevelBlock spellLevelBlock--cantrips">
+                                    <div className="spellLevelBlock__header">
+                                        <span className="spellLevelBlock__num">0</span>
+                                        <span>Trucos</span>
+                                    </div>
+                                    <div className="spellLevelBlock__entries">
+                                        {spells.cantrips.map((entry) => (
+                                            <SpellEntryRow
+                                                key={entry.id}
+                                                entry={entry}
+                                                onChange={(patch2) => setSpells({ ...spells, cantrips: spells.cantrips.map((c) => (c.id === entry.id ? { ...c, ...patch2 } : c)) })}
+                                                onRemove={() => setSpells({ ...spells, cantrips: spells.cantrips.filter((c) => c.id !== entry.id) })}
+                                                annotationsFor={annotationsFor}
+                                                setAnnotationsFor={setAnnotationsFor}
+                                            />
+                                        ))}
+                                        <button type="button" className="spellLevelBlock__add" onClick={() => setSpells({ ...spells, cantrips: [...spells.cantrips, { id: newId("cantrip"), name: "", prepared: false }] })}>
+                                            + Añadir truco
+                                        </button>
+                                    </div>
+                                </div>
+
+                                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((lvl) => (
+                                    <div className="card" key={lvl}>
+                                        <SpellLevelBlock
+                                            level={lvl}
+                                            data={spells.levels[lvl]}
+                                            onChange={(d) => setSpells({ ...spells, levels: { ...spells.levels, [lvl]: d } })}
+                                            annotationsFor={annotationsFor}
+                                            setAnnotationsFor={setAnnotationsFor}
+                                        />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+
+
+            </div>
+            <div className="characterSheetForm__inventoryContainer">
+                <SectionDisplay
+                    title="Inventario"
+                    content={inventory}
+                    onContentChange={setInventory}
+                    items={magicItems}
+                    onItemsChange={setMagicItems}
+                    itemsCategory="objeto"
+                    itemsLabel="Objetos Mágicos"
+                    onBeautify={beautifyInventoryMarkdown}
+                    enableBeautify={true}
+                    createItemLink="/article"
+                />
+                <SectionDisplay title="Historia del Personaje" content={story} onContentChange={setStory} createItemLink="/article" />
+            </div>
+        </div>
+    );
+}
