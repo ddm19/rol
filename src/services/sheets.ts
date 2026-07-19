@@ -89,19 +89,37 @@ export async function beautifyInventoryMarkdown(raw: string) {
     throw new Error("OpenRouter API key vacía en el cliente (revisa env + rebuild con cache limpia en Vercel).");
   }
   const model = "poolside/laguna-m.1:free";
-  const userPrompt = `Convierte este inventario de D&D a Markdown perfectamente estructurado:
-- Encabezados (pequeños) para secciones basadas en categorías o tipos de objetos
-- Listas con viñetas para ítems
-- Tablas Markdown si hay cantidades o propiedades
+  const userPrompt = `Convierte este inventario de D&D a Markdown perfectamente estructurado y compacto.
+
+REGLAS ESTRICTAS DE FORMATO:
+- Usa encabezados ### para cada categoría de objetos.
+- Para cada objeto usa una lista con viñetas, NUNCA una tabla de 2 columnas.
+- Formato de cada línea: "- **Nombre** — detalle/cantidad" (usa " — " solo si hay un dato real que aportar).
+- Si el objeto no tiene cantidad ni detalle relevante (el detalle original es "-", vacío, o irrelevante), escribe solo "- **Nombre**", sin guion ni "-" sobrante.
+- Usa tabla Markdown ÚNICAMENTE si un mismo objeto tiene 2 o más atributos distintos con datos reales (ej: cantidad Y peso Y valor). Para un solo atributo, usa siempre lista.
+- No repitas información entre el nombre y el detalle.
 - Sin explicación ni texto extra. Devuelve únicamente el Markdown final.
 - Debe contener todos los ítems del inventario original, sin omitir ni añadir nada.
+
+Ejemplo de formato esperado:
+### Armas
+- **Daga**
+- **Trombón** (x2)
+
+### Proyectiles
+- **Dardos** — 4
+- **Virotes** — 10
+
+### Insignias
+- **Insignia arco Oro** — Jade
+- **Insignia arco Cobre** — Jade
 
 Texto:
 ${raw}`;
   const r = await OR.post("/chat/completions", {
     model,
     messages: [
-      { role: "system", content: "Eres un formateador que devuelve exclusivamente Markdown válido para fichas de D&D." },
+      { role: "system", content: "Eres un formateador que devuelve exclusivamente Markdown válido para fichas de D&D, priorizando listas compactas sobre tablas." },
       { role: "user", content: userPrompt }
     ],
     reasoning: 
@@ -109,7 +127,7 @@ ${raw}`;
       "effort": "none",
     },
     temperature: 0.2,
-    max_tokens: 4000
+    max_tokens: 10000
   });
   const out = r.data?.choices?.[0]?.message?.content ?? "";
   return extractMarkdown(stripThinkSafe(out));

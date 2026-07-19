@@ -89,7 +89,7 @@
             border-radius: var(--radius-2);
             padding: var(--spacing-1-5) var(--spacing-3);
             cursor: pointer;
-            background: var(--dndGold);
+            background: var(--colors-orange);
             color: var(--dndInk);
             font-weight: var(--font-weight-4);
             display: inline-flex;
@@ -138,8 +138,9 @@
 
     &__lastSaved
     {
-        font-size: var(--font-size-1);
+        font-size: var(--font-size-2);
         opacity: var(--opacity-muted);
+        color: var(--dndInkSoft);
     }
 
     &__tabs

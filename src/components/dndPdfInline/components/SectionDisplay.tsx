@@ -28,12 +28,14 @@ interface SectionDisplayProps {
     createItemLink?: string;
 }
 
+const EMPTY_ITEMS: SectionItem[] = [];
+
 const SectionDisplay = (props: SectionDisplayProps) => {
     const {
         title,
         content,
         onContentChange,
-        items = [],
+        items = EMPTY_ITEMS,
         onItemsChange,
         itemsCategory,
         itemsLabel = "Items",
@@ -44,7 +46,7 @@ const SectionDisplay = (props: SectionDisplayProps) => {
 
     const [contentValue, setContentValue] = useState(content);
     const [availableItems, setAvailableItems] = useState<SectionItem[]>([]);
-    const [itemsOnSection, setItemsOnSection] = useState<SectionItem[]>(items || []);
+    const [itemsOnSection, setItemsOnSection] = useState<SectionItem[]>(items);
     const [selectedValue, setSelectedValue] = useState<SectionItem>();
     const [isContentBeautifying, setIsContentBeautifying] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -58,7 +60,7 @@ const SectionDisplay = (props: SectionDisplayProps) => {
                 );
 
                 setAvailableItems(filteredItems);
-                setSelectedValue(filteredItems[0] || null);
+                setSelectedValue(filteredItems[0]);
             });
         }
     }, [itemsCategory]);
@@ -68,7 +70,7 @@ const SectionDisplay = (props: SectionDisplayProps) => {
     }, [content]);
 
     useEffect(() => {
-        setItemsOnSection(items || []);
+        setItemsOnSection(items);
     }, [items]);
 
     const onChange = (val: string) => {
@@ -130,7 +132,7 @@ const SectionDisplay = (props: SectionDisplayProps) => {
             {isContentBeautifying ? <Loading text="Una cuadrilla de gnomos está organizando tu inventario, esto puede tardar hasta 30 segundos" /> :
                 <>
                     <div className="sectionDisplay__header">
-                        <button 
+                        <button
                             className="sectionDisplay__collapseButton"
                             onClick={() => setIsCollapsed(!isCollapsed)}
                         >
@@ -138,7 +140,7 @@ const SectionDisplay = (props: SectionDisplayProps) => {
                         </button>
                         <h2>{title}</h2>
                     </div>
-                    
+
                     {!isCollapsed && (
                         <>
                             {enableBeautify && onBeautify && (
@@ -156,9 +158,9 @@ const SectionDisplay = (props: SectionDisplayProps) => {
                                     <div className="sectionDisplay__selector">
                                         <img src={selectedValue?.content.image} className="sectionDisplay__image" alt={selectedValue?.content.title} />
                                         <select
-                                            value={selectedValue?.content.title}
+                                            value={selectedValue?.content.title || ""}
                                             onChange={(e) => {
-                                                const item = availableItems.find((item) => item.content.title === e.target.value) || null;
+                                                const item = availableItems.find((item) => item.content.title === e.target.value);
                                                 setSelectedValue(item || availableItems[0]);
                                             }}
                                         >
@@ -181,7 +183,6 @@ const SectionDisplay = (props: SectionDisplayProps) => {
                                         {itemsOnSection.map((item) =>
                                             <div className="sectionDisplay__item" key={item.id}>
                                                 <ArticleDisplay
-                                                    key={item.id}
                                                     image={item.content.image || ""}
                                                     title={item.content.title}
                                                     description={item.content.shortDescription}

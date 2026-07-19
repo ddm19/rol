@@ -3,7 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { getSheet, createSheetWithId, upsertSheet, deleteSheet, beautifyInventoryMarkdown } from "services/sheets";
 import { supabase } from "services/supabaseClient";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faDice, faFistRaised, faHandFist, faHeart, faHeartPulse, faMagic, faRunning, faSave, faShield, faTrash, faWandMagic, faWandMagicSparkles, faX } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faDice, faEraser, faFistRaised, faHandFist, faHeart, faHeartPulse, faMagic, faRunning, faSave, faShield, faTrash, faUpload, faWandMagic, faWandMagicSparkles, faX } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import SectionDisplay, { SectionItem } from "components/dndPdfInline/components/SectionDisplay";
 import Loading from "components/Loading/Loading";
@@ -233,16 +233,21 @@ export default function CharacterSheetForm() {
 
                     <div className="characterSheetForm__info">
                         <button onClick={handleSave} disabled={saving} className="characterSheetForm__button--green characterSheetForm__button">
-                            {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
                             <FontAwesomeIcon icon={faSave} />
+                            {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
                         </button>
-                        {lastSaved && <span className="characterSheetForm__lastSaved">Última vez: {new Date(lastSaved).toLocaleString("es-ES")}</span>}
+                        {lastSaved && <span className="characterSheetForm__lastSaved">
+                            Última vez: {new Date(lastSaved).toLocaleString("es-ES")}</span>}
                     </div>
 
                     <div className="characterSheetForm__info">
-                        <button onClick={triggerAvatarPicker}>Subir Ilustración</button>
+                        <button onClick={triggerAvatarPicker}>
+                            <FontAwesomeIcon icon={faUpload} />
+                            Subir Ilustración</button>
                         {avatarUrl && (
                             <button onClick={clearAvatar} title="Quitar avatar">
+                                <FontAwesomeIcon icon={faEraser} />
+
                                 Eliminar Ilustración
                             </button>
                         )}

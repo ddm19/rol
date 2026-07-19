@@ -35,16 +35,34 @@
         border: none;
         cursor: pointer;
         padding: var(--spacing-2);
-        color: var(--colors-text);
+        color: var(--colors-darkOrange);
         font-size: var(--font-size-5);
         display: flex;
         align-items: center;
         justify-content: center;
 
-        &:hover
+
+        &:hover:not(:disabled)
         {
-            opacity: 0.7;
+            animation: bounce 0.8s ease-in-out infinite;
+            background: none;
         }
+
+        @keyframes bounce
+        {
+
+            0%,
+            100%
+            {
+                transform: scale(1.1) translateY(3px);
+            }
+
+            50%
+            {
+                transform: scale(1.1) translateY(-3px);
+            }
+        }
+
     }
 
     .markdownEditor
@@ -148,6 +166,79 @@
         &:hover
         {
             opacity: 0.8;
+        }
+    }
+
+    select
+    {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="%23333"><path d="M7 10l5 5 5-5z"/></svg>');
+        background-repeat: no-repeat;
+        background-position: right 10px center;
+        background-size: 20px;
+        padding-right: 40px;
+        background-color: var(--background-color);
+        color: var(--colors-font);
+
+        option
+        {
+            background-color: var(--background-color);
+            color: var(--colors-font);
+        }
+
+
+    }
+
+    .markdownEditor
+    {
+        width: 90%;
+
+        table
+        {
+            width: 100%;
+            border-collapse: collapse;
+            margin: var(--spacing-3) 0;
+            font-size: var(--font-size-3);
+        }
+
+        th,
+        td
+        {
+            text-align: left;
+            padding: var(--spacing-2) var(--spacing-3);
+            border-bottom: 1px solid var(--colors-border);
+        }
+
+        th
+        {
+            color: var(--colors-darkRed);
+            font-weight: bold;
+        }
+
+        tr:last-child td
+        {
+            border-bottom: none;
+        }
+
+        h3
+        {
+            color: var(--colors-darkRed);
+            margin: var(--spacing-4) 0 var(--spacing-2);
+            border-bottom: 1px solid var(--colors-border);
+            padding-bottom: var(--spacing-1);
+        }
+
+        ul
+        {
+            margin: 0 0 var(--spacing-2);
+            padding-left: var(--spacing-4);
+        }
+
+        li
+        {
+            padding: 2px 0;
         }
     }
 }
