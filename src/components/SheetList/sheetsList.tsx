@@ -18,19 +18,39 @@ type SheetRow = {
 type Slide = { kind: "new" } | { kind: "sheet"; data: SheetRow };
 
 // ---------- config del carousel ----------
-const isMobile = window.innerWidth < 768;
-const DEFAULT_VISIBLE_COUNT = isMobile ? 1 : 2;
-const RENDER_BUFFER = isMobile ? 1 : 2;
+const MOBILE_QUERY = "(max-width: 768px)";
+const DEFAULT_VISIBLE_COUNT = 2;
+const MOBILE_VISIBLE_COUNT = 1;
+const DEFAULT_RENDER_BUFFER = 2;
+const MOBILE_RENDER_BUFFER = 1;
+const SWIPE_THRESHOLD_PX = 45;
+const EDGE_RESISTANCE = 0.35;
 
+function useIsMobile() {
+    const [isMobile, setIsMobile] = useState(() => window.matchMedia(MOBILE_QUERY).matches);
+    useEffect(() => {
+        const mql = window.matchMedia(MOBILE_QUERY);
+        const onChange = () => setIsMobile(mql.matches);
+        mql.addEventListener("change", onChange);
+        return () => mql.removeEventListener("change", onChange);
+    }, []);
+    return isMobile;
+}
 
 interface SheetsListProps {
     visibleCount?: number;
 }
 
-const SheetsList: React.FC<SheetsListProps> = ({ visibleCount = DEFAULT_VISIBLE_COUNT }) => {
+const SheetsList: React.FC<SheetsListProps> = ({ visibleCount }) => {
+    const isMobile = useIsMobile();
+    const effectiveVisibleCount = visibleCount ?? (isMobile ? MOBILE_VISIBLE_COUNT : DEFAULT_VISIBLE_COUNT);
+    const renderBuffer = isMobile ? MOBILE_RENDER_BUFFER : DEFAULT_RENDER_BUFFER;
+
     const [items, setItems] = useState<SheetRow[]>([]);
     const [loading, setLoading] = useState(true);
     const [activeIndex, setActiveIndex] = useState(0);
+    const [dragPx, setDragPx] = useState(0);
+    const [isDragging, setIsDragging] = useState(false);
     const touchStartX = useRef<number | null>(null);
     const navigate = useNavigate();
 
@@ -52,14 +72,13 @@ const SheetsList: React.FC<SheetsListProps> = ({ visibleCount = DEFAULT_VISIBLE_
     }, []);
 
     const slides: Slide[] = [{ kind: "new" }, ...items.map((data) => ({ kind: "sheet" as const, data }))];
-    const maxIndex = Math.max(0, slides.length - visibleCount);
+    const maxIndex = Math.max(0, slides.length - effectiveVisibleCount);
 
     useEffect(() => {
         setActiveIndex((i) => Math.min(i, maxIndex));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [maxIndex]);
 
-    const isFocused = (i: number) => i >= activeIndex && i < activeIndex + visibleCount;
+    const isFocused = (i: number) => i >= activeIndex && i < activeIndex + effectiveVisibleCount;
     const goTo = (i: number) => setActiveIndex(Math.min(Math.max(i, 0), maxIndex));
 
     const activate = (i: number, onNavigate: () => void) => {
@@ -70,13 +89,24 @@ const SheetsList: React.FC<SheetsListProps> = ({ visibleCount = DEFAULT_VISIBLE_
         onNavigate();
     };
 
+    // swipe con seguimiento en vivo del dedo + rubber-band en los extremos
     const onTouchStart = (e: React.TouchEvent) => {
         touchStartX.current = e.touches[0].clientX;
+        setIsDragging(true);
+        setDragPx(0);
     };
-    const onTouchEnd = (e: React.TouchEvent) => {
+    const onTouchMove = (e: React.TouchEvent) => {
         if (touchStartX.current === null) return;
-        const dx = e.changedTouches[0].clientX - touchStartX.current;
-        if (Math.abs(dx) > 40) goTo(activeIndex + (dx < 0 ? 1 : -1));
+        const dx = e.touches[0].clientX - touchStartX.current;
+        const atStart = activeIndex <= 0 && dx > 0;
+        const atEnd = activeIndex >= maxIndex && dx < 0;
+        setDragPx(atStart || atEnd ? dx * EDGE_RESISTANCE : dx);
+    };
+    const onTouchEnd = () => {
+        if (dragPx <= -SWIPE_THRESHOLD_PX) goTo(activeIndex + 1);
+        else if (dragPx >= SWIPE_THRESHOLD_PX) goTo(activeIndex - 1);
+        setIsDragging(false);
+        setDragPx(0);
         touchStartX.current = null;
     };
 
@@ -92,12 +122,18 @@ const SheetsList: React.FC<SheetsListProps> = ({ visibleCount = DEFAULT_VISIBLE_
                         <FontAwesomeIcon icon={faChevronLeft} />
                     </button>
 
-                    <div className="sheetsList__viewport" style={{ "--visible-count": visibleCount } as CSSProperties} onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-                        <ul className="sheetsList__track" style={{ "--active-index": activeIndex } as CSSProperties}>
+                    <div className="sheetsList__viewport" style={{ "--visible-count": effectiveVisibleCount } as CSSProperties}>
+                        <ul
+                            className={`sheetsList__track ${isDragging ? "sheetsList__track--dragging" : ""}`}
+                            style={{ "--active-index": activeIndex, "--drag-px": `${dragPx}px` } as CSSProperties}
+                            onTouchStart={onTouchStart}
+                            onTouchMove={onTouchMove}
+                            onTouchEnd={onTouchEnd}
+                        >
                             {slides.map((slide, i) => {
                                 const focused = isFocused(i);
 
-                                if (Math.abs(i - activeIndex) > RENDER_BUFFER) {
+                                if (Math.abs(i - activeIndex) > renderBuffer) {
                                     return <li key={`ghost-${i}`} className="sheetsList__card sheetsList__card--ghost" />;
                                 }
 

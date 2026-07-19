@@ -5,7 +5,7 @@
     margin: 0 auto;
     height: max-content;
 
-    @media (max-width: 700px)
+    @media (max-width: 768px)
     {
         width: 80%;
     }
@@ -70,11 +70,7 @@
         flex: 1 1 0%;
         min-width: 0;
         max-width: calc((var(--visible-count) + 1) * var(--card-w) + var(--visible-count) * var(--spacing-4));
-
-        @media (max-width: 700px)
-        {
-            --card-w: var(--image-size-2);
-        }
+        touch-action: pan-y;
     }
 
     &__track
@@ -85,7 +81,27 @@
         display: flex;
         gap: var(--spacing-4);
         transition: transform var(--motion-duration-slow) var(--motion-ease-card);
-        transform: translateX(calc((var(--card-w) + var(--spacing-4)) / 2 - var(--active-index) * (var(--card-w) + var(--spacing-4))));
+        transform: translateX(calc((var(--card-w) + var(--spacing-4)) / 2 - var(--active-index) * (var(--card-w) + var(--spacing-4)) + var(--drag-px, 0px)));
+
+        &--dragging
+        {
+            transition: none;
+        }
+    }
+
+    @media (max-width: 700px)
+    {
+        &__viewport
+        {
+            --card-w: min(52vw, 15rem);
+            max-width: calc(var(--card-w) + 5rem);
+
+        }
+
+        &__track
+        {
+            transform: translateX(calc(-1 * var(--active-index) * (var(--card-w) + var(--spacing-4)) + var(--drag-px, 0px)));
+        }
     }
 
     &__card
@@ -103,6 +119,8 @@
         opacity: var(--opacity-hidden);
         animation: sheetCardIn var(--motion-duration-slow) var(--motion-ease-emphasis) both;
         transition: transform var(--motion-duration-base) var(--motion-ease-standard), box-shadow var(--motion-duration-base) var(--motion-ease-standard), border-color var(--motion-duration-base) var(--motion-ease-standard), opacity var(--motion-duration-base) var(--motion-ease-standard), filter var(--motion-duration-base) var(--motion-ease-standard);
+
+
 
         &:hover
         {
@@ -135,7 +153,6 @@
             }
         }
 
-        // tarjetas insinuadas a medias en los bordes: atenuadas, un clic las trae al centro
         &--peek
         {
             opacity: var(--opacity-visible);

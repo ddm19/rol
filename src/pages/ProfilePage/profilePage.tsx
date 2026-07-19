@@ -118,7 +118,7 @@ const ProfilePage: React.FC = () => {
                     onSave={handleSaveAvatar}
                 />
             )}
-            <SheetsList visibleCount={2} />
+            <SheetsList />
         </div>
     );
 };
