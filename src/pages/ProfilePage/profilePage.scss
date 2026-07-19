@@ -7,6 +7,14 @@
     min-height: 80vh;
     width: fit-content;
 
+    @media (max-width: 768px)
+    {
+        flex-direction: column;
+    }
+
+
+
+
     &__closeBtn.MuiButtonBase-root
     {
         position: absolute;
