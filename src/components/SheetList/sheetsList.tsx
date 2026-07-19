@@ -18,8 +18,10 @@ type SheetRow = {
 type Slide = { kind: "new" } | { kind: "sheet"; data: SheetRow };
 
 // ---------- config del carousel ----------
-const DEFAULT_VISIBLE_COUNT = 2;
-const RENDER_BUFFER = 2;
+const isMobile = window.innerWidth < 768;
+const DEFAULT_VISIBLE_COUNT = isMobile ? 1 : 2;
+const RENDER_BUFFER = isMobile ? 1 : 2;
+
 
 interface SheetsListProps {
     visibleCount?: number;
