@@ -1,13 +1,5 @@
 // characterSheet/types.ts
-//
-// El "content" que se guarda en `sheets.content` (jsonb) nace del PDF fillable
-// antiguo, así que muchas claves son literalmente los nombres de campo del PDF
-// (con espacios sueltos incluidos, ej. "Race "). Para no tener que migrar la
-// base de datos, el formulario nuevo REUTILIZA esas claves cuando son fiables
-// (scores, prof-bonus, proficiencias de skill/salvación) y solo introduce
-// claves nuevas y limpias donde el campo antiguo era ambiguo, estaba partido
-// en dos por overflow de texto del PDF, o dependía de la numeración interna
-// de Acrobat (los hechizos). Ver migration.ts para el detalle.
+
 
 export type Ability = "STR" | "DEX" | "CON" | "INT" | "WIS" | "CHA";
 
@@ -21,11 +13,9 @@ export const ABILITIES: { key: Ability; label: string }[] = [
 ];
 
 export interface SkillDef {
-  /** También es la clave heredada donde el PDF guardaba el modificador ya calculado (ya no se usa como fuente de verdad, se recalcula en vivo). */
   key: string;
   label: string;
   ability: Ability;
-  /** Clave heredada del booleano de competencia — se sigue usando tal cual. */
   profKey: string;
 }
 
@@ -60,7 +50,6 @@ export interface SpellEntry {
   id: string;
   name: string;
   prepared: boolean;
-  /** true si se coló aquí automáticamente al migrar la ficha antigua — se le muestra un aviso para que se revise una vez, y desaparece al confirmarlo o al editar el nombre. */
   autoImported?: boolean;
 }
 
@@ -76,15 +65,13 @@ export interface SpellsData {
   saveDC: string;
   atkBonus: string;
   cantrips: SpellEntry[];
-  levels: Record<number, SpellLevelData>; // keys 1..9
+  levels: Record<number, SpellLevelData>; 
 }
 
-/** Una nota "flotante" anclada a un tramo de texto dentro de un campo (como un comentario de PDF). */
 export interface TextAnnotation {
   id: string;
   start: number;
   end: number;
-  /** Foto del texto anclado en el momento de crear/editar la nota, para detectar si se ha desincronizado. */
   anchorText: string;
   note: string;
 }
@@ -94,11 +81,7 @@ export interface DeathSaves {
   failures: number; // 0-3
 }
 
-/**
- * Forma "limpia" del contenido que usa el formulario nuevo.
- * Convive con el resto de claves heredadas que seguimos reutilizando
- * directamente (scores, PROF booleans, saves...) mediante índice abierto.
- */
+
 export interface SheetContent {
   // --- cabecera ---
   CharacterName?: string;
@@ -148,16 +131,8 @@ export interface SheetContent {
 
   // --- hechizos ---
   spells?: SpellsData;
-  /** Nombres de hechizo detectados en una ficha antigua que aún no se han re-clasificado. */
   legacySpellsImportList?: string[];
-
-  // --- QOL: notas ancladas a un fragmento de texto concreto (como un comentario de PDF) ---
-  // Varias por campo, no se solapan entre sí. `anchorText` es una foto del texto en el
-  // momento de crear la nota: si el texto del campo cambia y ese fragmento ya no coincide
-  // en esa posición, la nota pasa a "huérfana" (se conserva, pero deja de mostrarse flotando).
   annotations?: Record<string, TextAnnotation[]>;
-
-  // --- otros ya existentes, sin tocar ---
   inventory?: string;
   magicItems?: unknown[];
   avatarUrl?: string;

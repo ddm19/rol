@@ -56,6 +56,8 @@
             transform: translateY(-1px);
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
         }
+
+
     }
 
     &__container
@@ -162,6 +164,7 @@
             cursor: pointer;
             opacity: var(--opacity-muted);
             font-size: var(--font-size-3);
+            font-weight: var(--font-weight-4);
 
             &.active
             {
@@ -169,6 +172,7 @@
                 background: var(--dndBg);
                 font-weight: var(--font-weight-5);
                 box-shadow: var(--shadow-1);
+                color: var(--dndGold);
             }
         }
     }
@@ -260,6 +264,8 @@
             }
         }
 
+
+
     }
 }
 
@@ -323,7 +329,7 @@
         display: flex;
         gap: var(--spacing-1);
         justify-content: center;
-        font-size: var(--font-size-1);
+        font-size: var(--font-size-3);
         text-transform: uppercase;
         letter-spacing: var(--letter-spacing-1);
         color: var(--dndGold);
@@ -484,7 +490,7 @@
         flex: 1;
         display: flex;
         flex-direction: column;
-        font-size: var(--font-size-1);
+        font-size: var(--font-size-2);
         text-transform: uppercase;
         color: var(--dndInkSoft);
         align-items: center;
@@ -841,9 +847,15 @@
         }
     }
 
+    &__marks
+    {
+        position: relative;
+    }
+
     &__cancel
     {
-        // X button
+        position: absolute;
+        left: calc(-1 * var(--spacing-3));
         width: var(--font-size-3);
         height: var(--font-size-3);
         border: none;
@@ -985,6 +997,16 @@
                 border-radius: var(--radius-1);
                 background: var(--dndBg);
                 color: var(--dndInk);
+                justify-items: center;
+
+                &::-webkit-inner-spin-button,
+                &::-webkit-outer-spin-button
+                {
+                    -webkit-appearance: none;
+                    -moz-appearance: none;
+                    appearance: none;
+                    margin: 0;
+                }
             }
         }
     }
@@ -1019,6 +1041,29 @@
             color: var(--dndGold);
         }
     }
+
+    &__controlButton
+    {
+        display: flex;
+        gap: var(--spacing-1);
+        background: var(--dndBg2);
+        border: 1px solid var(--dndInk);
+        border-radius: var(--radius-2);
+        padding: var(--spacing-1) var(--spacing-2);
+        cursor: pointer;
+        color: var(--dndGold);
+        transition: all 0.25s ease-in-out;
+
+        &:hover
+        {
+            border-color: var(--dndGold);
+            color: var(--dndInk);
+            transform: scale(1.02) translateY(-1px);
+        }
+
+
+
+    }
 }
 
 .spellEntry
@@ -1043,11 +1088,9 @@
     &__reviewBadge
     {
         border: none;
-        background: var(--dndGold);
-        color: var(--dndInk);
+        background: var(--dndBg);
+        color: var(--colors-green);
         border-radius: var(--radius-circle);
-        width: 1.4rem;
-        height: 1.4rem;
         cursor: pointer;
         flex-shrink: 0;
     }

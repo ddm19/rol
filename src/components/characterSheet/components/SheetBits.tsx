@@ -1,7 +1,8 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPlus, faTrash, faCheck } from "@fortawesome/free-solid-svg-icons";
+import { faPlus, faTrash, faCheck, faMinus } from "@fortawesome/free-solid-svg-icons";
 import { Ability, abilityMod, fmtMod, SkillDef, WeaponEntry, SpellEntry, SpellLevelData, TextAnnotation } from "../types";
 import AnnotatedField from "./AnnotatedField";
+import { Tooltip } from "@mui/material";
 
 export type AnnotationsFor = (fieldId: string) => TextAnnotation[];
 export type SetAnnotationsFor = (fieldId: string, list: TextAnnotation[]) => void;
@@ -140,9 +141,12 @@ export function SpellEntryRow({
                 onAnnotationsChange={(list) => setAnnotationsFor(fieldId, list)}
             />
             {entry.autoImported && (
-                <button type="button" className="spellEntry__reviewBadge" title="Importado de la ficha antigua — clic para confirmar que el nivel es correcto" onClick={() => onChange({ autoImported: false })}>
-                    <FontAwesomeIcon icon={faCheck} />
-                </button>
+                <Tooltip title="Este hechizo se ha importado automáticamente de la ficha antigua, confirma si este hechizo pertenece a este nivel o elimínalo y crea uno nuevo. Solo necesitarás hacer esto 1 vez.">
+                    <button type="button" className="spellEntry__reviewBadge" title="Importado de la ficha antigua — clic para confirmar que el nivel es correcto" onClick={() => onChange({ autoImported: false })}>
+                        <FontAwesomeIcon icon={faCheck} />
+                    </button>
+                </Tooltip>
+
             )}
             <button type="button" onClick={onRemove} title="Quitar">
                 <FontAwesomeIcon icon={faTrash} />
@@ -185,7 +189,9 @@ export function SpellLevelBlock({
                 </label>
                 <label>
                     Gastados
+                    <span className="spellLevelBlock__controlButton" onClick={() => onChange({ ...data, slotsExpended: String(Math.max(0, (parseInt(data.slotsExpended, 10) || 0) - 1)) })} ><FontAwesomeIcon icon={faMinus} /></span>
                     <input type="number" min={0} value={data.slotsExpended} onChange={(e) => onChange({ ...data, slotsExpended: e.target.value })} />
+                    <span className="spellLevelBlock__controlButton" onClick={() => onChange({ ...data, slotsExpended: String(parseInt(data.slotsExpended, 10) + 1) })}><FontAwesomeIcon icon={faPlus} /></span>
                 </label>
             </div>
             <div className="spellLevelBlock__entries">

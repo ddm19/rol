@@ -411,7 +411,7 @@ export default function CharacterSheetForm() {
                                             <label className="card__title">Salvaciones de muerte</label>
                                             <div className="deathSaves__row">
                                                 Éxitos:
-                                                <div>
+                                                <div className="deathSaves__marks">
                                                     {content.deathSaves?.successes !== 0 && <span className="deathSaves__cancel" onClick={() => {
                                                         patch({ deathSaves: { ...(content.deathSaves || { successes: 0, failures: 0 }), successes: 0 } })
                                                     }}>
@@ -434,7 +434,7 @@ export default function CharacterSheetForm() {
                                             </div>
                                             <div className="deathSaves__row">
                                                 Fallos:
-                                                <div>
+                                                <div className="deathSaves__marks">
                                                     {content.deathSaves?.failures !== 0 && <span className="deathSaves__cancel" onClick={() => {
                                                         patch({
                                                             deathSaves: { ...(content.deathSaves?.failures !== undefined ? content.deathSaves : { successes: 0, failures: 0 }), failures: 0 },
@@ -579,7 +579,7 @@ export default function CharacterSheetForm() {
                                 </div>
 
                                 <div className="card span2">
-                                    <label className="card__title">Historia del personaje (ficha)</label>
+                                    <label className="card__title">Historia / Notas</label>
                                     {af("CharacterBackstory", content.CharacterBackstory || "", setField("CharacterBackstory"), { rows: 8 })}
                                 </div>
 
