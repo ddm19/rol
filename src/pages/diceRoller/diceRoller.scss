@@ -24,6 +24,17 @@
     width: var(--image-size-5);
     height: auto;
   }
+
+  button:disabled
+  {
+    background-color: #9d6157;
+    cursor: not-allowed;
+  }
+
+  button:hover:not(:disabled)
+  {
+    background-color: #9d6157;
+  }
 }
 
 .diceContainer
@@ -73,16 +84,7 @@ button
   transition: background-color 0.3s;
 }
 
-button:disabled
-{
-  background-color: #9d6157;
-  cursor: not-allowed;
-}
 
-button:hover:not(:disabled)
-{
-  background-color: #9d6157;
-}
 
 .roll-container
 {
