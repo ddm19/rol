@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import "./PhoneNavBar.scss";
 import { NavigationLink } from "../NavBar";
 import NavButton from "../NavButton/NavButton";
@@ -25,9 +26,10 @@ const PhoneNavBar: React.FC<Props> = (props: Props) => {
   const phoneNavBarRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      // Check also not menuButton
       if (
         phoneNavBarRef.current &&
-        !phoneNavBarRef.current.contains(event.target as Node)
+        !phoneNavBarRef.current.contains(event.target as Node) && !(event.target as Element).closest(".buttonMenu")
       ) {
         closeMenu();
       }
@@ -47,25 +49,30 @@ const PhoneNavBar: React.FC<Props> = (props: Props) => {
       <PhoneMenuButton toggleMenu={toggleMenu}></PhoneMenuButton>
       <OrdersButton variant="mobile" />
 
-      <nav
-        ref={phoneNavBarRef}
-        className={`${isPhoneMenuOpen ? "active-menu" : ""} menu`}
-      >
-        <ul className="navContainer">
-          <div className="mobileNav">
-            {navigationLinks.map((link: NavigationLink, index: number) => {
-              return (
-                <NavButton link={link} toggleMenu={toggleMenu}></NavButton>
-              );
-            })}
-            <VillazarcilloButton toggleMenu={toggleMenu} />
+      {createPortal(
+        <div className="navbar mobileMenu">
+          <nav
+            ref={phoneNavBarRef}
+            className={`${isPhoneMenuOpen ? "active-menu" : ""} menu`}
+          >
+            <ul className="navContainer">
+              <div className="mobileNav">
+                {navigationLinks.map((link: NavigationLink, index: number) => {
+                  return (
+                    <NavButton link={link} toggleMenu={toggleMenu}></NavButton>
+                  );
+                })}
+                <VillazarcilloButton toggleMenu={toggleMenu} />
 
-            <CloseButton onCloseEvent={closeMenu}></CloseButton>
-          </div>
+                <CloseButton onCloseEvent={closeMenu}></CloseButton>
+              </div>
 
-        </ul>
+            </ul>
 
-      </nav>
+          </nav>
+        </div>,
+        document.body
+      )}
       <DiscordButton></DiscordButton>
     </div>
   );

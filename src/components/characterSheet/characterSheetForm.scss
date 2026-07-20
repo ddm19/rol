@@ -142,9 +142,10 @@
         flex-wrap: wrap;
         align-items: center;
         gap: var(--spacing-1-5);
-        font-size: var(--font-size-2);
+        font-size: var(--font-size-3);
         min-width: 0;
         max-width: 100%;
+        color: var(--colors-font);
 
         input
         {
@@ -242,6 +243,8 @@
             {
                 padding: var(--spacing-1);
             }
+
+            top: 10%;
         }
     }
 

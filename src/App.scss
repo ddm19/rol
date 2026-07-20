@@ -10,7 +10,7 @@
 .App-header
 {
   height: var(--header-size);
-  z-index: 2;
+  z-index: var(--z-modal);
 }
 
 main

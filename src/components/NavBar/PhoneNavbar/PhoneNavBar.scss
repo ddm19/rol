@@ -26,6 +26,7 @@
   align-items: center;
   transform: translateX(-170%);
   transition: all 0.1s linear;
+  z-index: var(--z-mobile-menu);
 
   .navContainer
   {
