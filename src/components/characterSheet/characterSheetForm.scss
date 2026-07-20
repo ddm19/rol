@@ -356,6 +356,24 @@
         }
     }
 
+    &__pdfOverlay
+    {
+        position: fixed;
+        inset: 0;
+        z-index: var(--z-orders-modal-backdrop, var(--z-modal));
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: var(--dndOverlay);
+        backdrop-filter: blur(2px);
+
+        .loading__text
+        {
+            color: var(--dndGold);
+            font-weight: var(--font-weight-5);
+        }
+    }
+
     #inspiration
     {
         display: flex;
@@ -1229,7 +1247,7 @@
 
     &--review
     {
-        background: color-mix(in srgb, var(--dndGold) 12%, transparent);
+        background: var(--dndGoldTint12);
         border-radius: var(--radius-1);
     }
 
@@ -1305,7 +1323,7 @@
 
     &__editable mark.annotatedField__mark
     {
-        background: color-mix(in srgb, var(--dndGold) 45%, transparent);
+        background: var(--dndGoldTint45);
         border-bottom: var(--border-size-2) solid var(--dndGold);
         border-radius: var(--radius-1);
         cursor: pointer;

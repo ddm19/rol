@@ -1,9 +1,12 @@
 import { useEffect, useRef, useState, useCallback } from "react";
+import { flushSync } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { getSheet, createSheetWithId, upsertSheet, deleteSheet, beautifyInventoryMarkdown } from "services/sheets";
 import { supabase } from "services/supabaseClient";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faArrowLeft, faArrowUp, faDice, faEraser, faFistRaised, faHandFist, faHeart, faHeartPulse, faMagic, faRunning, faSave, faShield, faTrash, faUpload, faWandMagic, faWandMagicSparkles, faX } from "@fortawesome/free-solid-svg-icons";
+import html2canvas from "html2canvas";
+import jsPDF from "jspdf";
+import { faArrowLeft, faArrowUp, faDice, faEraser, faFilePdf, faFistRaised, faHandFist, faHeart, faHeartPulse, faMagic, faRunning, faSave, faShield, faTrash, faUpload, faWandMagic, faWandMagicSparkles, faX } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import SectionDisplay, { SectionItem } from "components/dndPdfInline/components/SectionDisplay";
 import Loading from "components/Loading/Loading";
@@ -14,6 +17,41 @@ import { ABILITIES, SKILLS, SheetContent, TextAnnotation, abilityMod, fmtMod, em
 import "./characterSheetForm.scss";
 
 type Tab = "stats" | "personality" | "spells";
+
+// "rgb(r, g, b)" / "rgba(r, g, b, a)" -> [r, g, b]. Si no matchea, parchment por defecto.
+function parseRgb(css: string): [number, number, number] {
+    const m = css.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+    return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [247, 241, 225];
+}
+
+// captura un nodo del DOM y lo añade como página al PDF, rellenando toda la página con
+// el color de fondo de la ficha (no solo el recuadro de la imagen) y centrando el contenido
+async function captureElementToPdf(pdf: jsPDF, el: HTMLElement, isFirstPage: boolean, orientation: "landscape" | "portrait", pageBg: string) {
+    const canvas = await html2canvas(el, {
+        allowTaint: false,
+        useCORS: true,
+        scale: 2,
+        backgroundColor: pageBg,
+    });
+
+    if (!isFirstPage) pdf.addPage("a4", orientation);
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const pageHeight = pdf.internal.pageSize.getHeight();
+
+    const [r, g, b] = parseRgb(pageBg);
+    pdf.setFillColor(r, g, b);
+    pdf.rect(0, 0, pageWidth, pageHeight, "F");
+
+    const imgData = canvas.toDataURL("image/jpeg", 0.95);
+    const ratio = Math.min(pageWidth / canvas.width, pageHeight / canvas.height);
+    const imgW = canvas.width * ratio;
+    const imgH = canvas.height * ratio;
+    const x = (pageWidth - imgW) / 2;
+    const y = (pageHeight - imgH) / 2;
+    pdf.addImage(imgData, "JPEG", x, y, imgW, imgH);
+}
+
+const waitForPaint = () => new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
 
 export default function CharacterSheetForm() {
     const { id: routeId = "" } = useParams();
@@ -31,7 +69,10 @@ export default function CharacterSheetForm() {
     const [magicItems, setMagicItems] = useState<SectionItem[]>([]);
     const [tab, setTab] = useState<Tab>("stats");
     const [showScrollTop, setShowScrollTop] = useState(false);
+    const [exportingPdf, setExportingPdf] = useState(false);
     const dirtyRef = useRef(false);
+    const sheetRef = useRef<HTMLDivElement | null>(null);
+    const inventoryRef = useRef<HTMLDivElement | null>(null);
 
     // ---------- botón volver arriba (móvil) ----------
     useEffect(() => {
@@ -166,6 +207,40 @@ export default function CharacterSheetForm() {
         }
     };
 
+    // ---------- descargar PDF ----------
+    const handleDownloadPdf = async () => {
+        if (!sheetRef.current || exportingPdf) return;
+        setExportingPdf(true);
+        const previousTab = tab;
+        try {
+            await document.fonts?.ready;
+            const pdf = new jsPDF({ orientation: "landscape", unit: "px", format: "a4" });
+            const tabsToExport: Tab[] = ["stats", "personality", "spells"];
+            const pageBg = getComputedStyle(sheetRef.current).backgroundColor;
+
+            for (let i = 0; i < tabsToExport.length; i++) {
+                flushSync(() => setTab(tabsToExport[i]));
+                await waitForPaint();
+
+                if (!sheetRef.current) continue;
+                await captureElementToPdf(pdf, sheetRef.current, i === 0, "landscape", pageBg);
+            }
+
+            if (inventoryRef.current) {
+                await waitForPaint();
+                await captureElementToPdf(pdf, inventoryRef.current, false, "portrait", pageBg);
+            }
+
+            pdf.save(`Ficha_${(sheetName || routeId || "personaje").trim()}.pdf`);
+        } catch (err) {
+            console.error("Error generando el PDF:", err);
+            alert("No se pudo generar el PDF. Inténtalo de nuevo.");
+        } finally {
+            flushSync(() => setTab(previousTab));
+            setExportingPdf(false);
+        }
+    };
+
     // ---------- avatar ----------
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const triggerAvatarPicker = () => {
@@ -258,6 +333,13 @@ export default function CharacterSheetForm() {
                         </button>
                         {lastSaved && <span className="characterSheetForm__lastSaved">
                             Última vez: {new Date(lastSaved).toLocaleString("es-ES")}</span>}
+                        {!isNew && (
+                            <button onClick={handleDownloadPdf} disabled={exportingPdf} title="Descarga la ficha en PDF, con las 3 pestañas como páginas">
+                                <FontAwesomeIcon icon={faFilePdf} />
+                                {exportingPdf ? "Generando PDF…" : "Descargar ficha"}
+                            </button>
+                        )}
+
                     </div>
 
                     <div className="characterSheetForm__info">
@@ -301,7 +383,7 @@ export default function CharacterSheetForm() {
                     </button>
                 </div>
 
-                <div className="characterSheetForm__sheet">
+                <div className="characterSheetForm__sheet" ref={sheetRef}>
                     {avatarUrl && (
                         <div className="characterSheetForm__avatar">
                             <img src={avatarUrl} alt="Retrato del personaje" />
@@ -678,7 +760,7 @@ export default function CharacterSheetForm() {
 
 
             </div>
-            <div className="characterSheetForm__inventoryContainer">
+            <div className="characterSheetForm__inventoryContainer" ref={inventoryRef}>
                 <SectionDisplay
                     title="Inventario"
                     content={inventory}
@@ -703,6 +785,12 @@ export default function CharacterSheetForm() {
             >
                 <FontAwesomeIcon icon={faArrowUp} />
             </button>
+
+            {exportingPdf && (
+                <div className="characterSheetForm__pdfOverlay">
+                    <Loading text="Generando PDF…" />
+                </div>
+            )}
         </div>
     );
 }
