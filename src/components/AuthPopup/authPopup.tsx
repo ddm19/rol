@@ -4,7 +4,7 @@ import "./authPopup.scss";
 import { Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
-import { faRightFromBracket, faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
+import { faFileLines, faRightFromBracket, faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
 
 interface AuthPopupProps {
   onClose: () => void;
@@ -46,6 +46,10 @@ const AuthPopup = ({ onClose, session }: AuthPopupProps) => {
             <Button className="authPopup__button" onClick={handleGoProfile}>
               <FontAwesomeIcon icon={faUser} />
               Perfil
+            </Button>
+            <Button className="authPopup__button" onClick={handleGoProfile}>
+              <FontAwesomeIcon icon={faFileLines} />
+              Mis Fichas
             </Button>
             <Button className="authPopup__button" onClick={handleSignOut}>
               <FontAwesomeIcon icon={faRightFromBracket} />

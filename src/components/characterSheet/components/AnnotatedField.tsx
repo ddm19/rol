@@ -4,6 +4,46 @@ import { faStickyNote, faTrash, faTimes } from "@fortawesome/free-solid-svg-icon
 import { TextAnnotation, newId } from "../types";
 import { getSelectionOffsets, resolveAnnotations } from "./annotationUtils";
 
+type FormatKind = "bold" | "italic" | "underline";
+
+const FORMAT_TAGS: Record<string, FormatKind> = { B: "bold", STRONG: "bold", I: "italic", EM: "italic", U: "underline" };
+
+const FORMAT_ELEMENT: Record<FormatKind, string> = { bold: "strong", italic: "em", underline: "u" };
+
+// Reads editable content as plain text (treating <br> as "\n"), while also collecting
+// the ranges wrapped in bold/italic/underline tags - these come from the browser's own
+// native formatting shortcuts (Ctrl+B, the mobile selection toolbar, etc.), which apply
+// directly to the DOM without going through our annotation state.
+function extractContent(el: HTMLElement): { text: string; formats: { type: FormatKind; start: number; end: number }[] } {
+    let text = "";
+    const formats: { type: FormatKind; start: number; end: number }[] = [];
+    const walk = (node: Node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+            text += node.textContent || "";
+            return;
+        }
+        if (node.nodeName === "BR") {
+            text += "\n";
+            return;
+        }
+        const type = FORMAT_TAGS[node.nodeName];
+        const start = text.length;
+        node.childNodes.forEach(walk);
+        if (type) formats.push({ type, start, end: text.length });
+    };
+    el.childNodes.forEach(walk);
+    return { text, formats };
+}
+
+// Inverse of the text side of extractContent: splits on "\n" and inserts <br> elements between lines.
+function pushTextWithBreaks(nodes: Node[], text: string) {
+    const lines = text.split("\n");
+    lines.forEach((line, i) => {
+        if (i > 0) nodes.push(document.createElement("br"));
+        if (line.length > 0) nodes.push(document.createTextNode(line));
+    });
+}
+
 interface AnnotatedFieldProps {
     fieldId: string;
     value: string;
@@ -21,6 +61,7 @@ interface Pill {
     y: number;
     start: number;
     end: number;
+    mobile: boolean;
 }
 
 interface Bubble {
@@ -50,7 +91,7 @@ export default function AnnotatedField({
     const [isEmpty, setIsEmpty] = useState(value.trim() === "");
 
     const resolved = resolveAnnotations(value, annotations);
-    const orphaned = resolved.filter((r) => r.orphaned);
+    const orphaned = resolved.filter((r) => r.orphaned && (!r.kind || r.kind === "note"));
 
     const rebuild = useCallback(() => {
         const el = containerRef.current;
@@ -58,15 +99,20 @@ export default function AnnotatedField({
         const nodes: Node[] = [];
         let cursor = 0;
         for (const a of resolved.filter((r) => !r.orphaned).sort((x, y) => x.start - y.start)) {
-            if (a.start > cursor) nodes.push(document.createTextNode(value.slice(cursor, a.start)));
-            const mark = document.createElement("mark");
-            mark.dataset.annotationId = a.id;
-            mark.className = "annotatedField__mark";
-            mark.appendChild(document.createTextNode(value.slice(a.start, a.end)));
-            nodes.push(mark);
+            if (a.start > cursor) pushTextWithBreaks(nodes, value.slice(cursor, a.start));
+            const isFormat = a.kind && a.kind !== "note";
+            const wrapper = document.createElement(isFormat ? FORMAT_ELEMENT[a.kind as FormatKind] : "mark");
+            if (!isFormat) {
+                wrapper.dataset.annotationId = a.id;
+                wrapper.className = "annotatedField__mark";
+            }
+            const wrapperNodes: Node[] = [];
+            pushTextWithBreaks(wrapperNodes, value.slice(a.start, a.end));
+            wrapperNodes.forEach((n) => wrapper.appendChild(n));
+            nodes.push(wrapper);
             cursor = a.end;
         }
-        if (cursor < value.length) nodes.push(document.createTextNode(value.slice(cursor)));
+        if (cursor < value.length) pushTextWithBreaks(nodes, value.slice(cursor));
         el.replaceChildren(...nodes);
         setIsEmpty(value.trim() === "");
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -85,13 +131,39 @@ export default function AnnotatedField({
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
+    // The DOM is the source of truth for formatting while the field is focused (the browser
+    // applies bold/italic/underline directly via native shortcuts). On every keystroke we
+    // reconcile that against the persisted annotation list so the formatting survives blur.
+    const syncFormatting = (text: string, formats: { type: FormatKind; start: number; end: number }[]) => {
+        const prevFormats = annotations
+            .filter((a) => a.kind && a.kind !== "note")
+            .map((a) => ({ type: a.kind as FormatKind, start: a.start, end: a.end }))
+            .sort((a, b) => a.start - b.start || a.type.localeCompare(b.type));
+        const nextFormats = [...formats].sort((a, b) => a.start - b.start || a.type.localeCompare(b.type));
+        const same =
+            prevFormats.length === nextFormats.length &&
+            prevFormats.every((f, i) => f.type === nextFormats[i].type && f.start === nextFormats[i].start && f.end === nextFormats[i].end);
+        if (same) return;
+        const noteAnnotations = annotations.filter((a) => !a.kind || a.kind === "note");
+        const formatAnnotations: TextAnnotation[] = formats.map((f) => ({
+            id: newId(f.type),
+            start: f.start,
+            end: f.end,
+            anchorText: text.slice(f.start, f.end),
+            note: "",
+            kind: f.type,
+        }));
+        onAnnotationsChange([...noteAnnotations, ...formatAnnotations]);
+    };
+
     const handleInput = () => {
         const el = containerRef.current;
         if (!el) return;
-        const text = el.textContent || "";
+        const { text, formats } = extractContent(el);
         lastEmitted.current = text;
         setIsEmpty(text.trim() === "");
         onValueChange(text);
+        syncFormatting(text, formats);
     };
 
     const handleBlur = () => {
@@ -100,10 +172,14 @@ export default function AnnotatedField({
     };
 
     const handleKeyDown = (e: React.KeyboardEvent) => {
-        if (!multiline && e.key === "Enter") e.preventDefault();
+        if (e.key !== "Enter") return;
+        e.preventDefault();
+        if (!multiline) return;
+        document.execCommand("insertLineBreak");
+        handleInput();
     };
 
-    const handleMouseUp = () => {
+    const evaluateSelection = useCallback(() => {
         const el = containerRef.current;
         if (!el) return;
         const sel = getSelectionOffsets(el);
@@ -119,15 +195,35 @@ export default function AnnotatedField({
         const range = window.getSelection()?.getRangeAt(0);
         const rect = range?.getBoundingClientRect();
         if (!rect) return;
-        setPill({ x: rect.left + rect.width / 2, y: rect.top, start: sel.start, end: sel.end });
-    };
+        setPill({ x: rect.left + rect.width / 2, y: rect.top, start: sel.start, end: sel.end, mobile: window.innerWidth < 600 });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [resolved]);
+
+    const handleMouseUp = () => evaluateSelection();
+
+    useEffect(() => {
+        const handleSelectionChange = () => {
+            if (window.innerWidth >= 600) return;
+            const el = containerRef.current;
+            if (!el) return;
+            const sel = window.getSelection();
+            if (!sel || sel.rangeCount === 0 || sel.isCollapsed) {
+                setPill(null);
+                return;
+            }
+            if (!el.contains(sel.getRangeAt(0).commonAncestorContainer)) return;
+            evaluateSelection();
+        };
+        document.addEventListener("selectionchange", handleSelectionChange);
+        return () => document.removeEventListener("selectionchange", handleSelectionChange);
+    }, [evaluateSelection]);
 
     const openNewBubble = () => {
         if (!pill) return;
         const mobile = window.innerWidth < 600;
         const id = newId("note");
         const anchorText = value.slice(pill.start, pill.end);
-        onAnnotationsChange([...annotations, { id, start: pill.start, end: pill.end, anchorText, note: "" }]);
+        onAnnotationsChange([...annotations, { id, start: pill.start, end: pill.end, anchorText, note: "", kind: "note" }]);
         setDraftNote("");
         setBubble({ annotationId: id, isNew: true, x: pill.x, y: pill.y, mobile });
         setPill(null);
@@ -198,12 +294,12 @@ export default function AnnotatedField({
             {pill && (
                 <button
                     type="button"
-                    className="annotatedField__pill"
-                    style={{ left: pill.x, top: pill.y }}
+                    className={`annotatedField__pill ${pill.mobile ? "annotatedField__pill--mobile" : ""}`}
+                    style={pill.mobile ? undefined : { left: pill.x, top: pill.y }}
                     onMouseDown={(e) => e.preventDefault()}
                     onClick={openNewBubble}
                 >
-                    <FontAwesomeIcon icon={faStickyNote} /> Nota
+                    <FontAwesomeIcon icon={faStickyNote} /> Añadir Nota
                 </button>
             )}
 

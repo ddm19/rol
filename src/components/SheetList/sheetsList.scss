@@ -120,7 +120,11 @@
         animation: sheetCardIn var(--motion-duration-slow) var(--motion-ease-emphasis) both;
         transition: transform var(--motion-duration-base) var(--motion-ease-standard), box-shadow var(--motion-duration-base) var(--motion-ease-standard), border-color var(--motion-duration-base) var(--motion-ease-standard), opacity var(--motion-duration-base) var(--motion-ease-standard), filter var(--motion-duration-base) var(--motion-ease-standard);
 
-
+        &--red
+        {
+            box-shadow: var(--shadow-3);
+            border-color: var(--dndAccent);
+        }
 
         &:hover
         {
@@ -264,6 +268,8 @@
         gap: var(--spacing-1);
         padding: var(--spacing-3);
         border-top: var(--border-size-1) solid var(--dndLine);
+
+
     }
 
     &__name

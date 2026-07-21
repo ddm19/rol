@@ -6,26 +6,25 @@ import { supabase } from "services/supabaseClient";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
-import { faArrowLeft, faArrowUp, faDice, faEraser, faFilePdf, faFistRaised, faHandFist, faHeart, faHeartPulse, faMagic, faRunning, faSave, faShield, faTrash, faUpload, faWandMagic, faWandMagicSparkles, faX } from "@fortawesome/free-solid-svg-icons";
+import { faArrowLeft, faArrowUp, faCoins, faDice, faEraser, faFilePdf, faFistRaised, faHandFist, faHeart, faHeartPulse, faMagic, faPen, faPlus, faRunning, faSave, faShield, faTrash, faUpload, faWandMagic, faWandMagicSparkles, faX } from "@fortawesome/free-solid-svg-icons";
 import { faHeart as faHeartRegular } from "@fortawesome/free-regular-svg-icons";
 import SectionDisplay, { SectionItem } from "components/dndPdfInline/components/SectionDisplay";
 import Loading from "components/Loading/Loading";
 import AnnotatedField from "./components/AnnotatedField";
 import { AbilityBox, SkillRow, WeaponRow, SpellLevelBlock, SpellEntryRow } from "./components/SheetBits";
 import { migrateLegacyContent } from "./migration";
-import { ABILITIES, SKILLS, SheetContent, TextAnnotation, abilityMod, fmtMod, emptySpells, newId } from "./types";
+import { ABILITIES, SKILLS, SheetContent, TextAnnotation, WeaponEntry, abilityMod, fmtMod, emptySpells, newId } from "./types";
 import "./characterSheetForm.scss";
+import { useAuth } from "hooks/useAuth";
 
 type Tab = "stats" | "personality" | "spells";
 
-// "rgb(r, g, b)" / "rgba(r, g, b, a)" -> [r, g, b]. Si no matchea, parchment por defecto.
 function parseRgb(css: string): [number, number, number] {
     const m = css.match(/rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
     return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [247, 241, 225];
 }
 
-// captura un nodo del DOM y lo añade como página al PDF, rellenando toda la página con
-// el color de fondo de la ficha (no solo el recuadro de la imagen) y centrando el contenido
+
 async function captureElementToPdf(pdf: jsPDF, el: HTMLElement, isFirstPage: boolean, orientation: "landscape" | "portrait", pageBg: string) {
     const canvas = await html2canvas(el, {
         allowTaint: false,
@@ -70,9 +69,13 @@ export default function CharacterSheetForm() {
     const [tab, setTab] = useState<Tab>("stats");
     const [showScrollTop, setShowScrollTop] = useState(false);
     const [exportingPdf, setExportingPdf] = useState(false);
+    const [weaponsEditMode, setWeaponsEditMode] = useState(false);
     const dirtyRef = useRef(false);
     const sheetRef = useRef<HTMLDivElement | null>(null);
     const inventoryRef = useRef<HTMLDivElement | null>(null);
+    const [sheetOwner, setSheetOwner] = useState("");
+    const user = useAuth();
+    const isOwner = user?.user?.id == sheetOwner;
 
     // ---------- botón volver arriba (móvil) ----------
     useEffect(() => {
@@ -105,6 +108,8 @@ export default function CharacterSheetForm() {
                 setMagicItems((migrated.magicItems as SectionItem[]) || []);
                 setStory(s?.story || "");
                 setLastSaved(s?.updated_at || "");
+                setSheetOwner(s?.owner || "");
+
 
                 let url = migrated.avatarUrl || "";
                 const name = (s?.id || routeId || "").trim();
@@ -150,7 +155,11 @@ export default function CharacterSheetForm() {
     );
 
     const profBonus = parseInt(content.ProfBonus || "2", 10) || 0;
-    const passivePerception = 10 + abilityMod(content.WISscore) + (content.perPROF ? profBonus : 0);
+    const passivePerception = 10 + abilityMod(content.WISscore) + (content.perPROF ? profBonus * (content.perPROFExpertise ? 2 : 1) : 0);
+
+    const strScore = parseInt(content.STRscore || "0", 10) || 0;
+    const carryCapacity = strScore * 15;
+    const pushDragLift = strScore * 30;
 
     // ---------- autoguardado 15 min ----------
     useEffect(() => {
@@ -290,11 +299,18 @@ export default function CharacterSheetForm() {
     const spells = content.spells || emptySpells();
     const setSpells = (s: typeof spells) => patch({ spells: s });
 
-    const weapons = content.weapons || [
-        { name: "", atkBonus: "", damage: "" },
-        { name: "", atkBonus: "", damage: "" },
-        { name: "", atkBonus: "", damage: "" },
-    ];
+    const MIN_WEAPONS = 3;
+    const weapons: WeaponEntry[] = (
+        content.weapons && content.weapons.length
+            ? content.weapons
+            : [
+                { id: "weapon_default_0", name: "", atkBonus: "", damage: "" },
+                { id: "weapon_default_1", name: "", atkBonus: "", damage: "" },
+                { id: "weapon_default_2", name: "", atkBonus: "", damage: "" },
+            ]
+    ).map((w, idx) => (w.id ? w : { ...w, id: `legacy_weapon_${idx}` }));
+    const addWeapon = () => patch({ weapons: [...weapons, { id: newId("weapon"), name: "", atkBonus: "", damage: "" }] });
+    const removeWeapon = (id: string) => patch({ weapons: weapons.filter((w) => w.id !== id) });
 
     if (isLoading) return <Loading />;
 
@@ -312,6 +328,8 @@ export default function CharacterSheetForm() {
         />
     );
 
+
+
     return (
         <div className="characterSheetForm__container">
             <div className="characterSheetForm">
@@ -327,10 +345,14 @@ export default function CharacterSheetForm() {
                     </div>
 
                     <div className="characterSheetForm__info">
-                        <button onClick={handleSave} disabled={saving} className="characterSheetForm__button--green characterSheetForm__button">
-                            <FontAwesomeIcon icon={faSave} />
-                            {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
-                        </button>
+                        {isOwner &&
+                            <button onClick={handleSave} disabled={saving} className="characterSheetForm__button--green characterSheetForm__button">
+                                <FontAwesomeIcon icon={faSave} />
+                                {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
+                            </button>
+                        }
+                        {!isOwner ? <h2 className="error">No eres el dueño de esta ficha</h2> : ""}
+
                         {lastSaved && <span className="characterSheetForm__lastSaved">
                             Última vez: {new Date(lastSaved).toLocaleString("es-ES")}</span>}
                         {!isNew && (
@@ -446,6 +468,20 @@ export default function CharacterSheetForm() {
                                             profBonus={profBonus}
                                             onScoreChange={(v) => patch({ [`${a.key}score`]: v } as any)}
                                             onSaveProfChange={(v) => patch({ [`${a.key}savePROF`]: v } as any)}
+                                            extra={
+                                                a.key === "STR" ? (
+                                                    <>
+                                                        <div className="abilityBox__carryRow">
+                                                            <span>Carga máxima</span>
+                                                            <strong>{carryCapacity} lb</strong>
+                                                        </div>
+                                                        <div className="abilityBox__carryRow">
+                                                            <span>Empujar, arrastrar o levantar</span>
+                                                            <strong>{pushDragLift} lb</strong>
+                                                        </div>
+                                                    </>
+                                                ) : undefined
+                                            }
                                         />
                                     ))}
                                 </div>
@@ -584,6 +620,8 @@ export default function CharacterSheetForm() {
                                                                 proficient={!!content[s.profKey]}
                                                                 profBonus={profBonus}
                                                                 onProfChange={(v) => patch({ [s.profKey]: v } as any)}
+                                                                expertise={!!content[`${s.profKey}Expertise`]}
+                                                                onExpertiseChange={(v) => patch({ [`${s.profKey}Expertise`]: v } as any)}
                                                             />
                                                         ))}
                                                     </div>
@@ -600,6 +638,14 @@ export default function CharacterSheetForm() {
 
                                 <div className="sheetPage__col sheetPage__col--details">
                                     <div className="card">
+                                        <button
+                                            type="button"
+                                            className={`card__editToggle ${weaponsEditMode ? "active" : ""}`}
+                                            onClick={() => setWeaponsEditMode((v) => !v)}
+                                            title={weaponsEditMode ? "Ocultar botones de borrar" : "Mostrar botones de borrar"}
+                                        >
+                                            <FontAwesomeIcon icon={faPen} />
+                                        </button>
                                         <label className="card__title">
                                             <FontAwesomeIcon icon={faFistRaised} />
                                             Ataques y conjuros
@@ -607,18 +653,21 @@ export default function CharacterSheetForm() {
                                         </label>
                                         {weapons.map((w, idx) => (
                                             <WeaponRow
-                                                key={idx}
-                                                idx={idx}
+                                                key={w.id}
                                                 weapon={w}
                                                 onChange={(nw) => {
                                                     const next = [...weapons];
                                                     next[idx] = nw;
                                                     patch({ weapons: next });
                                                 }}
+                                                onRemove={weaponsEditMode && weapons.length > MIN_WEAPONS ? () => removeWeapon(w.id) : undefined}
                                                 annotationsFor={annotationsFor}
                                                 setAnnotationsFor={setAnnotationsFor}
                                             />
                                         ))}
+                                        <button type="button" className="weaponsList__add" onClick={addWeapon}>
+                                            <FontAwesomeIcon icon={faPlus} /> Añadir arma
+                                        </button>
                                     </div>
 
 
@@ -626,6 +675,30 @@ export default function CharacterSheetForm() {
                                     <div className="card">
                                         <label className="card__title">Equipo</label>
                                         {af("Equipment", content.Equipment || "", setField("Equipment"), { rows: 6 })}
+                                    </div>
+
+                                    <div className="card">
+                                        <label className="card__title">Monedas</label>
+                                        <div className="coinRow coinRow--platinum">
+                                            <FontAwesomeIcon icon={faCoins} className="coinRow__icon" />
+                                            <label>Platino</label>
+                                            <input type="text" inputMode="numeric" value={content.Platinum || ""} onChange={(e) => setField("Platinum")(e.target.value)} />
+                                        </div>
+                                        <div className="coinRow coinRow--gold">
+                                            <FontAwesomeIcon icon={faCoins} className="coinRow__icon" />
+                                            <label>Oro</label>
+                                            <input type="text" inputMode="numeric" value={content.Gold || ""} onChange={(e) => setField("Gold")(e.target.value)} />
+                                        </div>
+                                        <div className="coinRow coinRow--silver">
+                                            <FontAwesomeIcon icon={faCoins} className="coinRow__icon" />
+                                            <label>Plata</label>
+                                            <input type="text" inputMode="numeric" value={content.Silver || ""} onChange={(e) => setField("Silver")(e.target.value)} />
+                                        </div>
+                                        <div className="coinRow coinRow--copper">
+                                            <FontAwesomeIcon icon={faCoins} className="coinRow__icon" />
+                                            <label>Cobre</label>
+                                            <input type="text" inputMode="numeric" value={content.Copper || ""} onChange={(e) => setField("Copper")(e.target.value)} />
+                                        </div>
                                     </div>
 
                                     <div className="card">

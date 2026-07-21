@@ -34,6 +34,7 @@ function migrateWeapons(content: Record<string, any>): WeaponEntry[] {
     { name: ["Wpn Name 3"], atk: ["Wpn3 AtkBonus  ", "Wpn3 AtkBonus "], dmg: ["Wpn3 Damage  ", "Wpn3 Damage "] },
   ];
   return defs.map((d) => ({
+    id: newId("weapon"),
     name: pick(content, d.name),
     atkBonus: pick(content, d.atk),
     damage: pick(content, d.dmg),
@@ -156,6 +157,13 @@ export function migrateLegacyContent(raw: Record<string, any> | null | undefined
   content.CharacterBackstory = content.Backstory || "";
 
   content.weapons = migrateWeapons(content);
+
+  // CP/SP/GP/PP son los nombres de campo de monedas de la plantilla PDF
+  // original (cobre/plata/oro/platino - el electro (EP) no se usa en la ficha nueva).
+  content.Copper = pick(content, ["Copper", "CP"]);
+  content.Silver = pick(content, ["Silver", "SP"]);
+  content.Gold = pick(content, ["Gold", "GP"]);
+  content.Platinum = pick(content, ["Platinum", "PP"]);
 
   const deathSuccesses = [content["Check Box 12"], content["Check Box 13"], content["Check Box 14"]].filter(Boolean).length;
   const deathFailures = [content["Check Box 15"], content["Check Box 16"], content["Check Box 17"]].filter(Boolean).length;

@@ -1,6 +1,7 @@
+import type { ReactNode } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPlus, faTrash, faCheck, faMinus } from "@fortawesome/free-solid-svg-icons";
-import { Ability, abilityMod, fmtMod, SkillDef, WeaponEntry, SpellEntry, SpellLevelData, TextAnnotation } from "../types";
+import { abilityMod, fmtMod, SkillDef, WeaponEntry, SpellEntry, SpellLevelData, TextAnnotation } from "../types";
 import AnnotatedField from "./AnnotatedField";
 import { Tooltip } from "@mui/material";
 
@@ -15,6 +16,7 @@ export function AbilityBox({
     profBonus,
     onScoreChange,
     onSaveProfChange,
+    extra,
 }: {
     label: string;
     score: string;
@@ -22,6 +24,7 @@ export function AbilityBox({
     profBonus: number;
     onScoreChange: (v: string) => void;
     onSaveProfChange: (v: boolean) => void;
+    extra?: ReactNode;
 }) {
     const mod = abilityMod(score);
     const saveMod = mod + (savePROF ? profBonus : 0);
@@ -36,6 +39,7 @@ export function AbilityBox({
                 <input type="checkbox" checked={savePROF} onChange={(e) => onSaveProfChange(e.target.checked)} />
                 <div>Salvación <span className="abilityBox__saveMod">{fmtMod(saveMod)}</span></div>
             </label>
+            {extra && <div className="abilityBox__extra">{extra}</div>}
         </div>
     );
 }
@@ -47,67 +51,91 @@ export function SkillRow({
     proficient,
     profBonus,
     onProfChange,
+    expertise,
+    onExpertiseChange,
 }: {
     def: SkillDef;
     score: string;
     proficient: boolean;
     profBonus: number;
     onProfChange: (v: boolean) => void;
+    expertise: boolean;
+    onExpertiseChange: (v: boolean) => void;
 }) {
-    const mod = abilityMod(score) + (proficient ? profBonus : 0);
+    const mod = abilityMod(score) + (proficient ? profBonus * (expertise ? 2 : 1) : 0);
+    const profId = `skill_${def.key}_prof`;
     return (
-        <label className="skillRow">
-            <input type="checkbox" checked={proficient} onChange={(e) => onProfChange(e.target.checked)} />
-            <span className="skillRow__mod">{fmtMod(mod)}</span>
-            <span className="skillRow__label">{def.label}</span>
-            <span className="skillRow__ability">({def.ability})</span>
-        </label>
+        <div className="skillRow">
+            <input id={profId} type="checkbox" checked={proficient} onChange={(e) => onProfChange(e.target.checked)} />
+            {proficient && (
+                <span className="skillRow__expertiseWrap">
+                    <input
+                        type="checkbox"
+                        className="skillRow__expertise"
+                        checked={expertise}
+                        onChange={(e) => onExpertiseChange(e.target.checked)}
+                        title="Pericia (Expertise): duplica el bono de competencia"
+                    />
+                </span>
+            )}
+            <label htmlFor={profId} className="skillRow__body">
+                <span className="skillRow__mod">{fmtMod(mod)}</span>
+                <span className="skillRow__label">{def.label}</span>
+                {/*                 <span className="skillRow__ability">({def.ability})</span>
+ */}            </label>
+        </div>
     );
 }
 
 // ---------- Weapon / attack row ----------
 export function WeaponRow({
-    idx,
     weapon,
     onChange,
+    onRemove,
     annotationsFor,
     setAnnotationsFor,
 }: {
-    idx: number;
     weapon: WeaponEntry;
     onChange: (w: WeaponEntry) => void;
+    onRemove?: () => void;
     annotationsFor: AnnotationsFor;
     setAnnotationsFor: SetAnnotationsFor;
 }) {
+    const id = weapon.id;
     return (
         <div className="weaponRow">
             <AnnotatedField
-                fieldId={`weapon_${idx}_name`}
+                fieldId={`weapon_${id}_name`}
                 multiline={false}
                 placeholder="Nombre"
                 value={weapon.name}
                 onValueChange={(v) => onChange({ ...weapon, name: v })}
-                annotations={annotationsFor(`weapon_${idx}_name`)}
-                onAnnotationsChange={(list) => setAnnotationsFor(`weapon_${idx}_name`, list)}
+                annotations={annotationsFor(`weapon_${id}_name`)}
+                onAnnotationsChange={(list) => setAnnotationsFor(`weapon_${id}_name`, list)}
             />
             <AnnotatedField
-                fieldId={`weapon_${idx}_atk`}
+                fieldId={`weapon_${id}_atk`}
                 multiline={false}
                 placeholder="Bono ataque"
                 value={weapon.atkBonus}
                 onValueChange={(v) => onChange({ ...weapon, atkBonus: v })}
-                annotations={annotationsFor(`weapon_${idx}_atk`)}
-                onAnnotationsChange={(list) => setAnnotationsFor(`weapon_${idx}_atk`, list)}
+                annotations={annotationsFor(`weapon_${id}_atk`)}
+                onAnnotationsChange={(list) => setAnnotationsFor(`weapon_${id}_atk`, list)}
             />
             <AnnotatedField
-                fieldId={`weapon_${idx}_dmg`}
+                fieldId={`weapon_${id}_dmg`}
                 multiline={false}
                 placeholder="Daño/Tipo"
                 value={weapon.damage}
                 onValueChange={(v) => onChange({ ...weapon, damage: v })}
-                annotations={annotationsFor(`weapon_${idx}_dmg`)}
-                onAnnotationsChange={(list) => setAnnotationsFor(`weapon_${idx}_dmg`, list)}
+                annotations={annotationsFor(`weapon_${id}_dmg`)}
+                onAnnotationsChange={(list) => setAnnotationsFor(`weapon_${id}_dmg`, list)}
             />
+            {onRemove && (
+                <button type="button" onClick={onRemove} title="Quitar arma">
+                    <FontAwesomeIcon icon={faTrash} />
+                </button>
+            )}
         </div>
     );
 }

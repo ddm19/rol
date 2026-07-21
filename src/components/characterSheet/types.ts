@@ -41,6 +41,7 @@ export const SKILLS: SkillDef[] = [
 ];
 
 export interface WeaponEntry {
+  id: string;
   name: string;
   atkBonus: string;
   damage: string;
@@ -74,6 +75,9 @@ export interface TextAnnotation {
   end: number;
   anchorText: string;
   note: string;
+  // Sticky notes omit `kind` (or set it to "note"); inline text formatting
+  // (persisted browser bold/italic/underline shortcuts) uses the other kinds.
+  kind?: "note" | "bold" | "italic" | "underline";
 }
 
 export interface DeathSaves {
@@ -105,6 +109,12 @@ export interface SheetContent {
   Inspiration?: boolean;
   deathSaves?: DeathSaves;
   weapons?: WeaponEntry[];
+
+  // --- monedas ---
+  Copper?: string;
+  Silver?: string;
+  Gold?: string;
+  Platinum?: string;
 
   // --- rasgos físicos (página 2) ---
   Age?: string;

@@ -5,9 +5,11 @@ import { listMySheets } from "services/sheets";
 import { faEye, faPlus, faChevronLeft, faChevronRight, faDiceD20 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Loading from "components/Loading/Loading";
+import { useAuth } from "hooks/useAuth";
 
 type SheetRow = {
     id: string;
+    owner: string;
     updatedAt: string;
     avatarUrl: string;
     characterName: string;
@@ -53,6 +55,7 @@ const SheetsList: React.FC<SheetsListProps> = ({ visibleCount }) => {
     const [isDragging, setIsDragging] = useState(false);
     const touchStartX = useRef<number | null>(null);
     const navigate = useNavigate();
+    const user = useAuth();
 
     useEffect(() => {
         listMySheets()
@@ -60,6 +63,7 @@ const SheetsList: React.FC<SheetsListProps> = ({ visibleCount }) => {
                 setItems(
                     rows.map((r: any) => ({
                         id: r.id,
+                        owner: r.owner,
                         updatedAt: r.updated_at,
                         avatarUrl: r.content?.avatarUrl || "",
                         characterName: r.content?.CharacterName || "",
@@ -89,7 +93,6 @@ const SheetsList: React.FC<SheetsListProps> = ({ visibleCount }) => {
         onNavigate();
     };
 
-    // swipe con seguimiento en vivo del dedo + rubber-band en los extremos
     const onTouchStart = (e: React.TouchEvent) => {
         touchStartX.current = e.touches[0].clientX;
         setIsDragging(true);
@@ -155,7 +158,7 @@ const SheetsList: React.FC<SheetsListProps> = ({ visibleCount }) => {
                                 const x = slide.data;
                                 const goToSheet = () => navigate(`/sheets/${encodeURIComponent(x.id)}`);
                                 return (
-                                    <li key={x.id} className={`sheetsList__card ${focused ? "sheetsList__card--focused" : "sheetsList__card--peek"}`} onClick={() => activate(i, goToSheet)}>
+                                    <li key={x.id} className={`sheetsList__card ${focused ? "sheetsList__card--focused" : "sheetsList__card--peek"} ${user?.user?.id !== x.owner && "sheetsList__card--red"}`} onClick={() => activate(i, goToSheet)}>
                                         <div className="sheetsList__portrait">
                                             {x.avatarUrl ? (
                                                 <>
@@ -171,7 +174,6 @@ const SheetsList: React.FC<SheetsListProps> = ({ visibleCount }) => {
                                             <h3 className="sheetsList__name">{x.characterName || x.id}</h3>
                                             {(x.classLevel || x.race) && <div className="sheetsList__subtitle">{[x.classLevel, x.race].filter(Boolean).join(" · ")}</div>}
                                             <div className="sheetsList__date">Última edición: {new Date(x.updatedAt).toLocaleDateString()}</div>
-
                                             <button
                                                 className="sheetsList__btn"
                                                 onClick={(e) => {

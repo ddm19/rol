@@ -50,7 +50,7 @@ function migrateWeapons(content) {
         { name: ["Wpn Name 2"], atk: ["Wpn2 AtkBonus ", "Wpn2 AtkBonus"], dmg: ["Wpn2 Damage ", "Wpn2 Damage"] },
         { name: ["Wpn Name 3"], atk: ["Wpn3 AtkBonus  ", "Wpn3 AtkBonus "], dmg: ["Wpn3 Damage  ", "Wpn3 Damage "] },
     ];
-    return defs.map((d) => ({ name: pick(content, d.name), atkBonus: pick(content, d.atk), damage: pick(content, d.dmg) }));
+    return defs.map((d) => ({ id: newId("weapon"), name: pick(content, d.name), atkBonus: pick(content, d.atk), damage: pick(content, d.dmg) }));
 }
 
 // Ver characterSheet/migration.ts para la explicación completa de estos límites.
@@ -137,6 +137,11 @@ function migrateLegacyContent(raw) {
     content.CharacterBackstory = content.Backstory || "";
 
     content.weapons = migrateWeapons(content);
+
+    content.Copper = pick(content, ["Copper", "CP"]);
+    content.Silver = pick(content, ["Silver", "SP"]);
+    content.Gold = pick(content, ["Gold", "GP"]);
+    content.Platinum = pick(content, ["Platinum", "PP"]);
 
     const deathSuccesses = [content["Check Box 12"], content["Check Box 13"], content["Check Box 14"]].filter(Boolean).length;
     const deathFailures = [content["Check Box 15"], content["Check Box 16"], content["Check Box 17"]].filter(Boolean).length;
