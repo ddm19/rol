@@ -154,6 +154,14 @@ export default function CharacterSheetForm() {
         [content.annotations, patch],
     );
 
+    const textAlignFor = useCallback((fieldId: string) => content.textAlign?.[fieldId] || "left", [content.textAlign]);
+    const setTextAlignFor = useCallback(
+        (fieldId: string, align: "left" | "center" | "right") => {
+            patch({ textAlign: { ...(content.textAlign || {}), [fieldId]: align } });
+        },
+        [content.textAlign, patch],
+    );
+
     const profBonus = parseInt(content.ProfBonus || "2", 10) || 0;
     const passivePerception = 10 + abilityMod(content.WISscore) + (content.perPROF ? profBonus * (content.perPROFExpertise ? 2 : 1) : 0);
 
@@ -325,6 +333,8 @@ export default function CharacterSheetForm() {
             rows={opts.rows}
             placeholder={opts.placeholder}
             className={opts.className}
+            textAlign={textAlignFor(fieldId)}
+            onTextAlignChange={opts.multiline === false ? undefined : (align) => setTextAlignFor(fieldId, align)}
         />
     );
 

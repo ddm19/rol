@@ -1539,6 +1539,33 @@
         font-size: var(--font-size-3);
     }
 
+    &__alignToggle
+    {
+        position: absolute;
+        top: var(--spacing-1);
+        right: var(--spacing-1);
+        border: var(--border-size-1) solid var(--dndLine);
+        background: var(--dndBg);
+        color: var(--dndInkSoft);
+        border-radius: var(--radius-2);
+        width: 1.5rem;
+        height: 1.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: var(--font-size-1);
+        opacity: var(--opacity-muted);
+        transition: all 0.2s ease-in-out;
+
+        &:hover
+        {
+            opacity: 1;
+            border-color: var(--dndGold);
+            color: var(--dndGold);
+        }
+    }
+
     &__editable mark.annotatedField__mark
     {
         background: var(--dndGoldTint45);

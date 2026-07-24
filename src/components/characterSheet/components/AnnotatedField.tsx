@@ -1,10 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faStickyNote, faTrash, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faStickyNote, faTrash, faTimes, faAlignLeft, faAlignCenter, faAlignRight } from "@fortawesome/free-solid-svg-icons";
 import { TextAnnotation, newId } from "../types";
 import { getSelectionOffsets, resolveAnnotations } from "./annotationUtils";
 
 type FormatKind = "bold" | "italic" | "underline";
+type TextAlign = "left" | "center" | "right";
+
+const NEXT_ALIGN: Record<TextAlign, TextAlign> = { left: "center", center: "right", right: "left" };
+const ALIGN_ICON: Record<TextAlign, typeof faAlignLeft> = { left: faAlignLeft, center: faAlignCenter, right: faAlignRight };
 
 const FORMAT_TAGS: Record<string, FormatKind> = { B: "bold", STRONG: "bold", I: "italic", EM: "italic", U: "underline" };
 
@@ -54,6 +58,8 @@ interface AnnotatedFieldProps {
     multiline?: boolean;
     rows?: number;
     className?: string;
+    textAlign?: TextAlign;
+    onTextAlignChange?: (align: TextAlign) => void;
 }
 
 interface Pill {
@@ -82,6 +88,8 @@ export default function AnnotatedField({
     multiline = true,
     rows = 3,
     className,
+    textAlign = "left",
+    onTextAlignChange,
 }: AnnotatedFieldProps) {
     const containerRef = useRef<HTMLDivElement | null>(null);
     const lastEmitted = useRef<string>(value);
@@ -258,13 +266,17 @@ export default function AnnotatedField({
         onAnnotationsChange(annotations.filter((a) => a.id !== id));
     };
 
+    const cycleTextAlign = () => {
+        onTextAlignChange?.(NEXT_ALIGN[textAlign]);
+    };
+
     return (
         <div className={`annotatedField ${className || ""}`}>
             <div className="annotatedField__wrapper">
                 <div
                     ref={containerRef}
                     className={`annotatedField__editable ${multiline ? "annotatedField__editable--multi" : "annotatedField__editable--single"}`}
-                    style={multiline ? { minHeight: `${rows * 1.4}em` } : undefined}
+                    style={multiline ? { minHeight: `${rows * 1.4}em`, textAlign } : undefined}
                     contentEditable
                     suppressContentEditableWarning
                     onInput={handleInput}
@@ -276,6 +288,16 @@ export default function AnnotatedField({
                     data-field-id={fieldId}
                 />
                 {isEmpty && placeholder && <span className="annotatedField__placeholder">{placeholder}</span>}
+                {multiline && onTextAlignChange && (
+                    <button
+                        type="button"
+                        className="annotatedField__alignToggle"
+                        onClick={cycleTextAlign}
+                        title="Cambiar alineación del texto"
+                    >
+                        <FontAwesomeIcon icon={ALIGN_ICON[textAlign]} />
+                    </button>
+                )}
             </div>
 
             {orphaned.length > 0 && (

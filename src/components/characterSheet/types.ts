@@ -143,6 +143,7 @@ export interface SheetContent {
   spells?: SpellsData;
   legacySpellsImportList?: string[];
   annotations?: Record<string, TextAnnotation[]>;
+  textAlign?: Record<string, "left" | "center" | "right">;
   inventory?: string;
   magicItems?: unknown[];
   avatarUrl?: string;
