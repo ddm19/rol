@@ -345,11 +345,12 @@ export default function CharacterSheetForm() {
                     </div>
 
                     <div className="characterSheetForm__info">
-                        {isOwner &&
+                        {isOwner || isNew ?
                             <button onClick={handleSave} disabled={saving} className="characterSheetForm__button--green characterSheetForm__button">
                                 <FontAwesomeIcon icon={faSave} />
                                 {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
                             </button>
+                            : ""
                         }
                         {!isOwner && !isNew ? <h2 className="error">No eres el dueño de esta ficha</h2> : ""}
 
