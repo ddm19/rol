@@ -351,7 +351,7 @@ export default function CharacterSheetForm() {
                                 {saving ? "Guardando…" : isNew ? "Crear ficha" : "Guardar cambios"}
                             </button>
                         }
-                        {!isOwner ? <h2 className="error">No eres el dueño de esta ficha</h2> : ""}
+                        {!isOwner && !isNew ? <h2 className="error">No eres el dueño de esta ficha</h2> : ""}
 
                         {lastSaved && <span className="characterSheetForm__lastSaved">
                             Última vez: {new Date(lastSaved).toLocaleString("es-ES")}</span>}
