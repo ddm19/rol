@@ -76,7 +76,7 @@
         padding: var(--spacing-4);
         max-width: 100%;
 
-        @media (max-width: 900px)
+        @media (max-width: 1440px)
         {
             grid-template-columns: 1fr;
             padding: var(--spacing-2);
@@ -550,8 +550,8 @@
     &__grid
     {
         display: grid;
-        grid-template-columns: 130px 1.5fr 1.3fr;
-        gap: var(--spacing-4);
+        grid-template-columns: 130px 1.8fr 1.1fr;
+        gap: var(--spacing-3);
         width: 100%;
 
         @media (max-width: 900px)
@@ -1099,10 +1099,16 @@
     gap: var(--spacing-2);
     width: -webkit-fill-available;
 
-    @media (max-width: 700px)
+    @media (max-width: 1440px)
     {
         grid-template-columns: 1fr 1fr;
     }
+
+    @media (max-width: 1100px)
+    {
+        grid-template-columns: 1fr;
+    }
+
 
     &__passive
     {
@@ -1523,7 +1529,7 @@
 
         &--single
         {
-            white-space: nowrap;
+            white-space: normal;
             overflow-x: auto;
         }
     }
