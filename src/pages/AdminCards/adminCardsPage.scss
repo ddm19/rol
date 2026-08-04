@@ -1,0 +1,525 @@
+@import "/src/styles/common/sizes.scss";
+@import "/src/styles/common/colors.scss";
+@import "/src/styles/common/spacings.scss";
+@import "/src/styles/common/fonts.scss";
+
+.adminCardsPage
+{
+    max-width: 62.5rem;
+    margin: 0 auto;
+    padding: var(--spacing-6) var(--spacing-4);
+    color: var(--colors-font);
+
+    &__header
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+        margin-bottom: var(--spacing-4);
+
+        h1
+        {
+            font-size: var(--font-size-8);
+            margin: 0;
+        }
+    }
+
+    &__back
+    {
+        color: var(--colors-subtitle);
+        text-decoration: none;
+        font-size: var(--font-size-3);
+        width: fit-content;
+
+        &:hover
+        {
+            text-decoration: underline;
+        }
+    }
+
+    &__tabs
+    {
+        display: flex;
+        gap: var(--spacing-2);
+        margin-bottom: var(--spacing-5);
+        border-bottom: var(--border-size-1) solid var(--colors-border);
+    }
+
+    &__tab
+    {
+        background: none;
+        border: none;
+        padding: var(--spacing-3) var(--spacing-4);
+        font-size: var(--font-size-4);
+        font-weight: var(--font-weight-4);
+        color: var(--colors-subtitle);
+        cursor: pointer;
+        border-bottom: var(--border-size-3) solid transparent;
+        transition: color var(--motion-duration-fast) var(--motion-ease-standard),
+            border-color var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &:hover
+        {
+            color: var(--colors-font);
+        }
+
+        &.is-active
+        {
+            color: var(--dndAccent2);
+            border-bottom-color: var(--dndAccent2);
+        }
+    }
+}
+
+.adminCardForm
+{
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+    background: var(--dndBg2);
+    border: var(--border-size-1) solid var(--colors-border);
+    border-radius: var(--radius-3);
+    padding: var(--spacing-5);
+    box-shadow: var(--shadow-1);
+
+    &__row
+    {
+        display: flex;
+        gap: var(--spacing-4);
+        flex-wrap: wrap;
+    }
+
+    &__group
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+
+        &--grow
+        {
+            flex: 1;
+            min-width: 12.5rem;
+        }
+    }
+
+    label
+    {
+        font-size: var(--font-size-3);
+        font-weight: var(--font-weight-4);
+        color: var(--colors-subtitle);
+    }
+
+    input[type="text"],
+    input[type="number"],
+    input:not([type]),
+    textarea
+    {
+        padding: var(--spacing-2) var(--spacing-3);
+        border: var(--border-size-1) solid var(--colors-border);
+        border-radius: var(--radius-2);
+        background: var(--colors-white);
+        color: var(--colors-font);
+        font-family: inherit;
+        font-size: var(--font-size-4);
+
+        &:focus
+        {
+            outline: var(--border-size-2) solid var(--dndGold);
+            outline-offset: 0;
+        }
+    }
+
+    textarea
+    {
+        min-height: 5rem;
+        resize: vertical;
+    }
+
+    input[type="file"]
+    {
+        color: var(--colors-font);
+    }
+
+    &__dropZone
+    {
+        border: var(--border-size-2) dashed transparent;
+        border-radius: var(--radius-2);
+        padding: var(--spacing-2);
+        margin: calc(-1 * var(--spacing-2));
+        transition: border-color var(--motion-duration-fast) var(--motion-ease-standard),
+            background var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &.is-dragging
+        {
+            border-color: var(--dndGold);
+            background: var(--dndGoldTint12);
+        }
+    }
+
+    &__checkbox
+    {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--spacing-2);
+        cursor: pointer;
+    }
+
+    &__stats
+    {
+        background: var(--dndRow);
+        padding: var(--spacing-3);
+        border-radius: var(--radius-2);
+    }
+
+    &__colorPicker
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+    }
+
+    &__colorCircles
+    {
+        display: flex;
+        gap: var(--spacing-2);
+        flex-wrap: wrap;
+    }
+
+    &__colorCircle
+    {
+        width: 1.75rem;
+        height: 1.75rem;
+        border-radius: var(--radius-circle);
+        border: var(--border-size-2) solid transparent;
+        cursor: pointer;
+        transition: transform var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &:hover
+        {
+            transform: scale(1.1);
+        }
+
+        &.is-selected
+        {
+            border-color: var(--colors-font);
+            box-shadow: var(--shadow-2);
+        }
+
+        &--clear
+        {
+            background: var(--dndRow);
+            color: var(--colors-subtitle);
+            font-size: var(--font-size-2);
+        }
+    }
+
+    &__preview
+    {
+        margin-top: var(--spacing-2);
+        max-width: 12.5rem;
+        border-radius: var(--radius-2);
+        box-shadow: var(--shadow-2);
+    }
+
+    &__actions
+    {
+        display: flex;
+        gap: var(--spacing-3);
+        flex-wrap: wrap;
+        align-items: center;
+    }
+
+    &__submit
+    {
+        align-self: flex-start;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        border: none;
+        border-radius: var(--radius-3);
+        padding: var(--spacing-3) var(--spacing-6);
+        background: var(--orders-primary-gradient);
+        color: var(--colors-white);
+        font-size: var(--font-size-4);
+        font-weight: var(--font-weight-5);
+        cursor: pointer;
+        box-shadow: var(--shadow-2);
+
+        &:hover:not(:disabled)
+        {
+            background: var(--orders-primary-hover-gradient);
+        }
+
+        &:disabled
+        {
+            opacity: var(--opacity-disabled);
+            cursor: not-allowed;
+        }
+    }
+
+    &__deleteButton,
+    &__cancelButton
+    {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        border-radius: var(--radius-3);
+        padding: var(--spacing-3) var(--spacing-5);
+        font-size: var(--font-size-3);
+        font-weight: var(--font-weight-4);
+        cursor: pointer;
+
+        &:disabled
+        {
+            opacity: var(--opacity-disabled);
+            cursor: not-allowed;
+        }
+    }
+
+    &__deleteButton
+    {
+        border: var(--border-size-1) solid var(--colors-mediumRed);
+        background: var(--dndNoticeErrorBg);
+        color: var(--colors-mediumRed);
+
+        &:hover:not(:disabled)
+        {
+            background: var(--colors-mediumRed);
+            color: var(--colors-white);
+        }
+    }
+
+    &__cancelButton
+    {
+        border: var(--border-size-1) solid var(--colors-border);
+        background: none;
+        color: var(--colors-subtitle);
+
+        &:hover:not(:disabled)
+        {
+            color: var(--colors-font);
+        }
+    }
+
+    &__notice
+    {
+        padding: var(--spacing-3);
+        border-radius: var(--radius-2);
+        font-size: var(--font-size-3);
+
+        &--success
+        {
+            background: var(--dndNoticeSuccessBg);
+            color: var(--colors-green);
+        }
+
+        &--error
+        {
+            background: var(--dndNoticeErrorBg);
+            color: var(--colors-mediumRed);
+        }
+    }
+}
+
+.adminCardBulk
+{
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+
+    &__inputs
+    {
+        display: flex;
+        gap: var(--spacing-4);
+        flex-wrap: wrap;
+        background: var(--dndBg2);
+        border: var(--border-size-1) solid var(--colors-border);
+        border-radius: var(--radius-3);
+        padding: var(--spacing-5);
+    }
+
+    &__summary
+    {
+        display: flex;
+        gap: var(--spacing-4);
+        font-size: var(--font-size-3);
+        color: var(--colors-subtitle);
+        flex-wrap: wrap;
+    }
+
+    &__warning
+    {
+        color: var(--dndAccent2);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-1);
+    }
+
+    &__tableWrapper
+    {
+        overflow-x: auto;
+        border: var(--border-size-1) solid var(--colors-border);
+        border-radius: var(--radius-2);
+    }
+
+    &__table
+    {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: var(--font-size-3);
+
+        th, td
+        {
+            text-align: left;
+            padding: var(--spacing-2) var(--spacing-3);
+            border-bottom: var(--border-size-1) solid var(--colors-border);
+            white-space: nowrap;
+        }
+
+        th
+        {
+            background: var(--dndRow);
+        }
+    }
+
+    &__status
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        text-transform: capitalize;
+
+        &--done
+        {
+            color: var(--colors-green);
+        }
+
+        &--error
+        {
+            color: var(--colors-mediumRed);
+            text-transform: none;
+        }
+
+        &--uploading,
+        &--saving
+        {
+            color: var(--dndGold);
+        }
+    }
+}
+
+.adminCardManage
+{
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-4);
+
+    &__backButton
+    {
+        background: none;
+        border: none;
+        cursor: pointer;
+        margin-bottom: var(--spacing-3);
+        padding: 0;
+        font-size: var(--font-size-3);
+    }
+
+    &__count
+    {
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-3);
+    }
+
+    &__loading,
+    &__empty
+    {
+        text-align: center;
+        color: var(--colors-subtitle);
+        padding: var(--spacing-6);
+    }
+
+    &__list
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-2);
+    }
+
+    &__row
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-4);
+        text-align: left;
+        background: var(--dndBg2);
+        border: var(--border-size-1) solid var(--colors-border);
+        border-radius: var(--radius-2);
+        padding: var(--spacing-2) var(--spacing-4);
+        cursor: pointer;
+        font-family: inherit;
+        color: inherit;
+        transition: background var(--motion-duration-fast) var(--motion-ease-standard),
+            border-color var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &:hover
+        {
+            background: var(--dndRow);
+            border-color: var(--dndGold);
+        }
+    }
+
+    &__thumb
+    {
+        width: 3rem;
+        height: 4.2rem;
+        flex-shrink: 0;
+        border-radius: var(--radius-1);
+        overflow: hidden;
+        background: var(--dndRow);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: var(--font-size-1);
+        color: var(--colors-subtitle);
+        text-align: center;
+
+        img
+        {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+    }
+
+    &__info
+    {
+        flex: 1;
+        min-width: 0;
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+    }
+
+    &__name
+    {
+        font-weight: var(--font-weight-4);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__meta
+    {
+        font-size: var(--font-size-2);
+        color: var(--colors-subtitle);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &__editIcon
+    {
+        color: var(--colors-subtitle);
+        flex-shrink: 0;
+    }
+}

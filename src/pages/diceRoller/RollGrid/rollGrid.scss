@@ -1,0 +1,90 @@
+.rollGrid
+{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--spacing-2);
+  width: 100%;
+
+  &__cell
+  {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+    background-color: var(--dndBg);
+    border: var(--border-size-1) solid var(--dndGoldTint45);
+    border-radius: var(--radius-2);
+    box-shadow: var(--shadow-1);
+    padding: var(--spacing-2);
+    text-align: center;
+  }
+
+  &__die
+  {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-1);
+  }
+
+  &__dieIcon
+  {
+    font-size: var(--font-size-7);
+    color: var(--dndGold);
+  }
+
+  &__value
+  {
+    font-size: var(--font-size-7);
+    font-weight: var(--font-weight-6);
+    line-height: var(--line-height-1);
+    color: var(--dndInk);
+  }
+
+  &__modifier
+  {
+    font-size: var(--font-size-3);
+    color: var(--colors-orange);
+  }
+
+  &__cellActions
+  {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-1);
+    margin-top: var(--spacing-1);
+  }
+
+  &__actionButton,
+  &__undoButton
+  {
+    background-color: var(--dndInkSoft);
+    color: var(--colors-white);
+    border: none;
+    padding: var(--spacing-1) var(--spacing-2);
+    border-radius: var(--radius-1);
+    font-size: var(--font-size-2);
+    cursor: pointer;
+    transition: background-color var(--motion-duration-base) var(--motion-ease-standard);
+
+    &:disabled
+    {
+      opacity: var(--opacity-disabled);
+      cursor: not-allowed;
+    }
+  }
+
+  &__actionButton
+  {
+    &--add.rollGrid__actionButton--active
+    {
+      background-color: var(--colors-green);
+    }
+
+    &--subtract.rollGrid__actionButton--active
+    {
+      background-color: var(--colors-darkRed);
+    }
+  }
+}

@@ -93,6 +93,18 @@
         {
             transform: var(--motion-transform-active);
         }
+
+        &--blocked
+        {
+            background: var(--colors-subtitle);
+            cursor: not-allowed;
+
+            &:hover
+            {
+                background: var(--colors-subtitle);
+                box-shadow: var(--shadow-3);
+            }
+        }
     }
 }
 

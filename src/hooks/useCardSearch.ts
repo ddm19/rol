@@ -1,12 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { fetchAllCards, CardDTO } from 'services/cardsService';
 
 export type Filters = {
   query: string;
   tipos: string[];
   colores: string[];
-  expansion: string | null;
-  rareza: string | null;
+  expansions: string[];
+  rarezas: string[];
   costeMin?: number | null;
   costeMax?: number | null;
 };
@@ -26,30 +26,26 @@ export function useCardSearch() {
   const [tipos, setTipos] = useState<string[]>([]);
   const [colores, setColores] = useState<string[]>([]);
   const [colorMatchMode, setColorMatchMode] = useState<'AND' | 'OR'>('OR');
-  const [expansion, setExpansion] = useState<string | null>(null);
-  const [rareza, setRareza] = useState<string | null>(null);
+  const [expansions, setExpansions] = useState<string[]>([]);
+  const [rarezas, setRarezas] = useState<string[]>([]);
   const [costeMin, setCosteMin] = useState<number | null>(null);
   const [costeMax, setCosteMax] = useState<number | null>(null);
   const [sort, setSort] = useState<SortOption>('name_asc');
 
+  const refetch = useCallback(async () => {
+    setLoading(true);
+    try {
+      const cards = await fetchAllCards();
+      setAll(cards);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   // fetch data once
   useEffect(() => {
-    let mounted = true;
-    (async () => {
-      setLoading(true);
-      try {
-        const cards = await fetchAllCards();
-        if (!mounted) return;
-        setAll(cards);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    })();
-
-    return () => {
-      mounted = false;
-    };
-  }, []);
+    refetch();
+  }, [refetch]);
 
   // debounce query
   useEffect(() => {
@@ -89,8 +85,14 @@ export function useCardSearch() {
         }
       }
 
-      if (expansion && normalizeString(c.expansion || '') !== normalizeString(expansion)) return false;
-      if (rareza && normalizeString(c.rareza || '') !== normalizeString(rareza)) return false;
+      if (expansions.length > 0) {
+        const ok = expansions.some((ex) => normalizeString(c.expansion || '') === normalizeString(ex));
+        if (!ok) return false;
+      }
+      if (rarezas.length > 0) {
+        const ok = rarezas.some((r) => normalizeString(c.rareza || '') === normalizeString(r));
+        if (!ok) return false;
+      }
 
       const coste = typeof c.coste === 'number' ? c.coste : null;
       if (costeMin != null && (coste == null || coste < costeMin)) return false;
@@ -108,7 +110,7 @@ export function useCardSearch() {
     });
 
     return sorted;
-  }, [all, debouncedQuery, tipos, colores, colorMatchMode, expansion, rareza, costeMin, costeMax, sort]);
+  }, [all, debouncedQuery, tipos, colores, colorMatchMode, expansions, rarezas, costeMin, costeMax, sort]);
 
   const availableTipos = useMemo(() => {
     const typesSet = new Set<string>();
@@ -129,10 +131,10 @@ export function useCardSearch() {
     setColores,
     colorMatchMode,
     setColorMatchMode,
-    expansion,
-    setExpansion,
-    rareza,
-    setRareza,
+    expansions,
+    setExpansions,
+    rarezas,
+    setRarezas,
     costeMin,
     setCosteMin,
     costeMax,
@@ -140,7 +142,8 @@ export function useCardSearch() {
     sort,
     setSort,
     all,
-    availableTipos
+    availableTipos,
+    refetch
   };
 }
 

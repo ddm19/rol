@@ -21,10 +21,10 @@ type Props = {
     setColoresSelected: (v: string[]) => void;
     colorMatchMode: 'AND' | 'OR';
     setColorMatchMode: (v: 'AND' | 'OR') => void;
-    expansion: string | null;
-    setExpansion: (v: string | null) => void;
-    rareza: string | null;
-    setRareza: (v: string | null) => void;
+    expansionsSelected: string[];
+    setExpansionsSelected: (v: string[]) => void;
+    rarezasSelected: string[];
+    setRarezasSelected: (v: string[]) => void;
     costeMin: number | null;
     setCosteMin: (v: number | null) => void;
     costeMax: number | null;
@@ -67,10 +67,10 @@ const FiltersPanel: React.FC<Props> = (props) => {
         setColoresSelected,
         colorMatchMode,
         setColorMatchMode,
-        expansion,
-        setExpansion,
-        rareza,
-        setRareza,
+        expansionsSelected,
+        setExpansionsSelected,
+        rarezasSelected,
+        setRarezasSelected,
         costeMin,
         setCosteMin,
         costeMax,
@@ -81,6 +81,8 @@ const FiltersPanel: React.FC<Props> = (props) => {
 
     const [tiposSearch, setTiposSearch] = useState('');
     const [showAllTipos, setShowAllTipos] = useState(false);
+    const [expansionSearch, setExpansionSearch] = useState('');
+    const [showAllExpansions, setShowAllExpansions] = useState(false);
 
     const toggleTipo = (t: string) => {
         if (tiposSelected.includes(t)) setTiposSelected(tiposSelected.filter((x) => x !== t));
@@ -92,18 +94,30 @@ const FiltersPanel: React.FC<Props> = (props) => {
         else setColoresSelected([...coloresSelected, c]);
     };
 
+    const toggleExpansion = (ex: string) => {
+        if (expansionsSelected.includes(ex)) setExpansionsSelected(expansionsSelected.filter((x) => x !== ex));
+        else setExpansionsSelected([...expansionsSelected, ex]);
+    };
+
+    const toggleRareza = (r: string) => {
+        if (rarezasSelected.includes(r)) setRarezasSelected(rarezasSelected.filter((x) => x !== r));
+        else setRarezasSelected([...rarezasSelected, r]);
+    };
+
     const onReset = () => {
         setQuery('');
         setTiposSelected([]);
         setColoresSelected([]);
         setColorMatchMode('OR');
-        setExpansion(null);
-        setRareza(null);
+        setExpansionsSelected([]);
+        setRarezasSelected([]);
         setCosteMin(null);
         setCosteMax(null);
         setSort('name_asc');
         setTiposSearch('');
         setShowAllTipos(false);
+        setExpansionSearch('');
+        setShowAllExpansions(false);
     };
 
     const { generalTipos, subTipos } = useMemo(() => {
@@ -133,6 +147,12 @@ const FiltersPanel: React.FC<Props> = (props) => {
     }, [subTipos, tiposSearch]);
 
     const visibleSubTipos = showAllTipos || tiposSearch ? filteredSubTipos : filteredSubTipos.slice(0, 8);
+
+    const filteredExpansions = useMemo(() => {
+        return expansions.filter((ex) => normalizeString(ex).includes(normalizeString(expansionSearch)));
+    }, [expansions, expansionSearch]);
+
+    const visibleExpansions = showAllExpansions || expansionSearch ? filteredExpansions : filteredExpansions.slice(0, 8);
 
     const actualMin = costeMin ?? 0;
     const actualMax = costeMax ?? maxCostAvailable;
@@ -234,29 +254,48 @@ const FiltersPanel: React.FC<Props> = (props) => {
                 </div>
             </div>
 
-            <div className="cardsFilters__section two-column">
-                <div>
-                    <label className="cardsFilters__label">Expansión</label>
-                    <select className="cardsFilters__select" value={expansion || ''} onChange={(e) => setExpansion(e.target.value || null)}>
-                        <option value="">Todas</option>
-                        {expansions.map((ex) => (
-                            <option key={ex} value={ex}>
-                                {ex}
-                            </option>
-                        ))}
-                    </select>
+            <div className="cardsFilters__section">
+                <label className="cardsFilters__label">Expansión</label>
+                {expansions.length > 8 && (
+                    <input
+                        className="cardsFilters__input cardsFilters__input--search"
+                        placeholder="Buscar expansión..."
+                        value={expansionSearch}
+                        onChange={(e) => setExpansionSearch(e.target.value)}
+                    />
+                )}
+                <div className="cardsFilters__chips">
+                    {visibleExpansions.map((ex) => (
+                        <button
+                            key={ex}
+                            type="button"
+                            className={`chip ${expansionsSelected.includes(ex) ? 'is-active' : ''}`}
+                            onClick={() => toggleExpansion(ex)}
+                        >
+                            {ex}
+                        </button>
+                    ))}
                 </div>
+                {!expansionSearch && filteredExpansions.length > 8 && (
+                    <button type="button" className="cardsFilters__moreBtn link link--bold" onClick={() => setShowAllExpansions(!showAllExpansions)}>
+                        {showAllExpansions ? 'Ver menos...' : `Ver ${filteredExpansions.length - 8} más...`}
+                    </button>
+                )}
+            </div>
 
-                <div>
-                    <label className="cardsFilters__label">Rareza</label>
-                    <select className="cardsFilters__select" value={rareza || ''} onChange={(e) => setRareza(e.target.value || null)}>
-                        <option value="">Todas</option>
-                        {rarezas.map((r) => (
-                            <option key={r} value={r}>
-                                {r}
-                            </option>
-                        ))}
-                    </select>
+            <div className="cardsFilters__section">
+                <label className="cardsFilters__label">Rareza</label>
+                <div className="cardsFilters__chips">
+                    {rarezas.map((r) => (
+                        <button
+                            key={r}
+                            type="button"
+                            className={`chip ${rarezasSelected.includes(r) ? 'is-active' : ''}`}
+                            onClick={() => toggleRareza(r)}
+                        >
+                            {r}
+                        </button>
+                    ))}
                 </div>
             </div>
 

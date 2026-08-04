@@ -17,6 +17,7 @@ import PrivateRoute from "components/NavBar/PrivateRoute/privateRoute";
 import VillazarcilloPage from "pages/VillazarcilloPage/villazarciloPage";
 import PJMaker from "pages/PjMaker/PjMaker";
 import AdminPage from "pages/AdminPage/adminPage";
+import AdminCardsPage from "pages/AdminCards/adminCardsPage";
 import AdminRoute from "components/NavBar/PrivateRoute/adminRoute";
 import RuleSearch from "pages/RulesSearcher/RuleSearch";
 import CharacterSheetForm from "components/characterSheet/CharacterSheetForm";
@@ -64,6 +65,11 @@ function App() {
           <Route path="/admin" element={
             <AdminRoute>
               <AdminPage />
+            </AdminRoute>
+          } />
+          <Route path="/admin/cards" element={
+            <AdminRoute>
+              <AdminCardsPage />
             </AdminRoute>
           } />
           <Route path="/profile" element={

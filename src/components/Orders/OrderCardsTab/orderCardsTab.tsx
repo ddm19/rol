@@ -15,6 +15,7 @@ import { CardDTO } from 'services/cardsService';
 import { createCardOrder, OrderItem } from 'services/ordersService';
 import useCardSearch from 'hooks/useCardSearch';
 import { useCardOrderCart } from 'hooks/useCardOrderCart';
+import { useBlockedExpansions } from 'hooks/useBlockedExpansions';
 import './orderCardsTab.scss';
 
 const OrderCardsTab: React.FC = () => {
@@ -29,12 +30,16 @@ const OrderCardsTab: React.FC = () => {
         clearCart,
         maxCardQuantity
     } = useCardOrderCart();
+    const { isBlocked } = useBlockedExpansions();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [showSearchResults, setShowSearchResults] = useState(false);
 
+    const blockedCartItems = cart.filter((sc) => isBlocked(sc.card.expansion));
+
     const handleSelectCard = (card: CardDTO) => {
+        if (isBlocked(card.expansion)) return;
         addCard(card);
     };
 
@@ -58,6 +63,11 @@ const OrderCardsTab: React.FC = () => {
 
             if (cart.length === 0) {
                 setError('Debes seleccionar al menos una carta');
+                return;
+            }
+
+            if (blockedCartItems.length > 0) {
+                setError(`Elimina del carrito las cartas de expansiones no disponibles: ${blockedCartItems.map((sc) => sc.card.nombre).join(', ')}`);
                 return;
             }
 
@@ -126,20 +136,27 @@ const OrderCardsTab: React.FC = () => {
 
                     {showSearchResults && query && searchResults.length > 0 && (
                         <div className="orderCardsTab__searchResults">
-                            {searchResults.slice(0, 10).map(card => (
-                                <button
-                                    key={card.id_archivo}
-                                    className="orderCardsTab__resultItem"
-                                    onClick={() => {
-                                        handleSelectCard(card);
-                                        setShowSearchResults(false);
-                                    }}
-                                >
-                                    <span className="orderCardsTab__resultName">{card.nombre}</span>
-                                    <span className="orderCardsTab__resultExpansion">{card.expansion}</span>
-                                    <FontAwesomeIcon icon={faPlus} className="orderCardsTab__resultAddIcon" />
-                                </button>
-                            ))}
+                            {searchResults.slice(0, 10).map(card => {
+                                const blocked = isBlocked(card.expansion);
+                                return (
+                                    <button
+                                        key={card.id_archivo}
+                                        className={`orderCardsTab__resultItem${blocked ? ' orderCardsTab__resultItem--blocked' : ''}`}
+                                        disabled={blocked}
+                                        title={blocked ? 'Solo en Sobres' : undefined}
+                                        onClick={() => {
+                                            handleSelectCard(card);
+                                            setShowSearchResults(false);
+                                        }}
+                                    >
+                                        <span className="orderCardsTab__resultName">{card.nombre}</span>
+                                        <span className="orderCardsTab__resultExpansion">
+                                            {blocked ? 'Solo en Sobres' : card.expansion}
+                                        </span>
+                                        {!blocked && <FontAwesomeIcon icon={faPlus} className="orderCardsTab__resultAddIcon" />}
+                                    </button>
+                                );
+                            })}
                         </div>
                     )}
 
@@ -183,62 +200,68 @@ const OrderCardsTab: React.FC = () => {
                         </div>
                     ) : (
                         <div className="orderCardsTab__selectedList">
-                            {cart.map(({ card, quantity }) => (
-                                <div key={card.id_archivo} className="orderCardsTab__selectedCard">
-                                    <div className="orderCardsTab__cardImage">
-                                        <img
-                                            src={card.imagen_url || '/images/card-fallback.png'}
-                                            alt={card.nombre}
-                                            onError={(e) => {
-                                                e.currentTarget.src = '/images/card-fallback.png';
-                                            }}
-                                        />
-                                    </div>
+                            {cart.map(({ card, quantity }) => {
+                                const blocked = isBlocked(card.expansion);
+                                return (
+                                    <div key={card.id_archivo} className={`orderCardsTab__selectedCard${blocked ? ' orderCardsTab__selectedCard--blocked' : ''}`}>
+                                        <div className="orderCardsTab__cardImage">
+                                            <img
+                                                src={card.imagen_url || '/images/card-fallback.png'}
+                                                alt={card.nombre}
+                                                onError={(e) => {
+                                                    e.currentTarget.src = '/images/card-fallback.png';
+                                                }}
+                                            />
+                                        </div>
 
-                                    <div className="orderCardsTab__cardInfo">
-                                        <div className="orderCardsTab__cardName">{card.nombre}</div>
-                                        <div className="orderCardsTab__cardExpansion">{card.expansion}</div>
-                                    </div>
+                                        <div className="orderCardsTab__cardInfo">
+                                            <div className="orderCardsTab__cardName">{card.nombre}</div>
+                                            <div className="orderCardsTab__cardExpansion">{card.expansion}</div>
+                                            {blocked && (
+                                                <div className="orderCardsTab__cardBlockedWarning">Solo en Sobres</div>
+                                            )}
+                                        </div>
 
-                                    <div className="orderCardsTab__quantityControl">
+                                        <div className="orderCardsTab__quantityControl">
+                                            <button
+                                                className="orderCardsTab__quantityBtn"
+                                                onClick={() => handleUpdateQuantity(card.id_archivo, quantity - 1)}
+                                                aria-label="Disminuir cantidad"
+                                            >
+                                                <FontAwesomeIcon icon={faMinus} />
+                                            </button>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                max={maxCardQuantity}
+                                                value={quantity}
+                                                onChange={(e) => {
+                                                    const val = parseInt(e.target.value) || 1;
+                                                    handleUpdateQuantity(card.id_archivo, val);
+                                                }}
+                                                className="orderCardsTab__quantityInput"
+                                            />
+                                            <button
+                                                className="orderCardsTab__quantityBtn"
+                                                onClick={() => handleUpdateQuantity(card.id_archivo, quantity + 1)}
+                                                disabled={quantity >= maxCardQuantity}
+                                                aria-label="Aumentar cantidad"
+                                            >
+                                                <FontAwesomeIcon icon={faPlus} />
+                                            </button>
+                                        </div>
+
                                         <button
-                                            className="orderCardsTab__quantityBtn"
-                                            onClick={() => handleUpdateQuantity(card.id_archivo, quantity - 1)}
-                                            aria-label="Disminuir cantidad"
+                                            className="orderCardsTab__removeButton"
+                                            onClick={() => handleRemoveCard(card.id_archivo)}
+                                            title="Eliminar carta"
+                                            aria-label="Eliminar carta"
                                         >
-                                            <FontAwesomeIcon icon={faMinus} />
-                                        </button>
-                                        <input
-                                            type="number"
-                                            min="1"
-                                            max={maxCardQuantity}
-                                            value={quantity}
-                                            onChange={(e) => {
-                                                const val = parseInt(e.target.value) || 1;
-                                                handleUpdateQuantity(card.id_archivo, val);
-                                            }}
-                                            className="orderCardsTab__quantityInput"
-                                        />
-                                        <button
-                                            className="orderCardsTab__quantityBtn"
-                                            onClick={() => handleUpdateQuantity(card.id_archivo, quantity + 1)}
-                                            disabled={quantity >= maxCardQuantity}
-                                            aria-label="Aumentar cantidad"
-                                        >
-                                            <FontAwesomeIcon icon={faPlus} />
+                                            <FontAwesomeIcon icon={faTrash} />
                                         </button>
                                     </div>
-
-                                    <button
-                                        className="orderCardsTab__removeButton"
-                                        onClick={() => handleRemoveCard(card.id_archivo)}
-                                        title="Eliminar carta"
-                                        aria-label="Eliminar carta"
-                                    >
-                                        <FontAwesomeIcon icon={faTrash} />
-                                    </button>
-                                </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
@@ -261,7 +284,8 @@ const OrderCardsTab: React.FC = () => {
                     <button
                         className="orderCardsTab__button"
                         onClick={handleOrderCards}
-                        disabled={loading || cart.length === 0}
+                        disabled={loading || cart.length === 0 || blockedCartItems.length > 0}
+                        title={blockedCartItems.length > 0 ? 'Elimina del carrito las cartas no disponibles para continuar' : undefined}
                     >
                         {loading ? 'Procesando...' : `Pedir ${totalQuantity} carta${totalQuantity !== 1 ? 's' : ''}`}
                     </button>

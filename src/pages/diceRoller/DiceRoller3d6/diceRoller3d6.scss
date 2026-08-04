@@ -1,0 +1,41 @@
+.diceRoller3d6
+{
+  &__secondRollControls
+  {
+    display: flex;
+    justify-content: center;
+  }
+
+  &__comparison
+  {
+    display: flex;
+    gap: var(--spacing-3);
+    width: 100%;
+
+    @media (max-width: 700px)
+    {
+      flex-direction: column;
+    }
+  }
+
+  &__rollSet
+  {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-2);
+    flex: 1;
+  }
+
+  &__separator
+  {
+    border-left: var(--border-size-1) solid var(--dndGoldTint45);
+    align-self: stretch;
+
+    @media (max-width: 700px)
+    {
+      border-left: none;
+      border-top: var(--border-size-1) solid var(--dndGoldTint45);
+    }
+  }
+}

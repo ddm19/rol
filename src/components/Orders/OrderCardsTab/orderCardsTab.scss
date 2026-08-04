@@ -197,6 +197,17 @@
         {
             background: var(--dndRow2);
         }
+
+        &--blocked
+        {
+            cursor: not-allowed;
+            opacity: var(--opacity-muted);
+
+            &:hover
+            {
+                background: none;
+            }
+        }
     }
 
     &__resultName
@@ -285,6 +296,18 @@
             border-color: var(--dndGold);
             box-shadow: var(--shadow-1);
         }
+
+        &--blocked
+        {
+            border-color: var(--colors-mediumRed);
+        }
+    }
+
+    &__cardBlockedWarning
+    {
+        color: var(--colors-mediumRed);
+        font-size: var(--font-size-2);
+        font-weight: var(--font-weight-4);
     }
 
     &__cardImage

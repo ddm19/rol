@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFileAudio, faUsers, faPuzzlePiece, faUserCog, faBook, faDiceD20 } from '@fortawesome/free-solid-svg-icons'
+import { faFileAudio, faUsers, faPuzzlePiece, faUserCog, faBook, faDiceD20, faHeart } from '@fortawesome/free-solid-svg-icons'
 import './Footer.scss'
 import { Link } from 'react-router-dom';
 
@@ -16,7 +16,17 @@ const Footer: React.FC = () => {
         <div className="footerContainer">
             <div>
                 <h2 className='footerText'>Hispania</h2>
-                <p className='footerText'>© 2025 Ddm19Dev.</p>
+                <p className='footerText'>© 2026 TheDM</p>
+                <p className="footerText">
+                    <a
+                        href="https://www.thedm.es"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="footerText mylink"
+                    >
+                        Hecho por <strong>The DM</strong> con <FontAwesomeIcon icon={faHeart} />
+                    </a>
+                </p>
                 <p className='footerText'>  All rights reserved.</p>
             </div>
             <div className='externalToolsContainer'>

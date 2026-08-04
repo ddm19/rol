@@ -28,6 +28,7 @@ const OrderBoosterTab: React.FC = () => {
     // selection: 'normal' | 'leyenda'
     const [selection, setSelection] = useState<'normal' | 'leyenda'>('normal');
 
+
     useEffect(() => {
         if (user?.id) {
             loadWeeklyData();
@@ -224,6 +225,9 @@ const OrderBoosterTab: React.FC = () => {
                 </div>
 
                 <div className="orderBoosterTab__actionSection">
+
+
+
                     {error && (
                         <div className="orderBoosterTab__error">
                             <FontAwesomeIcon icon={faExclamationCircle} />

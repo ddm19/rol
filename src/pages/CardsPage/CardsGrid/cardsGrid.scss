@@ -19,13 +19,16 @@
     &__name
     {
         font-weight: bold;
-        color: var(--colors-darkRed);
-        font-size: var(--font-size-2);
+        color: var(--colors-font);
+        text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        font-size: var(--font-size-3);
         font-style: italic;
         flex: 1;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        text-align: center;
+
     }
 
     &__addButton
@@ -46,6 +49,8 @@
             box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
             background var(--motion-duration-fast) var(--motion-ease-standard);
 
+        padding: var(--spacing-2);
+        margin: var(--spacing-2) 0;
 
         &:hover
         {
@@ -68,6 +73,18 @@
                 box-shadow: var(--shadow-2);
             }
         }
+
+        &--blocked
+        {
+            background: var(--colors-subtitle);
+            cursor: not-allowed;
+
+            &:hover
+            {
+                background: var(--colors-subtitle);
+                box-shadow: none;
+            }
+        }
     }
 }
 
@@ -82,6 +99,9 @@
     flex-direction: column;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
+    justify-content: space-between;
+    height: -webkit-fill-available;
+    padding: var(--spacing-2);
 
     &:hover
     {
@@ -92,7 +112,6 @@
     .cardsGrid__imageWrapper
     {
         width: 100%;
-        aspect-ratio: 2.5 / 3.5;
         background-color: rgba(0, 0, 0, 0.05);
         display: flex;
         justify-content: center;
@@ -101,10 +120,8 @@
         img
         {
             width: 100%;
-            height: 100%;
+            height: auto;
             display: block;
-            object-fit: cover;
-
         }
     }
 
@@ -153,36 +170,4 @@
         box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
     }
 
-    &__addButton
-    {
-        transform: scale(2);
-        width: 100%;
-        min-height: 2.5rem;
-        border: none;
-        border-radius: var(--radius-2);
-        background: var(--orders-primary-gradient);
-        color: var(--colors-white);
-        cursor: pointer;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: var(--spacing-2);
-        font-size: var(--font-size-3);
-        font-weight: var(--font-weight-4);
-        transition: transform var(--motion-duration-fast) var(--motion-ease-standard),
-            box-shadow var(--motion-duration-fast) var(--motion-ease-standard),
-            background var(--motion-duration-fast) var(--motion-ease-standard);
-
-
-        &:hover
-        {
-            background: var(--orders-primary-hover-gradient);
-            box-shadow: var(--shadow-2);
-        }
-
-        &:active
-        {
-            transform: var(--motion-transform-active);
-        }
-    }
 }

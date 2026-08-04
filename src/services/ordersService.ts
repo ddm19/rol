@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { assertCardsNotBlocked, assertExpansionNotBlocked } from './expansionLocks';
 
 export type OrderItem = {
   card_id_archivo: string;
@@ -52,6 +53,8 @@ export async function createCardOrder(
   userId: string,
   items: OrderItem[]
 ): Promise<OrderRecord> {
+  await assertCardsNotBlocked(items.map((item) => item.card_id_archivo));
+
   const { data: order, error: orderError } = await supabase
     .from('tcg_orders')
     .insert([
@@ -99,6 +102,8 @@ export async function createBoosterOrder(
   expansion: string,
   quantity: number
 ): Promise<BoosterOrder> {
+  await assertExpansionNotBlocked(expansion);
+
   const { data, error } = await supabase
     .from('tcg_booster_orders')
     .insert([
