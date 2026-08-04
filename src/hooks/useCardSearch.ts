@@ -11,7 +11,7 @@ export type Filters = {
   costeMax?: number | null;
 };
 
-export type SortOption = 'name_asc' | 'cost_asc' | 'cost_desc';
+export type SortOption = 'name_asc' | 'cost_asc' | 'cost_desc' | 'expansion_asc';
 
 export const normalizeString = (str: string) => {
   if (!str) return '';
@@ -106,6 +106,7 @@ export function useCardSearch() {
       if (sort === 'name_asc') return a.nombre.localeCompare(b.nombre);
       if (sort === 'cost_asc') return (a.coste || 0) - (b.coste || 0);
       if (sort === 'cost_desc') return (b.coste || 0) - (a.coste || 0);
+      if (sort === 'expansion_asc') return (a.expansion || '').localeCompare(b.expansion || '') || a.nombre.localeCompare(b.nombre);
       return 0;
     });
 

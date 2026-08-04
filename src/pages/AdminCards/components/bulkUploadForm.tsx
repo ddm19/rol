@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck, faSpinner, faTriangleExclamation, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { AdminCardInput, normalizeKey, uploadCardImage, upsertCardFull } from 'services/cardsService';
@@ -54,6 +54,17 @@ const BulkUploadForm: React.FC = () => {
     const [jsonError, setJsonError] = useState<string | null>(null);
     const [imageFiles, setImageFiles] = useState<File[]>([]);
     const [processing, setProcessing] = useState(false);
+
+
+    useEffect(() => {
+        const preventDefault = (e: DragEvent) => e.preventDefault();
+        window.addEventListener('dragover', preventDefault);
+        window.addEventListener('drop', preventDefault);
+        return () => {
+            window.removeEventListener('dragover', preventDefault);
+            window.removeEventListener('drop', preventDefault);
+        };
+    }, []);
 
     const imageMap = useMemo(() => {
         const map = new Map<string, File>();
@@ -112,14 +123,20 @@ const BulkUploadForm: React.FC = () => {
 
     const [isDraggingJson, setIsDraggingJson] = useState(false);
 
-    const handleJsonDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        setIsDraggingJson(false);
-        processJsonFile(e.dataTransfer.files?.[0] || null);
+    const jsonDropHandlers = {
+        onDragEnter: (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDraggingJson(true); },
+        onDragOver: (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDraggingJson(true); },
+        onDragLeave: (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDraggingJson(false); },
+        onDrop: (e: React.DragEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDraggingJson(false);
+            processJsonFile(e.dataTransfer.files?.[0] || null);
+        },
     };
 
     const processImageFiles = (files: FileList | File[] | null) => {
-        if (!files) return;
+        if (!files || files.length === 0) return;
         setImageFiles(Array.from(files));
     };
 
@@ -129,10 +146,16 @@ const BulkUploadForm: React.FC = () => {
 
     const [isDraggingImages, setIsDraggingImages] = useState(false);
 
-    const handleImagesDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        setIsDraggingImages(false);
-        processImageFiles(e.dataTransfer.files);
+    const imagesDropHandlers = {
+        onDragEnter: (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDraggingImages(true); },
+        onDragOver: (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDraggingImages(true); },
+        onDragLeave: (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDraggingImages(false); },
+        onDrop: (e: React.DragEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDraggingImages(false);
+            processImageFiles(e.dataTransfer.files);
+        },
     };
 
     const updateRow = (index: number, patch: Partial<Row>) => {
@@ -171,18 +194,14 @@ const BulkUploadForm: React.FC = () => {
             <div className="adminCardBulk__inputs">
                 <div
                     className={`adminCardForm__group adminCardForm__dropZone${isDraggingJson ? ' is-dragging' : ''}`}
-                    onDragOver={(e) => { e.preventDefault(); setIsDraggingJson(true); }}
-                    onDragLeave={() => setIsDraggingJson(false)}
-                    onDrop={handleJsonDrop}
+                    {...jsonDropHandlers}
                 >
                     <label htmlFor="bulk-json">Archivo JSON con las cartas — o arrástralo aquí</label>
                     <input id="bulk-json" type="file" accept="application/json" onChange={handleJsonFile} />
                 </div>
                 <div
                     className={`adminCardForm__group adminCardForm__dropZone${isDraggingImages ? ' is-dragging' : ''}`}
-                    onDragOver={(e) => { e.preventDefault(); setIsDraggingImages(true); }}
-                    onDragLeave={() => setIsDraggingImages(false)}
-                    onDrop={handleImagesDrop}
+                    {...imagesDropHandlers}
                 >
                     <label htmlFor="bulk-images">Imágenes (PNG, selección múltiple) — o arrástralas aquí</label>
                     <input id="bulk-images" type="file" accept="image/png" multiple onChange={handleImageFiles} />

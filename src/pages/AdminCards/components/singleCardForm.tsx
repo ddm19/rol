@@ -77,7 +77,7 @@ const SingleCardForm: React.FC<Props> = ({ initialCard, onSaved, onCancel }) => 
                 setRarezas(f.rarezas || []);
                 setTiposSugeridos(f.tipos || []);
             })
-            .catch(() => { /* sugerencias opcionales, se ignora el fallo */ });
+            .catch(() => { });
     }, []);
 
     useEffect(() => {
@@ -118,10 +118,26 @@ const SingleCardForm: React.FC<Props> = ({ initialCard, onSaved, onCancel }) => 
 
     const [isDraggingImage, setIsDraggingImage] = useState(false);
 
-    const handleImageDrop = (e: React.DragEvent<HTMLDivElement>) => {
-        e.preventDefault();
-        setIsDraggingImage(false);
-        processImageFile(e.dataTransfer.files?.[0] || null);
+    useEffect(() => {
+        const preventDefault = (e: DragEvent) => e.preventDefault();
+        window.addEventListener('dragover', preventDefault);
+        window.addEventListener('drop', preventDefault);
+        return () => {
+            window.removeEventListener('dragover', preventDefault);
+            window.removeEventListener('drop', preventDefault);
+        };
+    }, []);
+
+    const imageDropHandlers = {
+        onDragEnter: (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDraggingImage(true); },
+        onDragOver: (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDraggingImage(true); },
+        onDragLeave: (e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); e.stopPropagation(); setIsDraggingImage(false); },
+        onDrop: (e: React.DragEvent<HTMLDivElement>) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setIsDraggingImage(false);
+            processImageFile(e.dataTransfer.files?.[0] || null);
+        },
     };
 
     const resetForKeepingContext = () => {
@@ -312,9 +328,7 @@ const SingleCardForm: React.FC<Props> = ({ initialCard, onSaved, onCancel }) => 
 
             <div
                 className={`adminCardForm__group adminCardForm__dropZone${isDraggingImage ? ' is-dragging' : ''}`}
-                onDragOver={(e) => { e.preventDefault(); setIsDraggingImage(true); }}
-                onDragLeave={() => setIsDraggingImage(false)}
-                onDrop={handleImageDrop}
+                {...imageDropHandlers}
             >
                 <label htmlFor="imagen">Imagen (PNG){isEditing ? ' — deja vacío para mantener la actual' : ''} — o arrástrala aquí</label>
                 <input id="imagen" type="file" accept="image/png" onChange={handleFile} />
