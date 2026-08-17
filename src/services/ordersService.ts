@@ -102,7 +102,6 @@ export async function createBoosterOrder(
   expansion: string,
   quantity: number
 ): Promise<BoosterOrder> {
-  await assertExpansionNotBlocked(expansion);
 
   const { data, error } = await supabase
     .from('tcg_booster_orders')
@@ -123,10 +122,7 @@ export async function createBoosterOrder(
   return data;
 }
 
-/**
- * Obtener el coste en slots de un tipo de sobre.
- * Las expansiones con sufijo '-L' (Leyenda) ocupan 2 slots.
- */
+
 export function getBoosterSlotCost(expansion: string): number {
   if (!expansion) return 1;
   return expansion.endsWith('-L') ? 2 : 1;
