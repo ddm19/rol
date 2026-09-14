@@ -36,10 +36,10 @@ const OrderCardsTab: React.FC = () => {
     const [success, setSuccess] = useState(false);
     const [showSearchResults, setShowSearchResults] = useState(false);
 
-    const blockedCartItems = cart.filter((sc) => isBlocked(sc.card.expansion));
+    const blockedCartItems = cart.filter((sc) => isBlocked(sc.card.expansion, sc.card.rareza));
 
     const handleSelectCard = (card: CardDTO) => {
-        if (isBlocked(card.expansion)) return;
+        if (isBlocked(card.expansion, card.rareza)) return;
         addCard(card);
     };
 
@@ -137,7 +137,7 @@ const OrderCardsTab: React.FC = () => {
                     {showSearchResults && query && searchResults.length > 0 && (
                         <div className="orderCardsTab__searchResults">
                             {searchResults.slice(0, 10).map(card => {
-                                const blocked = isBlocked(card.expansion);
+                                const blocked = isBlocked(card.expansion, card.rareza);
                                 return (
                                     <button
                                         key={card.id_archivo}
@@ -201,7 +201,7 @@ const OrderCardsTab: React.FC = () => {
                     ) : (
                         <div className="orderCardsTab__selectedList">
                             {cart.map(({ card, quantity }) => {
-                                const blocked = isBlocked(card.expansion);
+                                const blocked = isBlocked(card.expansion, card.rareza);
                                 return (
                                     <div key={card.id_archivo} className={`orderCardsTab__selectedCard${blocked ? ' orderCardsTab__selectedCard--blocked' : ''}`}>
                                         <div className="orderCardsTab__cardImage">

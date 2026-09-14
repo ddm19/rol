@@ -1,16 +1,16 @@
 import { useCallback, useEffect, useState } from 'react';
-import { fetchBlockedExpansionSet, normalizeExpansionKey } from 'services/expansionLocks';
+import { fetchBlockedRarezasByExpansion, isRarezaBlocked } from 'services/expansionLocks';
 
 export function useBlockedExpansions() {
-    const [blockedSet, setBlockedSet] = useState<Set<string>>(new Set());
+    const [blockedMap, setBlockedMap] = useState<Map<string, Set<string>>>(new Map());
     const [loading, setLoading] = useState(true);
 
     const reload = useCallback(async () => {
         try {
-            const set = await fetchBlockedExpansionSet();
-            setBlockedSet(set);
+            const map = await fetchBlockedRarezasByExpansion();
+            setBlockedMap(map);
         } catch (err) {
-            console.error('Error cargando expansiones bloqueadas', err);
+            console.error('Error cargando rarezas bloqueadas', err);
         } finally {
             setLoading(false);
         }
@@ -21,8 +21,8 @@ export function useBlockedExpansions() {
     }, [reload]);
 
     const isBlocked = useCallback(
-        (expansion?: string | null) => (expansion ? blockedSet.has(normalizeExpansionKey(expansion)) : false),
-        [blockedSet]
+        (expansion?: string | null, rareza?: string | null) => isRarezaBlocked(blockedMap, expansion, rareza),
+        [blockedMap]
     );
 
     return { isBlocked, loading, reload };
