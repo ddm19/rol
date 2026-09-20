@@ -83,3 +83,24 @@ main
     display: none;
   }
 }
+
+button
+{
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  transition: all 150ms ease;
+  background-color: var(--colors-darkOrange);
+  padding: var(--spacing-2) var(--spacing-4);
+  border-radius: var(--spacing-2);
+  color: var(--colors-black);
+  font-weight: bold;
+
+  &:hover
+  {
+    transform: translateY(-2px);
+  }
+}
