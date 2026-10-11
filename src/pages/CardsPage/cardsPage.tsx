@@ -95,7 +95,7 @@ const CardsPage: React.FC = () => {
                 <CardsGrid
                     cards={results}
                     onSelect={(card) => setActive(card)}
-                    onAddToCart={(card) => { if (!isBlocked(card.expansion)) addCard(card); }}
+                    onAddToCart={(card) => { if (!isBlocked(card.expansion, card.rareza)) addCard(card); }}
                     isExpansionBlocked={isBlocked}
                 />
             </div>
@@ -109,8 +109,8 @@ const CardsPage: React.FC = () => {
                         <img src={active.imagen_url || '/images/card-fallback.png'} alt={active.nombre} />
                         <button
                             type="button"
-                            className={`modalContent__addButton${isBlocked(active.expansion) ? ' modalContent__addButton--blocked' : ''}`}
-                            disabled={isBlocked(active.expansion)}
+                            className={`modalContent__addButton${isBlocked(active.expansion, active.rareza) ? ' modalContent__addButton--blocked' : ''}`}
+                            disabled={isBlocked(active.expansion, active.rareza)}
                             onClick={(event) => {
                                 addCard(active)
                                 const button = event.currentTarget;
@@ -128,7 +128,7 @@ const CardsPage: React.FC = () => {
                             aria-label={`Añadir ${active.nombre} al pedido`}
                         >
                             <FontAwesomeIcon icon={faCartPlus} />
-                            <span>{isBlocked(active.expansion) ? 'Solo en Sobres' : 'Añadir al pedido'}</span>
+                            <span>{isBlocked(active.expansion, active.rareza) ? 'Solo en Sobres' : 'Añadir al pedido'}</span>
                         </button>
                     </div>
                 </div>

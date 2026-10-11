@@ -90,12 +90,19 @@
         display: flex;
         padding: var(--spacing-2) var(--spacing-4);
         border-radius: var(--spacing-2);
-        color: var(--colors-white);
         font-weight: bold;
         font-size: var(--font-size-5);
         cursor: pointer;
         transition: transform 120ms ease;
         gap: var(--spacing-2);
+        background-color: var(--colors-darkOrange);
+        border: none;
+        transition: all 150ms ease;
+
+        &:hover
+        {
+            transform: translateY(-2px);
+        }
     }
 
     &__field
@@ -131,9 +138,10 @@
         padding: var(--spacing-2) var(--spacing-4);
         border-radius: var(--spacing-2);
         background: var(--colors-darkOrange);
-        color: var(--colors-white);
+        color: var(--colors-black);
         border: 1px solid var(--colors-darkOrange);
         cursor: pointer;
+        font-weight: bold;
     }
 
     &__avatarModal
@@ -264,5 +272,23 @@
             color: var(--colors-white);
             border-color: var(--colors-darkOrange);
         }
+    }
+
+    &__rohCode
+    {
+        font-size: var(--font-size-4);
+        margin-top: var(--spacing-2);
+        position: relative;
+        display: flex;
+        justify-content: center;
+        gap: var(--spacing-2);
+    }
+
+    #copiedMessage
+    {
+        display: none;
+        font-size: var(--font-size-3);
+        color: var(--colors-darkOrange);
+        margin-top: var(--spacing-1);
     }
 }

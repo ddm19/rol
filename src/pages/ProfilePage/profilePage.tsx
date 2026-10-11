@@ -7,10 +7,12 @@ import { AVATARS } from "services/avatars";
 import { getMyProfile, saveMyProfile } from "services/profiles";
 import Loading from "components/Loading/Loading";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
+import { faCopy, faPencil, faXmark } from "@fortawesome/free-solid-svg-icons";
 import AvatarSelector from "./components/avatarSelector";
 import SheetsList from "components/SheetList/sheetsList";
-import { Button } from "@mui/material";
+import { Button, Tooltip } from "@mui/material";
+import { display } from "html2canvas/dist/types/css/property-descriptors/display";
+import { generateROHCode } from "services/roh";
 
 
 
@@ -22,6 +24,8 @@ const ProfilePage: React.FC = () => {
     const [username, setUsername] = useState("");
     const [avatarKey, setAvatarKey] = useState<string | undefined>();
     const [editingAvatar, setEditingAvatar] = useState(false);
+    const [rohCode, setRohCode] = useState("");
+    const [loadingRohCode, setLoadingRohCode] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -105,7 +109,34 @@ const ProfilePage: React.FC = () => {
                             >
                                 Guardar
                             </button>
+
                         </div>
+                        {loadingRohCode ?
+                            <Loading /> :
+                            (
+                                <>
+                                    <span id="copiedMessage" >¡Copiado al portapapeles!</span>
+
+                                    <p className="profilePage__rohCode" onClick={() => {
+                                        navigator.clipboard.writeText(rohCode)
+                                        document.getElementById("copiedMessage")!.style.display = "inline";
+                                        setTimeout(() => {
+                                            document.getElementById("copiedMessage")!.style.display = "none";
+                                        }, 2000);
+                                    }}>
+                                        {rohCode}
+                                        {rohCode.length > 0 && <FontAwesomeIcon icon={faCopy} />}
+                                    </p>
+                                    <button onClick={() => {
+                                        setLoadingRohCode(true);
+                                        generateROHCode().then((code) => { setRohCode(code), setLoadingRohCode(false) })
+                                    }
+                                    }
+                                    >
+                                        Generar Código ROH
+                                    </button>
+                                </>
+                            )}
                     </div>
                 </div>
             </div>

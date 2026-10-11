@@ -8,7 +8,7 @@ type Props = {
     cards: CardDTO[];
     onSelect?: (card: CardDTO) => void;
     onAddToCart?: (card: CardDTO) => void;
-    isExpansionBlocked?: (expansion?: string | null) => boolean;
+    isExpansionBlocked?: (expansion?: string | null, rareza?: string | null) => boolean;
 };
 
 const fallback = '/images/card-fallback.png'; // Update to a working public path if needed
@@ -17,7 +17,7 @@ const CardsGrid: React.FC<Props> = ({ cards, onSelect, onAddToCart, isExpansionB
     return (
         <div className="cardsGrid">
             {cards.map((c) => {
-                const blocked = isExpansionBlocked?.(c.expansion) ?? false;
+                const blocked = isExpansionBlocked?.(c.expansion, c.rareza) ?? false;
                 return (
                     <div key={c.id_archivo} className="cardsGrid__card" onClick={() => c.imagen_url && onSelect?.(c)}>
                         <div className="cardsGrid__imageWrapper">

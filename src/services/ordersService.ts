@@ -1,5 +1,5 @@
 import { supabase } from './supabaseClient';
-import { assertCardsNotBlocked, assertExpansionNotBlocked } from './expansionLocks';
+import { assertCardsNotBlocked } from './expansionLocks';
 
 export type OrderItem = {
   card_id_archivo: string;
