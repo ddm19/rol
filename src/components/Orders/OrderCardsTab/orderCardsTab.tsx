@@ -28,7 +28,6 @@ const OrderCardsTab: React.FC = () => {
         removeCard,
         updateQuantity,
         clearCart,
-        maxCardQuantity
     } = useCardOrderCart();
     const { isBlocked } = useBlockedExpansions();
     const [loading, setLoading] = useState(false);
@@ -233,7 +232,6 @@ const OrderCardsTab: React.FC = () => {
                                             <input
                                                 type="number"
                                                 min="1"
-                                                max={maxCardQuantity}
                                                 value={quantity}
                                                 onChange={(e) => {
                                                     const val = parseInt(e.target.value) || 1;
@@ -244,7 +242,6 @@ const OrderCardsTab: React.FC = () => {
                                             <button
                                                 className="orderCardsTab__quantityBtn"
                                                 onClick={() => handleUpdateQuantity(card.id_archivo, quantity + 1)}
-                                                disabled={quantity >= maxCardQuantity}
                                                 aria-label="Aumentar cantidad"
                                             >
                                                 <FontAwesomeIcon icon={faPlus} />

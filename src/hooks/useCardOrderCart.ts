@@ -8,7 +8,6 @@ export type CardOrderCartItem = {
 
 const CART_STORAGE_KEY = 'hispania-card-order-cart';
 const CART_UPDATED_EVENT = 'hispania-card-order-cart-updated';
-const MAX_CARD_QUANTITY = 4;
 
 const canUseStorage = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
 
@@ -19,10 +18,9 @@ const normalizeCart = (items: CardOrderCartItem[]) => {
         if (!item?.card?.id_archivo) return;
 
         const existing = byId.get(item.card.id_archivo);
-        const quantity = Math.min(
-            MAX_CARD_QUANTITY,
+        const quantity = 
             Math.max(1, Math.floor(Number(item.quantity) || 1) + (existing?.quantity || 0))
-        );
+        
 
         byId.set(item.card.id_archivo, {
             card: existing?.card || item.card,
@@ -88,7 +86,7 @@ export function useCardOrderCart() {
 
             return current.map((item) =>
                 item.card.id_archivo === card.id_archivo
-                    ? { ...item, quantity: Math.min(MAX_CARD_QUANTITY, item.quantity + 1) }
+                    ? { ...item, quantity: item.quantity }
                     : item
             );
         });
@@ -106,7 +104,7 @@ export function useCardOrderCart() {
 
             return current.map((item) =>
                 item.card.id_archivo === cardId
-                    ? { ...item, quantity: Math.min(MAX_CARD_QUANTITY, quantity) }
+                    ? { ...item, quantity: quantity }
                     : item
             );
         });
@@ -128,6 +126,5 @@ export function useCardOrderCart() {
         removeCard,
         updateQuantity,
         clearCart,
-        maxCardQuantity: MAX_CARD_QUANTITY,
     };
 }
