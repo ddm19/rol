@@ -24,6 +24,8 @@ const CardsGrid: React.FC<Props> = ({ cards, onSelect, onAddToCart, isExpansionB
                             <img
                                 src={c.imagen_url || fallback}
                                 alt={c.nombre}
+                                loading="lazy"
+                                decoding="async"
                                 onError={(e) => {
                                     const t = e.currentTarget;
                                     if (t.src !== fallback) t.src = fallback;

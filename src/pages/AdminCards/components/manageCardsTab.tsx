@@ -87,7 +87,7 @@ const ManageCardsTab: React.FC = () => {
                                         <div className="adminCardManage__tileBody">
                                             <div className="adminCardManage__thumb">
                                                 {card.imagen_url ? (
-                                                    <img src={card.imagen_url} alt={card.nombre} />
+                                                    <img src={card.imagen_url} alt={card.nombre} loading="lazy" decoding="async" />
                                                 ) : (
                                                     <span>Sin imagen</span>
                                                 )}

@@ -207,6 +207,8 @@ const OrderCardsTab: React.FC = () => {
                                             <img
                                                 src={card.imagen_url || '/images/card-fallback.png'}
                                                 alt={card.nombre}
+                                                loading="lazy"
+                                                decoding="async"
                                                 onError={(e) => {
                                                     e.currentTarget.src = '/images/card-fallback.png';
                                                 }}

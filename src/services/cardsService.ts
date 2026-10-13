@@ -1,4 +1,5 @@
 import { supabase } from './supabaseClient';
+import { cachedQuery, invalidateCache, readCache } from './queryCache';
 
 export type CardRecord = {
   id_archivo: string;
@@ -31,44 +32,40 @@ export type CardDTO = CardRecord & {
   stats?: CardStatsRecord | null;
 };
 
-export async function fetchAllCards(): Promise<CardDTO[]> {
-  // Fetch base card records
-  const { data: cards, error: cardsError } = await supabase
+const CARDS_CACHE_KEY = 'cards:v1';
+const CARDS_CACHE_TTL_MS = 15 * 60 * 1000;
+
+type CardRow = CardRecord & {
+  card_types: { tipo: string }[] | null;
+  card_stats: CardStatsRecord | CardStatsRecord[] | null;
+};
+
+async function fetchAllCardsFromDb(): Promise<CardDTO[]> {
+  // Una sola petición: cartas con sus tipos y estadísticas embebidos
+  const { data, error } = await supabase
     .from('cards')
-    .select('*');
+    .select('*, card_types(tipo), card_stats(*)');
 
-  if (cardsError) throw cardsError;
-  if (!cards) return [];
+  if (error) throw error;
+  if (!data) return [];
 
-  // Fetch types and stats for all cards in parallel
-  const ids = cards.map((c) => c.id_archivo);
-
-  const { data: types } = await supabase
-    .from('card_types')
-    .select('*')
-    .in('card_id_archivo', ids as any);
-
-  const { data: stats } = await supabase
-    .from('card_stats')
-    .select('*')
-    .in('card_id_archivo', ids as any);
-
-  const typesById: Record<string, string[]> = {};
-  (types || []).forEach((t) => {
-    typesById[t.card_id_archivo] = typesById[t.card_id_archivo] || [];
-    typesById[t.card_id_archivo].push(t.tipo);
-  });
-
-  const statsById: Record<string, CardStatsRecord> = {};
-  (stats || []).forEach((s) => {
-    statsById[s.card_id_archivo] = s;
-  });
-
-  return cards.map((c) => ({
-    ...c,
-    types: typesById[c.id_archivo] || [],
-    stats: statsById[c.id_archivo] || null,
+  return (data as CardRow[]).map(({ card_types, card_stats, ...card }) => ({
+    ...card,
+    types: (card_types || []).map((t) => t.tipo),
+    stats: (Array.isArray(card_stats) ? card_stats[0] : card_stats) || null,
   }));
+}
+
+export function getCachedCards(): CardDTO[] | null {
+  return readCache<CardDTO[]>(CARDS_CACHE_KEY, CARDS_CACHE_TTL_MS);
+}
+
+export function invalidateCardsCache() {
+  invalidateCache(CARDS_CACHE_KEY);
+}
+
+export function fetchAllCards(options: { force?: boolean } = {}): Promise<CardDTO[]> {
+  return cachedQuery(CARDS_CACHE_KEY, CARDS_CACHE_TTL_MS, fetchAllCardsFromDb, options);
 }
 
 // --- Administración: alta de cartas ---
@@ -147,14 +144,14 @@ export async function uploadCardImage(file: File, idArchivo: string): Promise<st
   const { error } = await supabase.storage
     .from(CARD_IMAGES_BUCKET)
     .upload(safeName, file, {
-      cacheControl: '3600',
+      cacheControl: '31536000',
       upsert: true,
       contentType: file.type || 'image/png',
     });
   if (error) throw error;
 
   const { data } = supabase.storage.from(CARD_IMAGES_BUCKET).getPublicUrl(safeName);
-  return data.publicUrl;
+  return `${data.publicUrl}?v=${Date.now()}`;
 }
 
 export async function upsertCardFull(input: AdminCardInput): Promise<void> {
@@ -220,6 +217,8 @@ export async function upsertCardFull(input: AdminCardInput): Promise<void> {
       .eq('card_id_archivo', idArchivo);
     if (delStatsError) throw delStatsError;
   }
+
+  invalidateCardsCache();
 }
 
 export async function deleteCardFull(idArchivo: string): Promise<void> {
@@ -231,30 +230,27 @@ export async function deleteCardFull(idArchivo: string): Promise<void> {
 
   const { error: cardError } = await supabase.from('cards').delete().eq('id_archivo', idArchivo);
   if (cardError) throw cardError;
+
+  invalidateCardsCache();
 }
 
 export async function fetchFacets() {
-  // Fetch distinct values for filters: tipos, colores, expansions, rarezas, and max coste
-  const [{ data: tipos }, { data: colores }, { data: expansions }, { data: rarezas }, { data: cardsForCost }] = await Promise.all([
-    supabase.from('card_types').select('tipo').neq('tipo', null),
-    supabase.from('cards').select('color').neq('color', null),
-    supabase.from('cards').select('expansion').neq('expansion', null),
-    supabase.from('cards').select('rareza').neq('rareza', null),
-    supabase.from('cards').select('coste').neq('coste', null),
-  ]);
+  const cards = await fetchAllCards();
 
   const capitalize = (s: string) => {
     if (!s) return '';
     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
   };
+  const distinct = (values: (string | null | undefined)[]) =>
+    Array.from(new Set(values.filter((v): v is string => v != null).map(capitalize))).filter(Boolean);
 
-  const maxCost = cardsForCost?.reduce((max, c) => Math.max(max, c.coste || 0), 0) || 10;
+  const maxCost = cards.reduce((max, c) => Math.max(max, c.coste || 0), 0) || 10;
 
   return {
-    tipos: Array.from(new Set((tipos || []).map((t: any) => capitalize(t.tipo)))).filter(Boolean),
-    colores: Array.from(new Set((colores || []).map((c: any) => capitalize(c.color)))).filter(Boolean),
-    expansions: Array.from(new Set((expansions || []).map((e: any) => capitalize(e.expansion)))).filter(Boolean),
-    rarezas: Array.from(new Set((rarezas || []).map((r: any) => capitalize(r.rareza)))).filter(Boolean),
+    tipos: distinct(cards.flatMap((c) => c.types)),
+    colores: distinct(cards.map((c) => c.color)),
+    expansions: distinct(cards.map((c) => c.expansion)),
+    rarezas: distinct(cards.map((c) => c.rareza)),
     maxCost,
   };
 }

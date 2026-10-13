@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { fetchAllCards, CardDTO } from 'services/cardsService';
+import { fetchAllCards, getCachedCards, CardDTO } from 'services/cardsService';
 
 export type Filters = {
   query: string;
@@ -19,8 +19,8 @@ export const normalizeString = (str: string) => {
 };
 
 export function useCardSearch() {
-  const [all, setAll] = useState<CardDTO[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [all, setAll] = useState<CardDTO[]>(() => getCachedCards() ?? []);
+  const [loading, setLoading] = useState(() => getCachedCards() === null);
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
   const [tipos, setTipos] = useState<string[]>([]);
@@ -32,20 +32,22 @@ export function useCardSearch() {
   const [costeMax, setCosteMax] = useState<number | null>(null);
   const [sort, setSort] = useState<SortOption>('name_asc');
 
-  const refetch = useCallback(async () => {
+  const load = useCallback(async (force: boolean) => {
     setLoading(true);
     try {
-      const cards = await fetchAllCards();
+      const cards = await fetchAllCards({ force });
       setAll(cards);
     } finally {
       setLoading(false);
     }
   }, []);
 
-  // fetch data once
+  const refetch = useCallback(() => load(true), [load]);
+
   useEffect(() => {
-    refetch();
-  }, [refetch]);
+    if (getCachedCards() !== null) return;
+    load(false);
+  }, [load]);
 
   // debounce query
   useEffect(() => {

@@ -24,6 +24,8 @@ function parseRgb(css: string): [number, number, number] {
     return m ? [Number(m[1]), Number(m[2]), Number(m[3])] : [247, 241, 225];
 }
 
+const PDF_MIN_WINDOW_WIDTH = 1920;
+const PDF_MIN_WINDOW_HEIGHT = 1080;
 
 async function captureElementToPdf(pdf: jsPDF, el: HTMLElement, isFirstPage: boolean, orientation: "landscape" | "portrait", pageBg: string) {
     const canvas = await html2canvas(el, {
@@ -31,6 +33,12 @@ async function captureElementToPdf(pdf: jsPDF, el: HTMLElement, isFirstPage: boo
         useCORS: true,
         scale: 2,
         backgroundColor: pageBg,
+        windowWidth: Math.max(window.innerWidth, PDF_MIN_WINDOW_WIDTH),
+        windowHeight: Math.max(window.innerHeight, PDF_MIN_WINDOW_HEIGHT),
+        onclone: (doc) => {
+            doc.querySelectorAll("input > html2canvaspseudoelement, textarea > html2canvaspseudoelement, select > html2canvaspseudoelement")
+                .forEach((pseudo) => pseudo.remove());
+        },
     });
 
     if (!isFirstPage) pdf.addPage("a4", orientation);
