@@ -55,3 +55,20 @@ export async function isVillazarcilloPlayer() {
   if (error && error.code !== 'PGRST116') throw error // Empty error code
   return !!data
 }
+
+export interface PublicProfile {
+  id: string
+  username: string
+  avatar_key?: string
+}
+
+export async function fetchProfilesDirectory(): Promise<PublicProfile[]> {
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, username, avatar_key')
+    .not('username', 'is', null)
+    .neq('username', '')
+    .order('username', { ascending: true })
+  if (error) throw error
+  return data || []
+}

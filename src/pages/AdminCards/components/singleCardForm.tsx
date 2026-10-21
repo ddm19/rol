@@ -7,9 +7,11 @@ import {
     CardDTO,
     deleteCardFull,
     fetchFacets,
+    normalizeKey,
     uploadCardImage,
     upsertCardFull,
 } from 'services/cardsService';
+import { fetchExpansions } from 'services/expansionLocks';
 
 type FormState = AdminCardInput & { ataque: string; dano_purga: string; vida: string; tieneEstadisticas: boolean };
 
@@ -71,9 +73,13 @@ const SingleCardForm: React.FC<Props> = ({ initialCard, onSaved, onCancel }) => 
     const [tiposSugeridos, setTiposSugeridos] = useState<string[]>([]);
 
     useEffect(() => {
-        fetchFacets()
-            .then((f: any) => {
-                setExpansions(f.expansions || []);
+        Promise.all([fetchFacets(), fetchExpansions()])
+            .then(([f, rows]: [any, { expansion: string }[]]) => {
+                const byKey = new Map<string, string>();
+                [...rows.map((row) => row.expansion), ...(f.expansions || [])].forEach((name: string) => {
+                    if (!byKey.has(normalizeKey(name))) byKey.set(normalizeKey(name), name);
+                });
+                setExpansions(Array.from(byKey.values()));
                 setRarezas(f.rarezas || []);
                 setTiposSugeridos(f.tipos || []);
             })

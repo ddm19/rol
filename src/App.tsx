@@ -9,6 +9,7 @@ import ArticleEditor from "pages/ArticleEditor/articleEditor";
 import DiceRollerPage from "pages/diceRoller/diceRoller";
 import AdvantagesPage from "pages/Advantages/AdvantagesPage";
 import CardsPage from "pages/CardsPage/cardsPage";
+import SpoilersPage from "pages/CardsPage/SpoilersPage/spoilersPage";
 import ArticleSearch from "pages/ArticleSearch/ArticleSearch";
 import UtilitiesPage from "pages/Utilities/UtilitiesPage";
 import AuthCallback from "pages/AuthCallBack/authCallBack";
@@ -18,6 +19,7 @@ import VillazarcilloPage from "pages/VillazarcilloPage/villazarciloPage";
 import PJMaker from "pages/PjMaker/PjMaker";
 import AdminPage from "pages/AdminPage/adminPage";
 import AdminCardsPage from "pages/AdminCards/adminCardsPage";
+import AdminRohPage from "pages/AdminRoh/adminRohPage";
 import AdminRoute from "components/NavBar/PrivateRoute/adminRoute";
 import RuleSearch from "pages/RulesSearcher/RuleSearch";
 import CharacterSheetForm from "components/characterSheet/CharacterSheetForm";
@@ -53,6 +55,7 @@ function App() {
           <Route path="/Utilities/Advantages" element={<AdvantagesPage />} />
           <Route path="Utilities/PJMaker" element={<PJMaker />} />
           <Route path="/Cards" element={<CardsPage />} />
+          <Route path="/Cards/Spoilers" element={<SpoilersPage />} />
           <Route path="/Utilities" element={<UtilitiesPage />} />
           <Route path="/Campaigns" element={<ArticleSearch category={{ "id": "campaign", "name": "Campaña" }} />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
@@ -70,6 +73,11 @@ function App() {
           <Route path="/admin/cards" element={
             <AdminRoute>
               <AdminCardsPage />
+            </AdminRoute>
+          } />
+          <Route path="/admin/roh" element={
+            <AdminRoute>
+              <AdminRohPage />
             </AdminRoute>
           } />
           <Route path="/profile" element={

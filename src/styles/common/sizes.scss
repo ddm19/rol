@@ -71,8 +71,6 @@ $fluid-range: $desktopMaxWidth - $mobileMaxWidth;
   --orders-perspective-depth: #{fluid(62.5rem, 62.5rem)};
   --orders-control-size-sm: #{fluid(1.625rem, 1.625rem)};
   --orders-control-size-md: #{fluid(1.875rem, 1.875rem)};
-  --orders-badge-size-sm: #{fluid(1.75rem, 1.75rem)};
-  --orders-badge-size-md: #{fluid(2rem, 2rem)};
   --orders-floating-size-sm: #{fluid(3.25rem, 3.25rem)};
   --orders-floating-size-md: #{fluid(3.5rem, 3.5rem)};
   --orders-floating-size-lg: #{fluid(3.75rem, 3.75rem)};

@@ -67,6 +67,37 @@
         font-size: var(--font-size-3);
     }
 
+    &__cartTotal,
+    &__price
+    {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        color: var(--dndCoinGold);
+        font-weight: var(--font-weight-5);
+        font-size: var(--font-size-3);
+    }
+
+    &__cartTotal.is-notEnough
+    {
+        color: var(--colors-mediumRed);
+    }
+
+    &__notEnough
+    {
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-3);
+        font-style: italic;
+        display: flex;
+        flex-direction: column;
+
+        &--important
+        {
+            color: var(--dndGold);
+            font-weight: var(--font-weight-3);
+        }
+    }
+
     &__clearCartButton
     {
         border: var(--border-size-1) solid var(--dndLine);

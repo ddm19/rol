@@ -11,6 +11,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useTheme } from "hooks/useTheme";
 import { faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import { OrdersButton } from "components/Orders";
+import CoinsButton from "components/Coins/CoinsButton/coinsButton";
+import CoinsReceivedNotice from "components/Coins/CoinsReceivedNotice/coinsReceivedNotice";
 
 export interface NavigationLink {
   name: string;
@@ -45,7 +47,14 @@ const NavBar: React.FC = () => {
       ],
     },
     { name: "Reglas", url: "/Rules" },
-    { name: "ROH", url: "/Cards" }
+    {
+      name: "ROH",
+      url: "/Cards",
+      sublinks: [
+        { name: "Catálogo", url: "" },
+        { name: "Spoilers", url: "/Spoilers" },
+      ],
+    }
   ];
 
   return (
@@ -69,6 +78,7 @@ const NavBar: React.FC = () => {
 
           <VillazarcilloButton />
           <OrdersButton variant="navbar" />
+          <CoinsButton variant="navbar" />
         </ul>
         <DiscordButton></DiscordButton>
 
@@ -79,6 +89,7 @@ const NavBar: React.FC = () => {
         <PhoneNavBar navigationLinks={navigationLinks}></PhoneNavBar>
       </div>
       <UserButton />
+      <CoinsReceivedNotice />
     </div>
   );
 };

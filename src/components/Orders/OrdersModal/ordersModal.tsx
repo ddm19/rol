@@ -1,21 +1,28 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBox, faCartShopping, faXmark } from '@fortawesome/free-solid-svg-icons';
+import { faBox, faCartShopping, faCoins, faXmark } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from 'hooks/useAuth';
 import OrderBoosterTab from '../OrderBoosterTab/orderBoosterTab';
 import OrderCardsTab from '../OrderCardsTab/orderCardsTab';
+import SendCoinsTab from '../SendCoinsTab/sendCoinsTab';
+import CoinsButton from 'components/Coins/CoinsButton/coinsButton';
 import './ordersModal.scss';
 
-type Tab = 'booster' | 'cards';
+export type OrdersTab = 'booster' | 'cards' | 'coins';
 
 interface OrdersModalProps {
     isOpen: boolean;
     onClose: () => void;
+    initialTab?: OrdersTab;
 }
 
-const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose }) => {
-    const [activeTab, setActiveTab] = useState<Tab>('cards');
+const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose, initialTab = 'cards' }) => {
+    const [activeTab, setActiveTab] = useState<OrdersTab>(initialTab);
     const { user } = useAuth();
+
+    useEffect(() => {
+        if (isOpen) setActiveTab(initialTab);
+    }, [isOpen, initialTab]);
 
     if (!isOpen) return null;
 
@@ -24,6 +31,7 @@ const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose }) => {
             <div className="ordersModal" onClick={(e) => e.stopPropagation()}>
                 <div className="ordersModal__header">
                     <h2 className="ordersModal__title">Hacer Pedido de Cartas</h2>
+                    <CoinsButton variant="modal" onOpenSend={() => setActiveTab('coins')} />
                     <button
                         className="ordersModal__closeButton"
                         onClick={onClose}
@@ -57,11 +65,19 @@ const OrdersModal: React.FC<OrdersModalProps> = ({ isOpen, onClose }) => {
                                 <FontAwesomeIcon icon={faCartShopping} className="ordersModal__tabIcon" />
                                 Pedir Cartas
                             </button>
+                            <button
+                                className={`ordersModal__tab ${activeTab === 'coins' ? 'is-active' : ''}`}
+                                onClick={() => setActiveTab('coins')}
+                            >
+                                <FontAwesomeIcon icon={faCoins} className="ordersModal__tabIcon" />
+                                Enviar Oro
+                            </button>
                         </div>
 
                         <div className="ordersModal__content">
                             {activeTab === 'booster' && <OrderBoosterTab />}
                             {activeTab === 'cards' && <OrderCardsTab />}
+                            {activeTab === 'coins' && <SendCoinsTab />}
                         </div>
                     </>
                 )}

@@ -86,7 +86,7 @@ export function useCardOrderCart() {
 
             return current.map((item) =>
                 item.card.id_archivo === card.id_archivo
-                    ? { ...item, quantity: item.quantity }
+                    ? { ...item, quantity: item.quantity + 1 }
                     : item
             );
         });

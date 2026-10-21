@@ -13,6 +13,19 @@ export type CardRecord = {
   expansion: string | null;
   rareza: string | null;
   imagen_url: string | null;
+  price?: number | null;
+  visibility?: CardVisibility | null;
+  reveal_at?: string | null;
+  order_blocked?: boolean;
+};
+
+export type CardVisibility = 'visible' | 'spoiler' | 'hidden';
+
+export type CardRohFields = {
+  price: number | null;
+  visibility: CardVisibility | null;
+  reveal_at: string | null;
+  order_blocked: boolean;
 };
 
 export type CardTypeRecord = {
@@ -234,8 +247,30 @@ export async function deleteCardFull(idArchivo: string): Promise<void> {
   invalidateCardsCache();
 }
 
-export async function fetchFacets() {
-  const cards = await fetchAllCards();
+export async function updateCardRohFields(idArchivo: string, fields: Partial<CardRohFields>): Promise<void> {
+  const { error } = await supabase.from('cards').update(fields).eq('id_archivo', idArchivo);
+  if (error) throw error;
+  invalidateCardsCache();
+}
+
+export async function updateCardsRohFields(idsArchivo: string[], fields: Partial<CardRohFields>): Promise<void> {
+  if (idsArchivo.length === 0) return;
+  const { error } = await supabase.from('cards').update(fields).in('id_archivo', idsArchivo);
+  if (error) throw error;
+  invalidateCardsCache();
+}
+
+export async function clearExpansionCardOverrides(expansion: string): Promise<void> {
+  const { error } = await supabase
+    .from('cards')
+    .update({ visibility: null, reveal_at: null })
+    .eq('expansion', expansion);
+  if (error) throw error;
+  invalidateCardsCache();
+}
+
+export async function fetchFacets(isIncluded: (card: CardDTO) => boolean = () => true) {
+  const cards = (await fetchAllCards()).filter(isIncluded);
 
   const capitalize = (s: string) => {
     if (!s) return '';

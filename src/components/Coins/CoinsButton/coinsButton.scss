@@ -1,0 +1,278 @@
+.coinsButton
+{
+    display: inline-flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--spacing-1);
+    position: relative;
+    flex-shrink: 0;
+
+    &__main
+    {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-1) var(--spacing-2);
+        border: none;
+        border-radius: var(--radius-2);
+        background: none;
+        color: var(--colors-darkRed);
+        font-family: inherit;
+        font-weight: var(--font-weight-5);
+        cursor: pointer;
+
+        &:disabled
+        {
+            opacity: var(--opacity-visible);
+        }
+
+        &:hover:not(.is-claimable) .coinsButton__coin
+        {
+            transform: translateY(calc(-1 * var(--border-size-2)));
+        }
+
+        &.is-claimable
+        {
+            cursor: pointer;
+
+            &:hover:not(:disabled) .coinsButton__coin
+            {
+                transform: translateY(calc(-1 * var(--border-size-2))) scale(1.1);
+            }
+
+            .coinsButton__coin
+            {
+                animation: coinsCall calc(var(--motion-duration-loop-slow) * 2) var(--motion-ease-emphasis) infinite;
+
+                &::before
+                {
+                    content: '';
+                    position: absolute;
+                    inset: calc(-1 * var(--spacing-1));
+                    border-radius: var(--radius-circle);
+                    background: radial-gradient(circle, var(--dndGoldTint45) 0%, transparent 70%);
+                    animation: coinsHalo calc(var(--motion-duration-loop-slow) * 2) var(--motion-ease-emphasis) infinite;
+                }
+            }
+        }
+    }
+
+    &__coin
+    {
+        position: relative;
+        display: inline-flex;
+        color: var(--dndCoinGold);
+        font-size: var(--font-size-5);
+        transition: transform var(--motion-duration-fast) var(--motion-ease-bounce);
+
+        svg
+        {
+            position: relative;
+            filter: drop-shadow(0 var(--border-size-1) var(--border-size-1) var(--dndTextShadow));
+        }
+    }
+
+    &__badge
+    {
+        position: absolute;
+        top: calc(-1 * var(--spacing-2));
+        right: calc(-1 * var(--spacing-3));
+        padding: 0 var(--spacing-1);
+        border-radius: var(--radius-round);
+        background: var(--colors-mediumRed);
+        color: var(--colors-white);
+        font-size: 0.6rem;
+        font-weight: var(--font-weight-6);
+        line-height: 1.4;
+        box-shadow: var(--shadow-1);
+    }
+
+    &__balance
+    {
+        font-size: var(--font-size-4);
+        font-variant-numeric: tabular-nums;
+
+        &.is-bumped
+        {
+            animation: coinsBump var(--motion-duration-feature) var(--motion-ease-bounce);
+        }
+    }
+
+    &__burst
+    {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        color: var(--dndCoinGold);
+        font-size: var(--font-size-4);
+        font-weight: var(--font-weight-6);
+        text-shadow: 0 var(--border-size-1) var(--border-size-2) var(--dndTextShadow);
+        pointer-events: none;
+        animation: coinsBurst var(--motion-duration-loop) var(--motion-ease-card) forwards;
+    }
+
+    &__next
+    {
+        min-width: max-content;
+        padding: var(--spacing-1) var(--spacing-2);
+        border-radius: var(--radius-round);
+        background: var(--colors-mediumRed);
+        color: var(--colors-white);
+        font-size: var(--font-size-1);
+        font-weight: var(--font-weight-6);
+        line-height: var(--line-height-1);
+        text-transform: uppercase;
+        white-space: nowrap;
+        box-shadow: var(--shadow-1);
+
+        &.is-nearClaim
+        {
+            background: var(--dndCoinGold);
+            animation: coinsNearGlow var(--motion-duration-loop-slow) var(--motion-ease-emphasis) infinite;
+        }
+    }
+
+    &__error
+    {
+        font-size: var(--font-size-1);
+        color: var(--colors-mediumRed);
+    }
+
+    &--navbar
+    {
+
+        .coinsButton__next,
+        .coinsButton__error
+        {
+            position: absolute;
+            top: calc(100% + var(--spacing-3));
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: var(--z-dropdown);
+        }
+    }
+
+    &--popup
+    {
+        margin: var(--spacing-2) 0;
+    }
+
+    &--modal
+    {
+        align-items: flex-end;
+        gap: var(--spacing-1);
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 1280px)
+{
+    .coinsButton--navbar
+    {
+        display: none;
+    }
+}
+
+@keyframes coinsCall
+{
+
+    0%,
+    70%,
+    100%
+    {
+        transform: rotate(0deg) translateY(0);
+    }
+
+    76%
+    {
+        transform: rotate(-14deg) translateY(calc(-1 * var(--border-size-2)));
+    }
+
+    82%
+    {
+        transform: rotate(12deg) translateY(calc(-1 * var(--border-size-2)));
+    }
+
+    88%
+    {
+        transform: rotate(-6deg) translateY(0);
+    }
+
+    94%
+    {
+        transform: rotate(0deg) translateY(0);
+    }
+}
+
+@keyframes coinsHalo
+{
+
+    0%,
+    100%
+    {
+        opacity: var(--opacity-hidden);
+        transform: scale(0.8);
+    }
+
+    50%
+    {
+        opacity: var(--opacity-visible);
+        transform: scale(1.3);
+    }
+}
+
+@keyframes coinsBump
+{
+    0%
+    {
+        transform: scale(1);
+    }
+
+    40%
+    {
+        transform: scale(1.2);
+        color: var(--dndCoinGold);
+    }
+
+    100%
+    {
+        transform: scale(1);
+    }
+}
+
+@keyframes coinsBurst
+{
+    0%
+    {
+        opacity: var(--opacity-visible);
+        transform: translate(-50%, 0) scale(0.6);
+    }
+
+    30%
+    {
+        opacity: var(--opacity-visible);
+        transform: translate(-50%, -100%) scale(1.1);
+    }
+
+    100%
+    {
+        opacity: var(--opacity-hidden);
+        transform: translate(-50%, -160%) scale(1);
+    }
+}
+
+@keyframes coinsNearGlow
+{
+
+    0%,
+    100%
+    {
+        box-shadow: var(--shadow-1), 0 0 0 var(--spacing-0) var(--orders-gacha-glow-start);
+    }
+
+    50%
+    {
+        box-shadow: var(--shadow-1), 0 0 0 var(--spacing-1) var(--orders-gacha-glow-end);
+    }
+}

@@ -1,0 +1,79 @@
+.coinsReceivedNotice
+{
+    position: fixed;
+    right: var(--spacing-5);
+    bottom: var(--spacing-5);
+    z-index: var(--z-orders-modal-backdrop);
+    display: flex;
+    align-items: flex-start;
+    gap: var(--spacing-3);
+    max-width: var(--content-size-sm);
+    padding: var(--spacing-4);
+    border: var(--border-size-2) solid var(--dndCoinGold);
+    border-radius: var(--radius-4);
+    background: var(--dndBg);
+    color: var(--colors-font);
+    box-shadow: var(--shadow-4);
+    animation: coinsNoticeIn var(--motion-duration-feature) var(--motion-ease-bounce);
+
+    &__coin
+    {
+        display: inline-flex;
+        color: var(--dndCoinGold);
+        font-size: var(--font-size-6);
+        animation: coinsCall calc(var(--motion-duration-loop-slow) * 2) var(--motion-ease-emphasis) infinite;
+    }
+
+    &__body
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+        flex: 1;
+    }
+
+    &__title
+    {
+        color: var(--dndGold);
+        font-size: var(--font-size-4);
+    }
+
+    &__line
+    {
+        font-size: var(--font-size-3);
+
+        b
+        {
+            color: var(--dndGold);
+        }
+    }
+
+    &__close
+    {
+        border: none;
+        background: none;
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-4);
+        cursor: pointer;
+
+        &:hover
+        {
+            color: var(--colors-font);
+        }
+    }
+}
+
+@keyframes coinsNoticeIn
+{
+    from
+    {
+        opacity: var(--opacity-hidden);
+        transform: translateY(var(--spacing-5)) scale(0.95);
+    }
+
+    to
+    {
+        opacity: var(--opacity-visible);
+        transform: translateY(0) scale(1);
+    }
+}

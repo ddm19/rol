@@ -8,6 +8,8 @@
     min-height: var(--orders-tab-min-height);
     padding: var(--spacing-2);
     background: var(--orders-bg-gradient);
+    position: relative;
+    overflow: hidden;
 
     &__container
     {
@@ -48,6 +50,9 @@
         display: flex;
         flex-direction: column;
         align-items: center;
+        flex: 1 1 0;
+        min-width: 0;
+        max-width: var(--image-size-2);
         cursor: pointer;
         border-radius: var(--radius-3);
         padding: var(--spacing-2);
@@ -107,6 +112,169 @@
 
     }
 
+    &__price,
+    &__buttonPrice
+    {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        font-weight: var(--font-weight-5);
+    }
+
+    &__price
+    {
+        margin-top: var(--spacing-1);
+        color: var(--dndCoinGold);
+        font-size: var(--font-size-4);
+    }
+
+    &__buttonPrice
+    {
+        margin-left: var(--spacing-2);
+        padding: var(--spacing-1) var(--spacing-2);
+        border-radius: var(--radius-round);
+        background: var(--dndShadowStrong);
+    }
+
+    &__notEnough
+    {
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-3);
+        font-style: italic;
+
+        &--important
+        {
+            color: var(--dndGold);
+            font-weight: var(--font-weight-3);
+        }
+    }
+
+    &__opening
+    {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: var(--spacing-4);
+        background: radial-gradient(circle, var(--dndBg2) 0%, var(--dndBg) 100%);
+        z-index: var(--z-modal);
+        animation: fadeIn var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &.is-charging .orderBoosterTab__openingPack
+        {
+            animation: boosterCharge var(--motion-duration-loop) var(--motion-ease-emphasis) forwards,
+                gachaUnlockShake calc(var(--motion-duration-fast) / 2) linear infinite;
+        }
+
+        &.is-charging .orderBoosterTab__rays
+        {
+            opacity: var(--opacity-muted);
+        }
+
+        &.is-burst .orderBoosterTab__flash
+        {
+            animation: boosterFlash var(--motion-duration-feature) var(--motion-ease-standard) forwards;
+        }
+
+        &.is-burst .orderBoosterTab__particle,
+        &.is-revealed .orderBoosterTab__particle
+        {
+            animation: boosterParticle var(--motion-duration-loop) var(--motion-ease-card) forwards;
+        }
+
+        &.is-burst .orderBoosterTab__openingPack,
+        &.is-revealed .orderBoosterTab__openingPack
+        {
+            transform: scale(1.15);
+            filter: drop-shadow(0 0 var(--spacing-6) var(--dndCoinGold));
+        }
+
+        &.is-burst .orderBoosterTab__rays,
+        &.is-revealed .orderBoosterTab__rays
+        {
+            opacity: var(--opacity-visible);
+        }
+    }
+
+    &__rays
+    {
+        position: absolute;
+        width: 160%;
+        aspect-ratio: 1;
+        background: repeating-conic-gradient(var(--dndGoldTint45) 0deg 10deg, transparent 10deg 20deg);
+        mask-image: radial-gradient(circle, black 0%, transparent 60%);
+        opacity: var(--opacity-hidden);
+        transition: opacity var(--motion-duration-slow) var(--motion-ease-standard);
+        animation: boosterRays calc(var(--motion-duration-loop-slow) * 6) linear infinite;
+        pointer-events: none;
+    }
+
+    &__flash
+    {
+        position: absolute;
+        inset: 0;
+        background: var(--colors-white);
+        opacity: var(--opacity-hidden);
+        pointer-events: none;
+    }
+
+    &__particles
+    {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        pointer-events: none;
+    }
+
+    &__particle
+    {
+        position: absolute;
+        color: var(--dndCoinGold);
+        font-size: var(--font-size-5);
+        opacity: var(--opacity-hidden);
+        transform: rotate(var(--particle-angle)) translateY(0);
+    }
+
+    &__openingPack
+    {
+        position: relative;
+        width: var(--image-size-2);
+        max-height: 50%;
+        object-fit: contain;
+        transition: transform var(--motion-duration-slow) var(--motion-ease-bounce),
+            filter var(--motion-duration-slow) var(--motion-ease-standard);
+    }
+
+    &__openingText
+    {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-2);
+        text-align: center;
+        animation: boosterReveal var(--motion-duration-feature) var(--motion-ease-bounce);
+
+        h3
+        {
+            margin: var(--spacing-0);
+            color: var(--dndGold);
+            font-size: var(--font-size-7);
+            font-weight: var(--font-weight-6);
+            letter-spacing: var(--letter-spacing-1);
+            text-transform: uppercase;
+        }
+
+        p
+        {
+            margin: var(--spacing-0);
+            color: var(--colors-font);
+            font-size: var(--font-size-3);
+        }
+    }
+
     &__boosterInfo
     {
         text-align: center;
@@ -135,94 +303,6 @@
                 letter-spacing: var(--letter-spacing-2);
             }
         }
-    }
-
-    &__limitSection
-    {
-        display: flex;
-        justify-content: center;
-    }
-
-    &__limitCard
-    {
-        background: var(--colors-white);
-        border-radius: var(--radius-4);
-        padding: var(--spacing-1);
-        box-shadow: var(--shadow-2);
-        width: var(--size-full);
-        max-width: var(--content-size-sm);
-        border: var(--border-size-1) solid var(--dndLine);
-
-        h4
-        {
-            margin: var(--spacing-0) var(--spacing-0) var(--spacing-2) var(--spacing-0);
-            color: var(--colors-darkRed);
-            font-size: var(--font-size-4);
-            font-weight: var(--font-weight-4);
-            text-transform: uppercase;
-            letter-spacing: var(--letter-spacing-1);
-        }
-    }
-
-    &__limitContent
-    {
-        display: flex;
-        flex-direction: column;
-        gap: var(--spacing-4);
-    }
-
-    &__limitBar
-    {
-        width: var(--size-full);
-        height: var(--spacing-3);
-        background: var(--dndBg2);
-        border-radius: var(--radius-4);
-        overflow: hidden;
-        position: relative;
-        border: var(--border-size-2) solid var(--dndLine);
-    }
-
-    &__limitFill
-    {
-        height: var(--size-full);
-        background: var(--orders-limit-gradient);
-        transition: width var(--motion-duration-slow) var(--motion-ease-standard);
-        position: relative;
-
-        &::after
-        {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--orders-shimmer-gradient);
-            animation: shimmer var(--motion-duration-loop-slow) infinite;
-        }
-    }
-
-    &__limitText
-    {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        flex-wrap: wrap;
-        gap: var(--spacing-2);
-    }
-
-    &__limitCount
-    {
-        font-weight: var(--font-weight-4);
-        color: var(--colors-font);
-        font-size: var(--font-size-3);
-    }
-
-    &__resetTime
-    {
-        font-size: var(--font-size-2);
-        color: var(--colors-subtitle);
-        font-style: italic;
     }
 
     &__actionSection
@@ -333,6 +413,82 @@
     }
 }
 
+@keyframes boosterCharge
+{
+    from
+    {
+        transform: scale(1);
+        filter: drop-shadow(0 0 0 var(--dndCoinGold));
+    }
+
+    to
+    {
+        transform: scale(1.1);
+        filter: drop-shadow(0 0 var(--spacing-5) var(--dndCoinGold));
+    }
+}
+
+@keyframes boosterFlash
+{
+    0%
+    {
+        opacity: var(--opacity-hidden);
+    }
+
+    20%
+    {
+        opacity: var(--opacity-visible);
+    }
+
+    100%
+    {
+        opacity: var(--opacity-hidden);
+    }
+}
+
+@keyframes boosterParticle
+{
+    0%
+    {
+        opacity: var(--opacity-visible);
+        transform: rotate(var(--particle-angle)) translateY(0) scale(0.5);
+    }
+
+    100%
+    {
+        opacity: var(--opacity-hidden);
+        transform: rotate(var(--particle-angle)) translateY(-12rem) scale(1.2);
+    }
+}
+
+@keyframes boosterRays
+{
+    from
+    {
+        transform: rotate(0deg);
+    }
+
+    to
+    {
+        transform: rotate(360deg);
+    }
+}
+
+@keyframes boosterReveal
+{
+    from
+    {
+        opacity: var(--opacity-hidden);
+        transform: scale(0.6);
+    }
+
+    to
+    {
+        opacity: var(--opacity-visible);
+        transform: scale(1);
+    }
+}
+
 @keyframes slideIn
 {
     from
@@ -385,12 +541,6 @@
             padding: var(--spacing-3) var(--spacing-8);
             font-size: var(--font-size-3);
         }
-
-        &__limitText
-        {
-            flex-direction: column;
-            align-items: flex-start;
-        }
     }
 }
 
@@ -409,16 +559,6 @@
             h3
             {
                 font-size: var(--font-size-4);
-            }
-        }
-
-        &__limitCard
-        {
-            padding: var(--spacing-4);
-
-            h4
-            {
-                font-size: var(--font-size-3);
             }
         }
     }

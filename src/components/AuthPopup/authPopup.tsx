@@ -5,6 +5,7 @@ import { Button } from "@mui/material";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faGoogle } from "@fortawesome/free-brands-svg-icons";
 import { faFileLines, faRightFromBracket, faTimes, faUser } from "@fortawesome/free-solid-svg-icons";
+import CoinsButton from "components/Coins/CoinsButton/coinsButton";
 
 interface AuthPopupProps {
   onClose: () => void;
@@ -43,6 +44,7 @@ const AuthPopup = ({ onClose, session }: AuthPopupProps) => {
         </button>
         {session ? (
           <>
+            <CoinsButton variant="popup" />
             <Button className="authPopup__button" onClick={handleGoProfile}>
               <FontAwesomeIcon icon={faUser} />
               Perfil

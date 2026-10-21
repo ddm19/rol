@@ -8,14 +8,16 @@ import {
     faMinus,
     faPlus,
     faTrash,
-    faCartShopping
+    faCartShopping,
+    faCoins
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from 'hooks/useAuth';
 import { CardDTO } from 'services/cardsService';
 import { createCardOrder, OrderItem } from 'services/ordersService';
 import useCardSearch from 'hooks/useCardSearch';
 import { useCardOrderCart } from 'hooks/useCardOrderCart';
-import { useBlockedExpansions } from 'hooks/useBlockedExpansions';
+import { useCardRules } from 'hooks/useCardRules';
+import { refreshCoins, useCoins } from 'hooks/useCoins';
 import './orderCardsTab.scss';
 
 const OrderCardsTab: React.FC = () => {
@@ -29,16 +31,22 @@ const OrderCardsTab: React.FC = () => {
         updateQuantity,
         clearCart,
     } = useCardOrderCart();
-    const { isBlocked } = useBlockedExpansions();
+    const { isBlocked, isVisible, getPrice } = useCardRules();
+    const { balance } = useCoins();
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const [showSearchResults, setShowSearchResults] = useState(false);
 
-    const blockedCartItems = cart.filter((sc) => isBlocked(sc.card.expansion, sc.card.rareza));
+    const unavailableCartItems = cart.filter((sc) => getPrice(sc.card) === null);
+    const totalPrice = cart.reduce((total, sc) => total + (getPrice(sc.card) ?? 0) * sc.quantity, 0);
+    const canAfford = totalPrice <= balance;
+    const visibleResults = searchResults.filter(isVisible);
+
+    const getUnavailableLabel = (card: CardDTO) => (isBlocked(card) ? 'Solo en Sobres' : 'Sin precio');
 
     const handleSelectCard = (card: CardDTO) => {
-        if (isBlocked(card.expansion, card.rareza)) return;
+        if (getPrice(card) === null) return;
         addCard(card);
     };
 
@@ -65,8 +73,13 @@ const OrderCardsTab: React.FC = () => {
                 return;
             }
 
-            if (blockedCartItems.length > 0) {
-                setError(`Elimina del carrito las cartas de expansiones no disponibles: ${blockedCartItems.map((sc) => sc.card.nombre).join(', ')}`);
+            if (unavailableCartItems.length > 0) {
+                setError(`Elimina del carrito las cartas no disponibles: ${unavailableCartItems.map((sc) => sc.card.nombre).join(', ')}`);
+                return;
+            }
+
+            if (!canAfford) {
+                setError(`No tienes suficientes monedas: necesitas ${totalPrice} y tienes ${balance}`);
                 return;
             }
 
@@ -77,7 +90,8 @@ const OrderCardsTab: React.FC = () => {
                 card_id_archivo: sc.card.id_archivo,
             }));
 
-            await createCardOrder(user.id, items);
+            await createCardOrder(items);
+            await refreshCoins(user.id);
 
             setSuccess(true);
             setError(null);
@@ -85,9 +99,9 @@ const OrderCardsTab: React.FC = () => {
             setQuery('');
 
             setTimeout(() => setSuccess(false), 3000);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Error creating card order:', err);
-            setError('Error al crear la orden. Por favor intenta de nuevo.');
+            setError(err?.message || 'Error al crear la orden. Por favor intenta de nuevo.');
         } finally {
             setLoading(false);
         }
@@ -133,16 +147,17 @@ const OrderCardsTab: React.FC = () => {
                         )}
                     </div>
 
-                    {showSearchResults && query && searchResults.length > 0 && (
+                    {showSearchResults && query && visibleResults.length > 0 && (
                         <div className="orderCardsTab__searchResults">
-                            {searchResults.slice(0, 10).map(card => {
-                                const blocked = isBlocked(card.expansion, card.rareza);
+                            {visibleResults.slice(0, 10).map(card => {
+                                const price = getPrice(card);
+                                const blocked = price === null;
                                 return (
                                     <button
                                         key={card.id_archivo}
                                         className={`orderCardsTab__resultItem${blocked ? ' orderCardsTab__resultItem--blocked' : ''}`}
                                         disabled={blocked}
-                                        title={blocked ? 'Solo en Sobres' : undefined}
+                                        title={blocked ? getUnavailableLabel(card) : undefined}
                                         onClick={() => {
                                             handleSelectCard(card);
                                             setShowSearchResults(false);
@@ -150,8 +165,14 @@ const OrderCardsTab: React.FC = () => {
                                     >
                                         <span className="orderCardsTab__resultName">{card.nombre}</span>
                                         <span className="orderCardsTab__resultExpansion">
-                                            {blocked ? 'Solo en Sobres' : card.expansion}
+                                            {blocked ? getUnavailableLabel(card) : card.expansion}
                                         </span>
+                                        {!blocked && (
+                                            <span className="orderCardsTab__price">
+                                                <FontAwesomeIcon icon={faCoins} />
+                                                {price}
+                                            </span>
+                                        )}
                                         {!blocked && <FontAwesomeIcon icon={faPlus} className="orderCardsTab__resultAddIcon" />}
                                     </button>
                                 );
@@ -159,22 +180,31 @@ const OrderCardsTab: React.FC = () => {
                         </div>
                     )}
 
-                    {showSearchResults && query && searchResults.length === 0 && (
+                    {showSearchResults && query && visibleResults.length === 0 && (
                         <div className="orderCardsTab__noResults">
                             No se encontraron cartas
                         </div>
                     )}
                 </div>
+
                 <div className="orderCardsTab__cartHeader">
                     <div className="orderCardsTab__cartIcon">
                         <FontAwesomeIcon icon={faCartShopping} />
                     </div>
+
                     <div className="orderCardsTab__cartSummary">
                         <h3 className="orderCardsTab__cartTitle">Carrito de cartas</h3>
                         <span className="orderCardsTab__cartCount">
                             {totalQuantity} carta{totalQuantity !== 1 ? 's' : ''} en el pedido
                         </span>
+                        <span className={`orderCardsTab__cartTotal${canAfford ? '' : ' is-notEnough'}`}>
+                            <FontAwesomeIcon icon={faCoins} />
+                            {totalPrice} / {balance}
+
+                        </span>
+
                     </div>
+
                     {cart.length > 0 && (
                         <button
                             type="button"
@@ -184,6 +214,7 @@ const OrderCardsTab: React.FC = () => {
                             Vaciar
                         </button>
                     )}
+
                 </div>
 
 
@@ -200,7 +231,8 @@ const OrderCardsTab: React.FC = () => {
                     ) : (
                         <div className="orderCardsTab__selectedList">
                             {cart.map(({ card, quantity }) => {
-                                const blocked = isBlocked(card.expansion, card.rareza);
+                                const price = getPrice(card);
+                                const blocked = price === null;
                                 return (
                                     <div key={card.id_archivo} className={`orderCardsTab__selectedCard${blocked ? ' orderCardsTab__selectedCard--blocked' : ''}`}>
                                         <div className="orderCardsTab__cardImage">
@@ -218,8 +250,13 @@ const OrderCardsTab: React.FC = () => {
                                         <div className="orderCardsTab__cardInfo">
                                             <div className="orderCardsTab__cardName">{card.nombre}</div>
                                             <div className="orderCardsTab__cardExpansion">{card.expansion}</div>
-                                            {blocked && (
-                                                <div className="orderCardsTab__cardBlockedWarning">Solo en Sobres</div>
+                                            {price === null ? (
+                                                <div className="orderCardsTab__cardBlockedWarning">{getUnavailableLabel(card)}</div>
+                                            ) : (
+                                                <div className="orderCardsTab__price">
+                                                    <FontAwesomeIcon icon={faCoins} />
+                                                    {price * quantity}
+                                                </div>
                                             )}
                                         </div>
 
@@ -264,6 +301,17 @@ const OrderCardsTab: React.FC = () => {
                         </div>
                     )}
                 </div>
+                {!canAfford && (
+                    <div className="orderCardsTab__notEnough">
+                        <span className="orderCardsTab__notEnough--important">
+                            Sin monedas semanales?
+                        </span>
+                        <span className="orderCardsTab__notEnough--important">
+                            Puedes conseguir más monedas en partidas de rol. Pregunta a tu DM
+                        </span>
+                    </div>
+
+                )}
 
                 <div className="orderCardsTab__actionSection">
                     {error && (
@@ -276,17 +324,17 @@ const OrderCardsTab: React.FC = () => {
                     {success && (
                         <div className="orderCardsTab__success">
                             <FontAwesomeIcon icon={faCheckCircle} />
-                            Orden de cartas enviada exitosamente. Revisa tu correo.
+                            Orden de cartas enviada. Revisa tu correo.
                         </div>
                     )}
 
                     <button
                         className="orderCardsTab__button"
                         onClick={handleOrderCards}
-                        disabled={loading || cart.length === 0 || blockedCartItems.length > 0}
-                        title={blockedCartItems.length > 0 ? 'Elimina del carrito las cartas no disponibles para continuar' : undefined}
+                        disabled={loading || cart.length === 0 || unavailableCartItems.length > 0 || !canAfford}
+                        title={unavailableCartItems.length > 0 ? 'Elimina del carrito las cartas no disponibles para continuar' : undefined}
                     >
-                        {loading ? 'Procesando...' : `Pedir ${totalQuantity} carta${totalQuantity !== 1 ? 's' : ''}`}
+                        {loading ? 'Procesando...' : `Pedir ${totalQuantity} carta${totalQuantity !== 1 ? 's' : ''} · ${totalPrice} monedas`}
                     </button>
                 </div>
             </div>

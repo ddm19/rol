@@ -1,0 +1,225 @@
+@use "../../../styles/common/breakpoints" as breakpoints;
+
+.spoilersPanel
+{
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-5);
+    padding: var(--spacing-5) var(--spacing-4);
+    color: var(--colors-font);
+
+    &__hero
+    {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-2);
+        text-align: center;
+        padding: var(--spacing-8) var(--spacing-5);
+        border-radius: var(--radius-4);
+        border: var(--border-size-1) solid var(--dndLine);
+        background: radial-gradient(circle at top, var(--dndGoldTint45) 0%, var(--dndBg2) 60%);
+        box-shadow: var(--shadow-3);
+    }
+
+    &__kicker
+    {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-1) var(--spacing-3);
+        border-radius: var(--radius-round);
+        background: var(--colors-darkRed);
+        color: var(--colors-lightYellow);
+        font-size: var(--font-size-2);
+        font-weight: var(--font-weight-5);
+        letter-spacing: var(--letter-spacing-2);
+        text-transform: uppercase;
+    }
+
+    &__title
+    {
+        margin: var(--spacing-0);
+        color: var(--dndGold);
+        font-size: var(--font-size-8);
+        letter-spacing: var(--letter-spacing-1);
+    }
+
+    &__refresh
+    {
+        position: absolute;
+        top: var(--spacing-3);
+        right: var(--spacing-3);
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-1) var(--spacing-3);
+        border: var(--border-size-1) solid var(--dndLine);
+        border-radius: var(--radius-round);
+        background: var(--dndBg);
+        color: var(--colors-subtitle);
+        font-family: inherit;
+        font-size: var(--font-size-2);
+        cursor: pointer;
+        transition: color var(--motion-duration-fast) var(--motion-ease-standard),
+            border-color var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &:hover:not(:disabled)
+        {
+            color: var(--colors-font);
+            border-color: var(--dndGold);
+        }
+
+        &:disabled
+        {
+            cursor: default;
+            opacity: var(--opacity-muted);
+        }
+    }
+
+    &__description
+    {
+        margin: var(--spacing-0);
+        max-width: var(--content-size-lg);
+        color: var(--colors-font);
+        font-size: var(--font-size-4);
+    }
+
+    &__release
+    {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        margin-top: var(--spacing-2);
+        padding: var(--spacing-2) var(--spacing-4);
+        border-radius: var(--radius-3);
+        background: var(--dndBg);
+        border: var(--border-size-2) solid var(--dndGold);
+        font-size: var(--font-size-4);
+
+        strong
+        {
+            color: var(--dndGold);
+            font-variant-numeric: tabular-nums;
+        }
+    }
+
+    &__stats
+    {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: var(--spacing-3);
+    }
+
+    &__stat
+    {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: var(--spacing-1);
+        padding: var(--spacing-4);
+        border-radius: var(--radius-3);
+        background: var(--dndBg2);
+        border: var(--border-size-1) solid var(--dndLine);
+    }
+
+    &__statValue
+    {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        font-size: var(--font-size-6);
+        font-weight: var(--font-weight-6);
+        color: var(--colors-font);
+        font-variant-numeric: tabular-nums;
+    }
+
+    &__statLabel
+    {
+        font-size: var(--font-size-2);
+        color: var(--colors-subtitle);
+        text-transform: uppercase;
+        letter-spacing: var(--letter-spacing-1);
+    }
+
+    &__progress
+    {
+        width: var(--size-full);
+        height: var(--spacing-2);
+        margin-top: var(--spacing-1);
+        border-radius: var(--radius-round);
+        background: var(--dndRow);
+        overflow: hidden;
+    }
+
+    &__progressFill
+    {
+        height: var(--size-full);
+        background: var(--orders-primary-gradient);
+        transition: width var(--motion-duration-slow) var(--motion-ease-standard);
+    }
+
+    &__filters
+    {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-2);
+        justify-content: center;
+    }
+
+    &__filter
+    {
+        padding: var(--spacing-1) var(--spacing-4);
+        border-radius: var(--radius-round);
+        border: var(--border-size-1) solid var(--dndLine);
+        background: var(--dndBg);
+        color: var(--colors-font);
+        font-family: inherit;
+        font-size: var(--font-size-3);
+        cursor: pointer;
+        transition: background var(--motion-duration-fast) var(--motion-ease-standard),
+            color var(--motion-duration-fast) var(--motion-ease-standard);
+
+        &:hover
+        {
+            border-color: var(--dndGold);
+        }
+
+        &.is-active
+        {
+            background: var(--colors-darkRed);
+            border-color: var(--colors-darkRed);
+            color: var(--colors-white);
+        }
+    }
+
+    &__empty
+    {
+        text-align: center;
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-5);
+        padding: var(--spacing-10);
+    }
+}
+
+@media (max-width: breakpoints.$ordersTabletMaxWidth)
+{
+    .spoilersPanel
+    {
+        &__hero
+        {
+            padding: var(--spacing-5) var(--spacing-3);
+        }
+
+        &__title
+        {
+            font-size: var(--font-size-6);
+        }
+
+        &__stats
+        {
+            grid-template-columns: 1fr;
+        }
+    }
+}

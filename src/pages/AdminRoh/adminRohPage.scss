@@ -1,0 +1,318 @@
+.adminRohPage
+{
+    &__titleRow
+    {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-3);
+    }
+
+    &__tabs
+    {
+        flex-wrap: wrap;
+    }
+
+    &__section
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-4);
+    }
+
+    &__formTitle
+    {
+        margin: var(--spacing-0);
+        font-size: var(--font-size-6);
+        color: var(--colors-darkRed);
+    }
+
+    &__muted
+    {
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-2);
+    }
+
+    &__coins
+    {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-1);
+        color: var(--dndCoinGold);
+        font-weight: var(--font-weight-5);
+    }
+
+    &__inline
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-2);
+    }
+
+    &__smallInput
+    {
+        width: 5rem;
+    }
+
+    &__code
+    {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-2) var(--spacing-4);
+        border: var(--border-size-2) dashed var(--dndGold);
+        border-radius: var(--radius-2);
+        background: var(--dndGoldTint12);
+        color: var(--colors-font);
+        font-family: monospace;
+        font-size: var(--font-size-5);
+        letter-spacing: var(--letter-spacing-2);
+        cursor: pointer;
+    }
+
+    &__movements
+    {
+        display: flex;
+        flex-direction: column;
+        gap: var(--spacing-1);
+        margin: var(--spacing-0);
+        padding: var(--spacing-0);
+        list-style: none;
+
+        li
+        {
+            display: flex;
+            gap: var(--spacing-3);
+            align-items: baseline;
+        }
+
+        .is-positive
+        {
+            color: var(--colors-green);
+            font-weight: var(--font-weight-5);
+        }
+
+        .is-negative
+        {
+            color: var(--colors-mediumRed);
+            font-weight: var(--font-weight-5);
+        }
+    }
+
+    &__chips
+    {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-2);
+    }
+
+    &__chip
+    {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-2) var(--spacing-4);
+        border: var(--border-size-1) solid var(--colors-border);
+        border-radius: var(--radius-round);
+        background: var(--colors-white);
+        color: var(--colors-subtitle);
+        font-size: var(--font-size-3);
+        font-weight: var(--font-weight-4);
+        cursor: pointer;
+        user-select: none;
+        transition: background var(--motion-duration-fast) var(--motion-ease-standard),
+            color var(--motion-duration-fast) var(--motion-ease-standard),
+            border-color var(--motion-duration-fast) var(--motion-ease-standard);
+
+        input
+        {
+            position: absolute;
+            inset: 0;
+            width: var(--size-full);
+            height: var(--size-full);
+            margin: 0;
+            opacity: var(--opacity-hidden);
+            pointer-events: none;
+        }
+
+        &:hover
+        {
+            border-color: var(--dndGold);
+            color: var(--colors-font);
+        }
+
+        &:focus-within
+        {
+            outline: var(--border-size-2) solid var(--dndGold);
+            outline-offset: var(--border-size-1);
+        }
+
+        &.is-active
+        {
+            background: var(--orders-primary-gradient);
+            border-color: transparent;
+            color: var(--colors-white);
+            box-shadow: var(--shadow-1);
+        }
+
+        &.is-disabled
+        {
+            cursor: default;
+            opacity: var(--opacity-muted);
+        }
+    }
+
+    &__warning
+    {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: var(--spacing-3);
+        flex-wrap: wrap;
+        padding: var(--spacing-3) var(--spacing-4);
+        border: var(--border-size-1) solid var(--dndGold);
+        border-left: var(--border-size-4) solid var(--dndGold);
+        border-radius: var(--radius-2);
+        background: var(--dndGoldTint12);
+        color: var(--colors-font);
+        font-size: var(--font-size-3);
+    }
+
+    &__filters
+    {
+        display: flex;
+        flex-wrap: wrap;
+        gap: var(--spacing-2);
+    }
+
+    &__filter
+    {
+        display: inline-flex;
+        align-items: center;
+        gap: var(--spacing-2);
+        padding: var(--spacing-2) var(--spacing-3);
+        border: var(--border-size-1) solid var(--colors-border);
+        border-radius: var(--radius-round);
+        background: var(--colors-white);
+        color: var(--colors-subtitle);
+        font-family: inherit;
+        font-size: var(--font-size-3);
+        cursor: pointer;
+
+        span
+        {
+            padding: 0 var(--spacing-1);
+            border-radius: var(--radius-round);
+            background: var(--dndRow);
+            font-size: var(--font-size-2);
+        }
+
+        &:hover
+        {
+            border-color: var(--dndGold);
+            color: var(--colors-font);
+        }
+
+        &.is-active
+        {
+            background: var(--orders-primary-gradient);
+            border-color: transparent;
+            color: var(--colors-white);
+
+            span
+            {
+                background: var(--dndShadowStrong);
+            }
+        }
+    }
+
+    &__spoilerTable
+    {
+        tbody tr
+        {
+            cursor: pointer;
+            transition: background var(--motion-duration-fast) var(--motion-ease-standard);
+
+            &:hover
+            {
+                background: var(--dndRow);
+            }
+
+            &.is-selected
+            {
+                background: var(--dndGoldTint12);
+            }
+        }
+    }
+
+    &__state
+    {
+        display: inline-block;
+        padding: 0.1rem var(--spacing-2);
+        border-radius: var(--radius-round);
+        font-size: var(--font-size-2);
+        font-weight: var(--font-weight-5);
+
+        &--hidden
+        {
+            background: var(--dndRow);
+            color: var(--colors-subtitle);
+        }
+
+        &--scheduled
+        {
+            background: var(--dndGoldTint12);
+            color: var(--dndGold);
+        }
+
+        &--revealed
+        {
+            background: color-mix(in srgb, var(--colors-green) 20%, transparent);
+            color: var(--colors-green);
+        }
+    }
+
+    &__bulkBar
+    {
+        position: sticky;
+        bottom: var(--spacing-3);
+        z-index: var(--z-dropdown);
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: var(--spacing-3);
+        padding: var(--spacing-3) var(--spacing-4);
+        border: var(--border-size-1) solid var(--dndGold);
+        border-radius: var(--radius-3);
+        background: var(--dndBg);
+        box-shadow: var(--shadow-4);
+    }
+
+    &__clearSelection
+    {
+        margin-left: auto;
+        border: none;
+        background: none;
+        color: var(--colors-subtitle);
+        font-family: inherit;
+        font-size: var(--font-size-3);
+        text-decoration: underline;
+        cursor: pointer;
+    }
+
+    &__cardsTable,
+    &__inline
+    {
+        input,
+        select
+        {
+            padding: var(--spacing-1) var(--spacing-2);
+            border: var(--border-size-1) solid var(--colors-border);
+            border-radius: var(--radius-2);
+            background: var(--colors-white);
+            color: var(--colors-font);
+            font-family: inherit;
+        }
+    }
+}
