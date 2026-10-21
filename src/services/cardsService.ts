@@ -1,5 +1,6 @@
 import { supabase } from './supabaseClient';
 import { cachedQuery, invalidateCache, readCache } from './queryCache';
+import { optimizeImage, OptimizedImage } from './imageOptimizer';
 
 export type CardRecord = {
   id_archivo: string;
@@ -151,20 +152,57 @@ export function normalizeKey(name: string): string {
   return stripDiacritics(name).toLowerCase().trim();
 }
 
-export async function uploadCardImage(file: File, idArchivo: string): Promise<string> {
-  const ext = file.name.split('.').pop() || 'png';
-  const safeName = sanitizeFileName(`${idArchivo}.${ext}`);
+const CARD_IMAGE_WIDTH = 500;
+const CARD_IMAGE_QUALITY = 0.8;
+const CARD_THUMB_WIDTH = 320;
+const CARD_THUMB_QUALITY = 0.7;
+const CARD_IMAGE_CACHE_SECONDS = '31536000';
+const OPTIMIZED_IMAGE_PATTERN = /\.(webp|jpg)(\?|$)/;
+
+async function uploadToCardsBucket(path: string, image: OptimizedImage): Promise<void> {
   const { error } = await supabase.storage
     .from(CARD_IMAGES_BUCKET)
-    .upload(safeName, file, {
-      cacheControl: '31536000',
+    .upload(path, image.blob, {
+      cacheControl: CARD_IMAGE_CACHE_SECONDS,
       upsert: true,
-      contentType: file.type || 'image/png',
+      contentType: image.blob.type,
     });
   if (error) throw error;
+}
+
+export async function uploadCardImage(file: Blob, idArchivo: string): Promise<string> {
+  const [full, thumb] = await Promise.all([
+    optimizeImage(file, CARD_IMAGE_WIDTH, CARD_IMAGE_QUALITY),
+    optimizeImage(file, CARD_THUMB_WIDTH, CARD_THUMB_QUALITY),
+  ]);
+  const safeName = sanitizeFileName(`${idArchivo}.${full.extension}`);
+  const thumbName = sanitizeFileName(`${idArchivo}.thumb.${thumb.extension}`);
+
+  await uploadToCardsBucket(thumbName, thumb);
+  await uploadToCardsBucket(safeName, full);
 
   const { data } = supabase.storage.from(CARD_IMAGES_BUCKET).getPublicUrl(safeName);
   return `${data.publicUrl}?v=${Date.now()}`;
+}
+
+export function isOptimizedCardImage(url?: string | null): boolean {
+  return !!url && OPTIMIZED_IMAGE_PATTERN.test(url);
+}
+
+export function getCardThumbUrl(url?: string | null): string | null {
+  if (!url) return null;
+  return isOptimizedCardImage(url) ? url.replace(OPTIMIZED_IMAGE_PATTERN, '.thumb.$1$2') : url;
+}
+
+export async function optimizeExistingCardImage(card: CardRecord): Promise<string> {
+  if (!card.imagen_url) throw new Error('La carta no tiene imagen');
+  const response = await fetch(card.imagen_url);
+  if (!response.ok) throw new Error(`No se pudo descargar la imagen (${response.status})`);
+  const url = await uploadCardImage(await response.blob(), card.id_archivo);
+
+  const { error } = await supabase.from('cards').update({ imagen_url: url }).eq('id_archivo', card.id_archivo);
+  if (error) throw error;
+  return url;
 }
 
 export async function upsertCardFull(input: AdminCardInput): Promise<void> {

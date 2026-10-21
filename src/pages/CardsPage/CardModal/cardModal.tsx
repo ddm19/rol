@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartPlus, faCoins, faXmark } from '@fortawesome/free-solid-svg-icons';
-import { CardDTO } from 'services/cardsService';
+import { CardDTO, getCardThumbUrl } from 'services/cardsService';
 import '../cardsPage.scss';
 
 type Props = {
@@ -15,6 +15,11 @@ type Props = {
 const CardModal: React.FC<Props> = ({ card, onClose, onAddToCart, isBlocked, getPrice }) => {
     const blocked = isBlocked?.(card) ?? false;
     const price = getPrice?.(card) ?? null;
+    const fullUrl = card.imagen_url || '/images/card-fallback.png';
+    const thumbUrl = getCardThumbUrl(card.imagen_url);
+    const [fullLoaded, setFullLoaded] = useState(false);
+
+    useEffect(() => setFullLoaded(false), [fullUrl]);
 
     return (
         <div className="modalBackdrop is-open" onClick={onClose} role="dialog" aria-modal="true">
@@ -22,7 +27,17 @@ const CardModal: React.FC<Props> = ({ card, onClose, onAddToCart, isBlocked, get
                 <button className="closeBtn" aria-label="Cerrar" onClick={onClose}>
                     <FontAwesomeIcon icon={faXmark} />
                 </button>
-                <img src={card.imagen_url || '/images/card-fallback.png'} alt={card.nombre} />
+                <div className="modalContent__image">
+                    {thumbUrl && thumbUrl !== fullUrl && (
+                        <img src={thumbUrl} alt="" aria-hidden="true" className="modalContent__placeholder" />
+                    )}
+                    <img
+                        src={fullUrl}
+                        alt={card.nombre}
+                        className={`modalContent__full${fullLoaded || !thumbUrl || thumbUrl === fullUrl ? ' is-loaded' : ''}`}
+                        onLoad={() => setFullLoaded(true)}
+                    />
+                </div>
                 {onAddToCart && (
                     <button
                         type="button"

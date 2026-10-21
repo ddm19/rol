@@ -7,6 +7,7 @@ import {
     CardDTO,
     deleteCardFull,
     fetchFacets,
+    getCardThumbUrl,
     normalizeKey,
     uploadCardImage,
     upsertCardFull,
@@ -222,7 +223,7 @@ const SingleCardForm: React.FC<Props> = ({ initialCard, onSaved, onCancel }) => 
         }
     };
 
-    const previewSrc = imagePreview || form.imagen_url || null;
+    const previewSrc = imagePreview || getCardThumbUrl(form.imagen_url) || null;
 
     return (
         <form className="adminCardForm" onSubmit={handleSubmit}>

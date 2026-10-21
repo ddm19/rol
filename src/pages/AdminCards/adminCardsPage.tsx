@@ -4,8 +4,9 @@ import './adminCardsPage.scss';
 import SingleCardForm from './components/singleCardForm';
 import BulkUploadForm from './components/bulkUploadForm';
 import ManageCardsTab from './components/manageCardsTab';
+import OptimizeImagesTab from './components/optimizeImagesTab';
 
-type Tab = 'single' | 'bulk' | 'manage';
+type Tab = 'single' | 'bulk' | 'manage' | 'optimize';
 
 const AdminCardsPage: React.FC = () => {
     const [tab, setTab] = useState<Tab>('single');
@@ -39,12 +40,20 @@ const AdminCardsPage: React.FC = () => {
                 >
                     Ver / editar / eliminar
                 </button>
+                <button
+                    type="button"
+                    className={`adminCardsPage__tab${tab === 'optimize' ? ' is-active' : ''}`}
+                    onClick={() => setTab('optimize')}
+                >
+                    Optimizar imágenes
+                </button>
             </div>
 
             <div className="adminCardsPage__content">
                 {tab === 'single' && <SingleCardForm />}
                 {tab === 'bulk' && <BulkUploadForm />}
                 {tab === 'manage' && <ManageCardsTab />}
+                {tab === 'optimize' && <OptimizeImagesTab />}
             </div>
         </div>
     );

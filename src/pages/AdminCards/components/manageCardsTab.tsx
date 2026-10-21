@@ -3,12 +3,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBolt, faChevronDown, faChevronRight, faCoins, faGavel, faHeart, faSkull } from '@fortawesome/free-solid-svg-icons';
 import useCardSearch, { SortOption } from 'hooks/useCardSearch';
 import SingleCardForm from './singleCardForm';
+import { CardDTO, getCardThumbUrl } from 'services/cardsService';
+import CardModal from 'pages/CardsPage/CardModal/cardModal';
 
 const NEUTRAL_COLOR = 'var(--colors-border)';
 
 const ManageCardsTab: React.FC = () => {
     const { results, all, loading, query, setQuery, expansions, setExpansions, sort, setSort, refetch } = useCardSearch();
     const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+    const [active, setActive] = useState<CardDTO | null>(null);
 
     const distinctExpansions = useMemo(() => {
         const set = new Set<string>();
@@ -87,7 +90,17 @@ const ManageCardsTab: React.FC = () => {
                                         <div className="adminCardManage__tileBody">
                                             <div className="adminCardManage__thumb">
                                                 {card.imagen_url ? (
-                                                    <img src={card.imagen_url} alt={card.nombre} loading="lazy" decoding="async" />
+                                                    <img
+                                                        src={getCardThumbUrl(card.imagen_url) || undefined}
+                                                        alt={card.nombre}
+                                                        loading="lazy"
+                                                        decoding="async"
+                                                        title="Ver en grande"
+                                                        onClick={(event) => {
+                                                            event.stopPropagation();
+                                                            setActive(card);
+                                                        }}
+                                                    />
                                                 ) : (
                                                     <span>Sin imagen</span>
                                                 )}
@@ -159,6 +172,8 @@ const ManageCardsTab: React.FC = () => {
                     </div>
                 </>
             )}
+
+            {active && <CardModal card={active} onClose={() => setActive(null)} />}
         </div>
     );
 };

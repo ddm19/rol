@@ -2,7 +2,7 @@ import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCartPlus, faCoins } from '@fortawesome/free-solid-svg-icons';
 import './cardsGrid.scss';
-import { CardDTO } from 'services/cardsService';
+import { CardDTO, getCardThumbUrl } from 'services/cardsService';
 
 type Props = {
     cards: CardDTO[];
@@ -27,7 +27,7 @@ const CardsGrid: React.FC<Props> = ({ cards, onSelect, onAddToCart, isBlocked, g
                         <div className="cardsGrid__imageWrapper">
                             {isNew?.(c) && <span className="cardsGrid__newBadge">Nueva</span>}
                             <img
-                                src={c.imagen_url || fallback}
+                                src={getCardThumbUrl(c.imagen_url) || fallback}
                                 alt={c.nombre}
                                 loading="lazy"
                                 decoding="async"

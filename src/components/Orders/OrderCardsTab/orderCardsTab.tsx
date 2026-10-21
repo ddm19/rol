@@ -12,7 +12,7 @@ import {
     faCoins
 } from '@fortawesome/free-solid-svg-icons';
 import { useAuth } from 'hooks/useAuth';
-import { CardDTO } from 'services/cardsService';
+import { CardDTO, getCardThumbUrl } from 'services/cardsService';
 import { createCardOrder, OrderItem } from 'services/ordersService';
 import useCardSearch from 'hooks/useCardSearch';
 import { useCardOrderCart } from 'hooks/useCardOrderCart';
@@ -237,7 +237,7 @@ const OrderCardsTab: React.FC = () => {
                                     <div key={card.id_archivo} className={`orderCardsTab__selectedCard${blocked ? ' orderCardsTab__selectedCard--blocked' : ''}`}>
                                         <div className="orderCardsTab__cardImage">
                                             <img
-                                                src={card.imagen_url || '/images/card-fallback.png'}
+                                                src={getCardThumbUrl(card.imagen_url) || '/images/card-fallback.png'}
                                                 alt={card.nombre}
                                                 loading="lazy"
                                                 decoding="async"

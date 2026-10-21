@@ -133,6 +133,36 @@
         border-radius: 0.25rem;
     }
 
+    &__image
+    {
+        position: relative;
+        width: 100%;
+    }
+
+    &__placeholder
+    {
+        display: block;
+    }
+
+    &__placeholder + &__full
+    {
+        position: absolute;
+        inset: 0;
+        height: 100%;
+    }
+
+    &__full
+    {
+        display: block;
+        opacity: 0;
+        transition: opacity var(--motion-duration-base) var(--motion-ease-standard);
+
+        &.is-loaded
+        {
+            opacity: 1;
+        }
+    }
+
     &__addButton
     {
         width: 100%;
