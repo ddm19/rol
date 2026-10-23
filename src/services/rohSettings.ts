@@ -30,6 +30,17 @@ export function fetchRohSettings(options: { force?: boolean } = {}): Promise<Roh
     return cachedQuery(ROH_SETTINGS_CACHE_KEY, ROH_SETTINGS_CACHE_TTL_MS, fetchRohSettingsFromDb, options);
 }
 
+export type SpoilerSummary = {
+    total_cards: number;
+    next_reveal_at: string | null;
+};
+
+export async function fetchSpoilerSummary(): Promise<SpoilerSummary> {
+    const { data, error } = await supabase.rpc('roh_resumen_spoilers').single();
+    if (error) throw error;
+    return data as SpoilerSummary;
+}
+
 export function invalidateRohSettingsCache() {
     invalidateCache(ROH_SETTINGS_CACHE_KEY);
 }

@@ -6,20 +6,29 @@ import CardModal from '../CardModal/cardModal';
 import useCardSearch from 'hooks/useCardSearch';
 import { useCardRules } from 'hooks/useCardRules';
 import { CardDTO } from 'services/cardsService';
-import { fetchRohSettings, RohSettings } from 'services/rohSettings';
+import { fetchRohSettings, fetchSpoilerSummary, RohSettings, SpoilerSummary } from 'services/rohSettings';
 import '../cardsPage.scss';
 
 const SpoilersPage: React.FC = () => {
     const { all, loading, refetch } = useCardSearch();
     const { getVisibility, loading: rulesLoading, reload } = useCardRules();
     const [settings, setSettings] = useState<RohSettings | null>(null);
+    const [summary, setSummary] = useState<SpoilerSummary>({ total_cards: 0, next_reveal_at: null });
     const [settingsLoading, setSettingsLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [active, setActive] = useState<CardDTO | null>(null);
 
     const loadSettings = useCallback(async (force: boolean) => {
         try {
-            setSettings(await fetchRohSettings({ force }));
+            const [loadedSettings, loadedSummary] = await Promise.all([
+                fetchRohSettings({ force }),
+                fetchSpoilerSummary().catch((err) => {
+                    console.error('Error fetching spoiler summary', err);
+                    return { total_cards: 0, next_reveal_at: null };
+                }),
+            ]);
+            setSettings(loadedSettings);
+            setSummary(loadedSummary);
         } catch (err) {
             console.error('Error fetching ROH settings', err);
         } finally {
@@ -31,14 +40,14 @@ const SpoilersPage: React.FC = () => {
         loadSettings(false);
     }, [loadSettings]);
 
-    const handleRefresh = async () => {
+    const handleRefresh = useCallback(async () => {
         setRefreshing(true);
         try {
             await Promise.all([refetch(), reload(true), loadSettings(true)]);
         } finally {
             setRefreshing(false);
         }
-    };
+    }, [refetch, reload, loadSettings]);
 
     if ((loading && all.length === 0) || rulesLoading || settingsLoading) return <Loading />;
 
@@ -57,6 +66,7 @@ const SpoilersPage: React.FC = () => {
         <div className="cardsPageRoot">
             <SpoilersPanel
                 settings={settings}
+                summary={summary}
                 cards={all}
                 getVisibility={getVisibility}
                 onSelect={(card) => setActive(card)}

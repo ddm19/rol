@@ -46,7 +46,7 @@ export type CardDTO = CardRecord & {
   stats?: CardStatsRecord | null;
 };
 
-const CARDS_CACHE_KEY = 'cards:v1';
+const CARDS_CACHE_KEY = 'cards:v2';
 const CARDS_CACHE_TTL_MS = 15 * 60 * 1000;
 
 type CardRow = CardRecord & {
