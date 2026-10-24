@@ -2,7 +2,8 @@ import React, { useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendarDays, faEye, faEyeSlash, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { normalizeString } from 'hooks/useCardSearch';
-import { CardDTO, CardRohFields } from 'services/cardsService';
+import { CardDTO, CardRohFields, getCardThumbUrl } from 'services/cardsService';
+import CardModal from 'pages/CardsPage/CardModal/cardModal';
 import { formatDateTime, fromDateTimeInput } from '../dateInput';
 
 export type SpoilerState = 'hidden' | 'scheduled' | 'revealed';
@@ -35,6 +36,7 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
     const [scheduleAt, setScheduleAt] = useState('');
     const [applying, setApplying] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [active, setActive] = useState<CardDTO | null>(null);
 
     const counts = useMemo(() => {
         const result: Record<Filter, number> = { all: cards.length, hidden: 0, scheduled: 0, revealed: 0 };
@@ -150,7 +152,28 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
                                             aria-label={`Seleccionar ${card.nombre}`}
                                         />
                                     </td>
-                                    <td>{card.nombre}</td>
+                                    <td>
+                                        <div className="adminRohPage__cardCell">
+                                            <div className="adminCardManage__thumb">
+                                                {card.imagen_url ? (
+                                                    <img
+                                                        src={getCardThumbUrl(card.imagen_url) || undefined}
+                                                        alt={card.nombre}
+                                                        loading="lazy"
+                                                        decoding="async"
+                                                        title="Ver en grande"
+                                                        onClick={(event) => {
+                                                            event.stopPropagation();
+                                                            setActive(card);
+                                                        }}
+                                                    />
+                                                ) : (
+                                                    <span>Sin imagen</span>
+                                                )}
+                                            </div>
+                                            <span>{card.nombre}</span>
+                                        </div>
+                                    </td>
                                     <td>{card.rareza || '—'}</td>
                                     <td>
                                         <span className={`adminRohPage__state adminRohPage__state--${state}`}>
@@ -222,6 +245,8 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
             )}
 
             {error && <div className="adminCardForm__notice adminCardForm__notice--error">{error}</div>}
+
+            {active && <CardModal card={active} onClose={() => setActive(null)} />}
         </div>
     );
 };

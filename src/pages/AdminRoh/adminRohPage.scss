@@ -246,6 +246,13 @@
         }
     }
 
+    &__cardCell
+    {
+        display: flex;
+        align-items: center;
+        gap: var(--spacing-3);
+    }
+
     &__state
     {
         display: inline-block;
