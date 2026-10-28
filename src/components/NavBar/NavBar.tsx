@@ -53,6 +53,7 @@ const NavBar: React.FC = () => {
       sublinks: [
         { name: "Catálogo", url: "" },
         { name: "Spoilers", url: "/Spoilers" },
+        { name: "ROH Online", url: "/Game" },
       ],
     }
   ];

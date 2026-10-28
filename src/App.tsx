@@ -23,10 +23,11 @@ import AdminRohPage from "pages/AdminRoh/adminRohPage";
 import AdminRoute from "components/NavBar/PrivateRoute/adminRoute";
 import RuleSearch from "pages/RulesSearcher/RuleSearch";
 import CharacterSheetForm from "components/characterSheet/CharacterSheetForm";
+import ROHPage from "pages/CardsPage/ROHPage/ROHPage";
 
 
 function App() {
-  const notFooterRoutes = ["/sheets/*", "/Villazarcillo/*", "/Villazarcillo"];
+  const notFooterRoutes = ["/sheets/*", "/Villazarcillo/*", "/Villazarcillo", "/Cards/Game/*"];
 
   const location = useLocation();
 
@@ -56,6 +57,7 @@ function App() {
           <Route path="Utilities/PJMaker" element={<PJMaker />} />
           <Route path="/Cards" element={<CardsPage />} />
           <Route path="/Cards/Spoilers" element={<SpoilersPage />} />
+          <Route path="/Cards/Game" element={<ROHPage />} />
           <Route path="/Utilities" element={<UtilitiesPage />} />
           <Route path="/Campaigns" element={<ArticleSearch category={{ "id": "campaign", "name": "Campaña" }} />} />
           <Route path="/auth/callback" element={<AuthCallback />} />
