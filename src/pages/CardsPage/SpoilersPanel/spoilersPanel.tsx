@@ -55,7 +55,7 @@ const SpoilersPanel: React.FC<Props> = ({ settings, summary, cards, getVisibilit
     const revealed = useMemo(
         () => expansionCards
             .filter((card) => getVisibility(card) !== 'hidden')
-            .sort((a, b) => spoilerOrder(a) - spoilerOrder(b) || revealTime(b) - revealTime(a) || a.nombre.localeCompare(b.nombre)),
+            .sort((a, b) => revealTime(b) - revealTime(a) || spoilerOrder(a) - spoilerOrder(b) || a.nombre.localeCompare(b.nombre)),
         [expansionCards, getVisibility, now]
     );
 
