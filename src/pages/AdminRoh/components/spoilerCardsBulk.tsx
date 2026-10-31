@@ -181,20 +181,26 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply, onReorder
                                     key={card.id_archivo}
                                     className={`${isSelected ? 'is-selected' : ''}${dragging === card.id_archivo ? ' is-dragging' : ''}`}
                                     onClick={() => toggle(card.id_archivo)}
-                                    draggable={!reordering}
-                                    onDragStart={(e) => {
-                                        e.dataTransfer.effectAllowed = 'move';
-                                        setDragging(card.id_archivo);
-                                    }}
-                                    onDragOver={(e) => {
-                                        if (!dragging) return;
-                                        e.preventDefault();
-                                        moveTo(card.id_archivo);
-                                    }}
-                                    onDrop={(e) => e.preventDefault()}
-                                    onDragEnd={saveOrder}
+                                    data-card-id={card.id_archivo}
                                 >
-                                    <td className="adminRohPage__dragHandle">
+                                    <td
+                                        className="adminRohPage__dragHandle"
+                                        onClick={(e) => e.stopPropagation()}
+                                        onPointerDown={(e) => {
+                                            if (reordering) return;
+                                            e.preventDefault();
+                                            e.currentTarget.setPointerCapture(e.pointerId);
+                                            setDragging(card.id_archivo);
+                                        }}
+                                        onPointerMove={(e) => {
+                                            if (!dragging) return;
+                                            const row = document.elementFromPoint(e.clientX, e.clientY)?.closest('tr[data-card-id]');
+                                            const targetId = row?.getAttribute('data-card-id');
+                                            if (targetId) moveTo(targetId);
+                                        }}
+                                        onPointerUp={() => dragging && saveOrder()}
+                                        onPointerCancel={() => dragging && saveOrder()}
+                                    >
                                         <FontAwesomeIcon icon={faGripVertical} />
                                     </td>
                                     <td>

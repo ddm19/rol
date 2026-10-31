@@ -253,8 +253,11 @@
 
     &__dragHandle
     {
+        padding: var(--spacing-2) var(--spacing-3);
         color: var(--colors-subtitle);
         cursor: grab;
+        touch-action: none;
+        user-select: none;
     }
 
     &__cardCell
