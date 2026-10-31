@@ -22,6 +22,8 @@ const NEW_REVEAL_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
 
 const FLIPPED_STORAGE_KEY = 'roh:spoilers:flipped';
 
+const FACE_DOWN_SINCE = new Date('2026-10-31T16:30:00Z').getTime();
+
 const revealTime = (card: CardDTO) => (card.reveal_at ? new Date(card.reveal_at).getTime() : 0);
 
 const spoilerOrder = (card: CardDTO) => card.spoiler_order ?? Number.MAX_SAFE_INTEGER;
@@ -31,7 +33,10 @@ const SpoilersPanel: React.FC<Props> = ({ settings, summary, cards, getVisibilit
     const [filter, setFilter] = useState<string | null>(null);
     const [flipped, setFlipped] = useLocalStorageState<string[]>(FLIPPED_STORAGE_KEY, [], 0);
     const flippedSet = useMemo(() => new Set(flipped), [flipped]);
-    const isFaceDown = useCallback((card: CardDTO) => !flippedSet.has(card.id_archivo), [flippedSet]);
+    const isFaceDown = useCallback(
+        (card: CardDTO) => revealTime(card) >= FACE_DOWN_SINCE && !flippedSet.has(card.id_archivo),
+        [flippedSet]
+    );
     const handleFlip = useCallback(
         (card: CardDTO) => setFlipped((prev) => (prev.includes(card.id_archivo) ? prev : [...prev, card.id_archivo])),
         [setFlipped]
