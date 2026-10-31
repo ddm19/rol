@@ -161,7 +161,7 @@ const SpoilersPanel: React.FC<Props> = ({ settings, summary, cards, getVisibilit
                     Aún no se ha revelado ninguna carta. ¡Vuelve pronto!
                 </div>
             ) : (
-                <CardsGrid cards={shown} onSelect={onSelect} isNew={isNew} isFaceDown={isFaceDown} onFlip={handleFlip} />
+                <CardsGrid cards={shown} onSelect={onSelect} isNew={isNew} isFaceDown={isFaceDown} onFlip={handleFlip} fullImage />
             )}
         </div>
     );

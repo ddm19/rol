@@ -13,11 +13,12 @@ type Props = {
     isNew?: (card: CardDTO) => boolean;
     isFaceDown?: (card: CardDTO) => boolean;
     onFlip?: (card: CardDTO) => void;
+    fullImage?: boolean;
 };
 
 const fallback = '/images/card-fallback.png'; // Update to a working public path if needed
 
-const CardsGrid: React.FC<Props> = ({ cards, onSelect, onAddToCart, isBlocked, getPrice, isNew, isFaceDown, onFlip }) => {
+const CardsGrid: React.FC<Props> = ({ cards, onSelect, onAddToCart, isBlocked, getPrice, isNew, isFaceDown, onFlip, fullImage }) => {
     return (
         <div className="cardsGrid">
             {cards.map((c) => {
@@ -27,7 +28,7 @@ const CardsGrid: React.FC<Props> = ({ cards, onSelect, onAddToCart, isBlocked, g
                 const faceDown = isFaceDown?.(c) ?? false;
                 const image = (
                     <img
-                        src={getCardThumbUrl(c.imagen_url) || fallback}
+                        src={(fullImage ? c.imagen_url : getCardThumbUrl(c.imagen_url)) || fallback}
                         alt={c.nombre}
                         loading="lazy"
                         decoding="async"

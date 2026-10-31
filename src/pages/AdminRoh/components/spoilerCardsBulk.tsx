@@ -186,6 +186,8 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply, onReorder
                                     <td
                                         className="adminRohPage__dragHandle"
                                         onClick={(e) => e.stopPropagation()}
+                                        onMouseDown={(e) => e.preventDefault()}
+                                        onContextMenu={(e) => e.preventDefault()}
                                         onPointerDown={(e) => {
                                             if (reordering) return;
                                             e.preventDefault();

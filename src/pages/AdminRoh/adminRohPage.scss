@@ -232,6 +232,9 @@
         tbody tr
         {
             cursor: pointer;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
             transition: background var(--motion-duration-fast) var(--motion-ease-standard);
 
             &:hover
