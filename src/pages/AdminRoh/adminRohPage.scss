@@ -243,7 +243,18 @@
             {
                 background: var(--dndGoldTint12);
             }
+
+            &.is-dragging
+            {
+                opacity: var(--opacity-muted);
+            }
         }
+    }
+
+    &__dragHandle
+    {
+        color: var(--colors-subtitle);
+        cursor: grab;
     }
 
     &__cardCell

@@ -5,6 +5,7 @@ import CardsGrid from '../CardsGrid/cardsGrid';
 import { CardDTO, CardVisibility, normalizeKey } from 'services/cardsService';
 import { RohSettings, SpoilerSummary } from 'services/rohSettings';
 import { useCountdown } from 'hooks/useCountdown';
+import { useLocalStorageState } from 'hooks/useLocalStorageState';
 import './spoilersPanel.scss';
 
 type Props = {
@@ -19,11 +20,22 @@ type Props = {
 
 const NEW_REVEAL_WINDOW_MS = 3 * 24 * 60 * 60 * 1000;
 
+const FLIPPED_STORAGE_KEY = 'roh:spoilers:flipped';
+
 const revealTime = (card: CardDTO) => (card.reveal_at ? new Date(card.reveal_at).getTime() : 0);
+
+const spoilerOrder = (card: CardDTO) => card.spoiler_order ?? Number.MAX_SAFE_INTEGER;
 
 const SpoilersPanel: React.FC<Props> = ({ settings, summary, cards, getVisibility, onSelect, onRefresh, refreshing }) => {
     const [now, setNow] = useState(() => Date.now());
     const [filter, setFilter] = useState<string | null>(null);
+    const [flipped, setFlipped] = useLocalStorageState<string[]>(FLIPPED_STORAGE_KEY, [], 0);
+    const flippedSet = useMemo(() => new Set(flipped), [flipped]);
+    const isFaceDown = useCallback((card: CardDTO) => !flippedSet.has(card.id_archivo), [flippedSet]);
+    const handleFlip = useCallback(
+        (card: CardDTO) => setFlipped((prev) => (prev.includes(card.id_archivo) ? prev : [...prev, card.id_archivo])),
+        [setFlipped]
+    );
     const handleRevealReached = useCallback(() => {
         setNow(Date.now());
         onRefresh();
@@ -38,7 +50,7 @@ const SpoilersPanel: React.FC<Props> = ({ settings, summary, cards, getVisibilit
     const revealed = useMemo(
         () => expansionCards
             .filter((card) => getVisibility(card) !== 'hidden')
-            .sort((a, b) => revealTime(b) - revealTime(a) || a.nombre.localeCompare(b.nombre)),
+            .sort((a, b) => spoilerOrder(a) - spoilerOrder(b) || revealTime(b) - revealTime(a) || a.nombre.localeCompare(b.nombre)),
         [expansionCards, getVisibility, now]
     );
 
@@ -144,7 +156,7 @@ const SpoilersPanel: React.FC<Props> = ({ settings, summary, cards, getVisibilit
                     Aún no se ha revelado ninguna carta. ¡Vuelve pronto!
                 </div>
             ) : (
-                <CardsGrid cards={shown} onSelect={onSelect} isNew={isNew} />
+                <CardsGrid cards={shown} onSelect={onSelect} isNew={isNew} isFaceDown={isFaceDown} onFlip={handleFlip} />
             )}
         </div>
     );

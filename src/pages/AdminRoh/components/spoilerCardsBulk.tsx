@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCalendarDays, faEye, faEyeSlash, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import { faCalendarDays, faEye, faEyeSlash, faGripVertical, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import { normalizeString } from 'hooks/useCardSearch';
 import { CardDTO, CardRohFields, getCardThumbUrl } from 'services/cardsService';
 import CardModal from 'pages/CardsPage/CardModal/cardModal';
@@ -12,6 +12,7 @@ type Props = {
     cards: CardDTO[];
     getState: (card: CardDTO) => SpoilerState;
     onApply: (ids: string[], fields: Partial<CardRohFields>) => Promise<void>;
+    onReorder: (ids: string[]) => Promise<void>;
 };
 
 type Filter = 'all' | SpoilerState;
@@ -29,7 +30,7 @@ const FILTERS: { id: Filter; label: string }[] = [
     { id: 'revealed', label: 'Reveladas' },
 ];
 
-const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
+const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply, onReorder }) => {
     const [query, setQuery] = useState('');
     const [filter, setFilter] = useState<Filter>('all');
     const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -37,6 +38,13 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
     const [applying, setApplying] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [active, setActive] = useState<CardDTO | null>(null);
+    const [ordered, setOrdered] = useState<CardDTO[]>(cards);
+    const [dragging, setDragging] = useState<string | null>(null);
+    const [reordering, setReordering] = useState(false);
+
+    useEffect(() => {
+        setOrdered(cards);
+    }, [cards]);
 
     const counts = useMemo(() => {
         const result: Record<Filter, number> = { all: cards.length, hidden: 0, scheduled: 0, revealed: 0 };
@@ -46,11 +54,11 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
 
     const shown = useMemo(() => {
         const search = normalizeString(query.trim());
-        return cards.filter((card) => {
+        return ordered.filter((card) => {
             if (filter !== 'all' && getState(card) !== filter) return false;
             return !search || normalizeString(card.nombre).includes(search);
         });
-    }, [cards, filter, query, getState]);
+    }, [ordered, filter, query, getState]);
 
     const allShownSelected = shown.length > 0 && shown.every((card) => selected.has(card.id_archivo));
 
@@ -74,6 +82,33 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
         });
     };
 
+    const moveTo = (targetId: string) => {
+        if (!dragging || dragging === targetId) return;
+        setOrdered((prev) => {
+            const from = prev.findIndex((card) => card.id_archivo === dragging);
+            const to = prev.findIndex((card) => card.id_archivo === targetId);
+            if (from < 0 || to < 0) return prev;
+            const next = [...prev];
+            const [moved] = next.splice(from, 1);
+            next.splice(to, 0, moved);
+            return next;
+        });
+    };
+
+    const saveOrder = async () => {
+        setDragging(null);
+        if (ordered.every((card, index) => card.id_archivo === cards[index]?.id_archivo)) return;
+        setReordering(true);
+        setError(null);
+        try {
+            await onReorder(ordered.map((card) => card.id_archivo));
+        } catch (err: any) {
+            setError(err?.message || 'Error guardando el orden');
+        } finally {
+            setReordering(false);
+        }
+    };
+
     const apply = async (fields: Partial<CardRohFields>) => {
         setApplying(true);
         setError(null);
@@ -90,7 +125,10 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
 
     return (
         <div className="adminCardForm">
-            <h2 className="adminRohPage__formTitle">Cartas</h2>
+            <h2 className="adminRohPage__formTitle">
+                Cartas {reordering && <FontAwesomeIcon icon={faSpinner} spin />}
+            </h2>
+            <p className="adminRohPage__muted">Arrastra las filas para cambiar el orden en que aparecen en spoilers.</p>
 
             <div className="adminCardManage__toolbar">
                 <div className="adminCardForm__group adminCardManage__toolbarSearch">
@@ -120,6 +158,7 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
                 <table className="adminCardBulk__table adminRohPage__spoilerTable">
                     <thead>
                         <tr>
+                            <th />
                             <th>
                                 <input
                                     type="checkbox"
@@ -140,9 +179,24 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
                             return (
                                 <tr
                                     key={card.id_archivo}
-                                    className={isSelected ? 'is-selected' : ''}
+                                    className={`${isSelected ? 'is-selected' : ''}${dragging === card.id_archivo ? ' is-dragging' : ''}`}
                                     onClick={() => toggle(card.id_archivo)}
+                                    draggable={!reordering}
+                                    onDragStart={(e) => {
+                                        e.dataTransfer.effectAllowed = 'move';
+                                        setDragging(card.id_archivo);
+                                    }}
+                                    onDragOver={(e) => {
+                                        if (!dragging) return;
+                                        e.preventDefault();
+                                        moveTo(card.id_archivo);
+                                    }}
+                                    onDrop={(e) => e.preventDefault()}
+                                    onDragEnd={saveOrder}
                                 >
+                                    <td className="adminRohPage__dragHandle">
+                                        <FontAwesomeIcon icon={faGripVertical} />
+                                    </td>
                                     <td>
                                         <input
                                             type="checkbox"
@@ -162,6 +216,7 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
                                                         loading="lazy"
                                                         decoding="async"
                                                         title="Ver en grande"
+                                                        draggable={false}
                                                         onClick={(event) => {
                                                             event.stopPropagation();
                                                             setActive(card);
@@ -188,7 +243,7 @@ const SpoilerCardsBulk: React.FC<Props> = ({ cards, getState, onApply }) => {
                         })}
                         {shown.length === 0 && (
                             <tr>
-                                <td colSpan={4} className="adminRohPage__muted">No hay cartas con este filtro</td>
+                                <td colSpan={5} className="adminRohPage__muted">No hay cartas con este filtro</td>
                             </tr>
                         )}
                     </tbody>

@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBox, faEye, faEyeSlash, faRocket, faSpinner } from '@fortawesome/free-solid-svg-icons';
 import useCardSearch from 'hooks/useCardSearch';
 import { useCardRules } from 'hooks/useCardRules';
-import { CardDTO, CardRohFields, clearExpansionCardOverrides, normalizeKey, updateCardsRohFields } from 'services/cardsService';
+import { CardDTO, CardRohFields, clearExpansionCardOverrides, normalizeKey, updateCardsRohFields, updateSpoilerOrder } from 'services/cardsService';
 import { upsertExpansion } from 'services/expansionLocks';
 import { fetchPackTypes, PackTypeRecord, upsertPackType } from 'services/packTypes';
 import { fetchRohSettings, RohSettings, updateRohSettings } from 'services/rohSettings';
@@ -58,7 +58,8 @@ const SpoilersTab: React.FC = () => {
     const expansionCards = useMemo(
         () => all
             .filter((card) => savedExpansion && card.expansion && normalizeKey(card.expansion) === normalizeKey(savedExpansion))
-            .sort((a, b) => a.nombre.localeCompare(b.nombre)),
+            .sort((a, b) => (a.spoiler_order ?? Number.MAX_SAFE_INTEGER) - (b.spoiler_order ?? Number.MAX_SAFE_INTEGER)
+                || a.nombre.localeCompare(b.nombre)),
         [all, savedExpansion]
     );
 
@@ -133,6 +134,17 @@ const SpoilersTab: React.FC = () => {
     const handleApply = async (ids: string[], cardFields: Partial<CardRohFields>) => {
         await updateCardsRohFields(ids, cardFields);
         await refetch();
+    };
+
+    const handleReorder = async (ids: string[]) => {
+        const changes = ids
+            .map((id_archivo, index) => ({ id_archivo, spoiler_order: index + 1 }))
+            .filter(({ id_archivo, spoiler_order }) => expansionCards.find((card) => card.id_archivo === id_archivo)?.spoiler_order !== spoiler_order);
+        try {
+            await updateSpoilerOrder(changes);
+        } finally {
+            await refetch();
+        }
     };
 
     const handleLaunch = async () => {
@@ -233,7 +245,7 @@ const SpoilersTab: React.FC = () => {
                         )}
                     </div>
 
-                    <SpoilerCardsBulk cards={expansionCards} getState={getState} onApply={handleApply} />
+                    <SpoilerCardsBulk cards={expansionCards} getState={getState} onApply={handleApply} onReorder={handleReorder} />
 
                     <div className="adminCardForm">
                         <h2 className="adminRohPage__formTitle">Lanzar al catálogo</h2>

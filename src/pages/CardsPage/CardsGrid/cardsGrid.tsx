@@ -11,35 +11,54 @@ type Props = {
     isBlocked?: (card: CardDTO) => boolean;
     getPrice?: (card: CardDTO) => number | null;
     isNew?: (card: CardDTO) => boolean;
+    isFaceDown?: (card: CardDTO) => boolean;
+    onFlip?: (card: CardDTO) => void;
 };
 
 const fallback = '/images/card-fallback.png'; // Update to a working public path if needed
 
-const CardsGrid: React.FC<Props> = ({ cards, onSelect, onAddToCart, isBlocked, getPrice, isNew }) => {
+const CardsGrid: React.FC<Props> = ({ cards, onSelect, onAddToCart, isBlocked, getPrice, isNew, isFaceDown, onFlip }) => {
     return (
         <div className="cardsGrid">
             {cards.map((c) => {
                 const blocked = isBlocked?.(c) ?? false;
                 const price = blocked ? null : getPrice?.(c) ?? null;
                 const unavailable = blocked || price === null;
+                const faceDown = isFaceDown?.(c) ?? false;
+                const image = (
+                    <img
+                        src={getCardThumbUrl(c.imagen_url) || fallback}
+                        alt={c.nombre}
+                        loading="lazy"
+                        decoding="async"
+                        onError={(e) => {
+                            const t = e.currentTarget;
+                            if (t.src !== fallback) t.src = fallback;
+                        }}
+                    />
+                );
                 return (
-                    <div key={c.id_archivo} className="cardsGrid__card" onClick={() => c.imagen_url && onSelect?.(c)}>
+                    <div
+                        key={c.id_archivo}
+                        className={`cardsGrid__card${faceDown ? ' cardsGrid__card--faceDown' : ''}`}
+                        onClick={() => {
+                            if (faceDown) onFlip?.(c);
+                            else if (c.imagen_url) onSelect?.(c);
+                        }}
+                        title={faceDown ? 'Haz clic para revelar' : undefined}
+                    >
                         <div className="cardsGrid__imageWrapper">
                             {isNew?.(c) && <span className="cardsGrid__newBadge">Nueva</span>}
-                            <img
-                                src={getCardThumbUrl(c.imagen_url) || fallback}
-                                alt={c.nombre}
-                                loading="lazy"
-                                decoding="async"
-                                onError={(e) => {
-                                    const t = e.currentTarget;
-                                    if (t.src !== fallback) t.src = fallback;
-                                }}
-                            />
+                            {isFaceDown ? (
+                                <div className={`cardsGrid__flipper${faceDown ? ' is-faceDown' : ''}`}>
+                                    {image}
+                                    <img className="cardsGrid__back" src={fallback} alt="" />
+                                </div>
+                            ) : image}
                         </div>
                         <div className="cardsGrid__meta">
                             <div className="cardsGrid__title">
-                                <span className="cardsGrid__name">{c.nombre}</span>
+                                <span className="cardsGrid__name">{faceDown ? '???' : c.nombre}</span>
                                 {price !== null && (
                                     <span className="cardsGrid__price">
                                         <FontAwesomeIcon icon={faCoins} />

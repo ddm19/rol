@@ -18,6 +18,7 @@ export type CardRecord = {
   visibility?: CardVisibility | null;
   reveal_at?: string | null;
   order_blocked?: boolean;
+  spoiler_order?: number | null;
 };
 
 export type CardVisibility = 'visible' | 'spoiler' | 'hidden';
@@ -296,6 +297,18 @@ export async function updateCardsRohFields(idsArchivo: string[], fields: Partial
   const { error } = await supabase.from('cards').update(fields).in('id_archivo', idsArchivo);
   if (error) throw error;
   invalidateCardsCache();
+}
+
+export async function updateSpoilerOrder(changes: { id_archivo: string; spoiler_order: number }[]): Promise<void> {
+  if (changes.length === 0) return;
+  const results = await Promise.all(
+    changes.map(({ id_archivo, spoiler_order }) =>
+      supabase.from('cards').update({ spoiler_order }).eq('id_archivo', id_archivo)
+    )
+  );
+  const failed = results.find(({ error }) => error);
+  invalidateCardsCache();
+  if (failed?.error) throw failed.error;
 }
 
 export async function clearExpansionCardOverrides(expansion: string): Promise<void> {

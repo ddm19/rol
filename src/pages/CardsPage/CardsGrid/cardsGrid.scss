@@ -53,6 +53,7 @@
         position: absolute;
         top: var(--spacing-2);
         right: var(--spacing-2);
+        z-index: 1;
         padding: var(--spacing-1) var(--spacing-2);
         border-radius: var(--radius-round);
         background: var(--colors-mediumRed);
@@ -144,6 +145,7 @@
     .cardsGrid__imageWrapper
     {
         position: relative;
+        perspective: 60rem;
         width: 100%;
         background-color: rgba(0, 0, 0, 0.05);
         display: flex;
@@ -156,6 +158,39 @@
             height: auto;
             display: block;
         }
+    }
+
+    .cardsGrid__flipper
+    {
+        position: relative;
+        width: 100%;
+        aspect-ratio: 1210 / 1834;
+        transform-style: preserve-3d;
+        transition: transform var(--motion-duration-slow) var(--motion-ease-standard);
+
+        img
+        {
+            position: absolute;
+            inset: 0;
+            height: 100%;
+            object-fit: cover;
+            backface-visibility: hidden;
+        }
+
+        .cardsGrid__back
+        {
+            transform: rotateY(180deg);
+        }
+
+        &.is-faceDown
+        {
+            transform: rotateY(180deg);
+        }
+    }
+
+    &--faceDown:hover
+    {
+        box-shadow: 0 8px 16px var(--dndGoldTint45);
     }
 
     &__meta
